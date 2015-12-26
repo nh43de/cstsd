@@ -1,21 +1,20 @@
-﻿using CommandLine;
-using CommandLine.Text;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using ToTypeScriptD.Core;
+using CommandLine;
+using CommandLine.Text;
 using ToTypeScriptD.Core.Config;
 
-namespace ToTypeScriptD
+namespace tsd
 {
     public class Options
     {
         public const string DotNetCommandName = "dotnet";
         public const string WinmdCommandName = "winmd";
 
-        [VerbOption(Options.DotNetCommandName, HelpText = "Generate .d.ts based on .Net conventions")]
+        [VerbOption(DotNetCommandName, HelpText = "Generate .d.ts based on .Net conventions")]
         public DotNetSubOptions DotNet { get; set; }
 
-        [VerbOption(Options.WinmdCommandName, HelpText = "Generate .d.ts based on WinJS/WinMD conventions")]
+        [VerbOption(WinmdCommandName, HelpText = "Generate .d.ts based on WinJS/WinMD conventions")]
         public WinmdSubOptions WinMD { get; set; }
 
         [HelpVerbOption]
@@ -98,7 +97,7 @@ namespace ToTypeScriptD
 
     public class DotNetSubOptions : BaseSubOption
     {
-        [Option('c', "camelBack", HelpText = "CamelBack case (lower case first letter). EX: (SomeThing: string) becomes (someThing: string)")]
+        [Option('c', "camelBack", HelpText = "CamelBack case (lower case first letter)")]
         public bool CamelBackCase { get; set; }
     }
 

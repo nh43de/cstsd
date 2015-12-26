@@ -6,51 +6,18 @@ namespace ToTypeScriptD.Core
 
     public abstract class ConfigBase
     {
-        public ConfigBase()
-        {
-            this.IndentationType = IndentationFormatting.SpaceX4;
-        }
-
-        public abstract bool CamelBackCase { get; set; }
         public abstract TypeWriters.ITypeWriterTypeSelector GetTypeWriterTypeSelector();
-
-
+        public abstract bool CamelBackCase { get; set; }
+        
         public bool IncludeSpecialTypes { get; set; }
+        public string RegexFilter { get; set; } = "";
+        public IndentationFormatting IndentationType { get; set; } = IndentationFormatting.SpaceX4;        
+        public IEnumerable<string> AssemblyPaths { get; set; } = new string[0];
 
-        private IEnumerable<string> _assemblyPaths = new List<string>();
-        public IEnumerable<string> AssemblyPaths
-        {
-            get
-            {
-                return _assemblyPaths ?? new string[0];
-            }
-            set
-            {
-                _assemblyPaths = value ?? new string[0];
-            }
-        }
+        public TypeWriters.ITypeNotFoundErrorHandler TypeNotFoundErrorHandler { get; set; }
+            = new ConsoleErrorTypeNotFoundErrorHandler();
 
-        private TypeWriters.ITypeNotFoundErrorHandler _typeNotfoundErrorHandler;
-        public TypeWriters.ITypeNotFoundErrorHandler TypeNotFoundErrorHandler
-        {
-            get
-            {
-                return _typeNotfoundErrorHandler ?? (_typeNotfoundErrorHandler = new ConsoleErrorTypeNotFoundErrorHandler());
-            }
-            set
-            {
-                _typeNotfoundErrorHandler = value;
-            }
-        }
 
-        private string _regexFilter = "";
-        public string RegexFilter
-        {
-            get { return _regexFilter ?? ""; }
-            set { _regexFilter = value ?? ""; }
-        }
-
-        public IndentationFormatting IndentationType { get; set; }
         public string Indent
         {
             get

@@ -1,7 +1,8 @@
 ﻿using System;
+using ToTypeScriptD;
 using ToTypeScriptD.Core;
 
-namespace ToTypeScriptD
+namespace tsd
 {
     class Program
     {
@@ -50,11 +51,11 @@ namespace ToTypeScriptD
                 }
             }))
             {
-                bool skipPrintingHelp = false;
+                bool skipPrintingHelp;
 
                 try
                 {
-                    skipPrintingHelp = ToTypeScriptD.Render.AllAssemblies(config, Console.Out);
+                    skipPrintingHelp = Render.AllAssemblies(config, Console.Out);
                 }
                 catch (Exception ex)
                 {
@@ -69,11 +70,9 @@ namespace ToTypeScriptD
                     }
                 }
 
-                if (!skipPrintingHelp)
-                {
-                    Console.WriteLine(options.GetUsage(verbInvoked));
-                    Environment.ExitCode = 1;
-                }
+                if (skipPrintingHelp) return;
+                Console.WriteLine(options.GetUsage(verbInvoked));
+                Environment.ExitCode = 1;
             }
         }
     }
