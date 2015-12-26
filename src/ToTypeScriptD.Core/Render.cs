@@ -24,17 +24,21 @@ namespace ToTypeScriptD
         private static bool WriteFiles(IEnumerable<string> assemblyPaths, TextWriter w, ITypeNotFoundErrorHandler typeNotFoundErrorHandler, TypeCollection typeCollection, string filterRegex, ConfigBase config)
         {
             var filesAlreadyProcessed = new HashSet<string>(new IgnoreCaseStringEqualityComparer());
-            if (!assemblyPaths.Any())
-                return false;
+
+            var any = false;
 
             assemblyPaths.Each(assemblyPath =>
             {
+                any = true;
                 if (filesAlreadyProcessed.Contains(assemblyPath))
                     return;
 
                 filesAlreadyProcessed.Add(assemblyPath);
                 CollectTypes(assemblyPath, typeNotFoundErrorHandler, typeCollection, config);
             });
+
+            if (any == false)
+                return false;
 
             var renderedOut = typeCollection.Render(filterRegex);
             w.WriteLine(renderedOut);

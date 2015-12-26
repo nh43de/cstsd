@@ -15,7 +15,7 @@ namespace ToTypeScriptD.Core.TypeWriters
 
         public TypeCollection(ITypeWriterTypeSelector typeSelector)
         {
-            this.TypeSelector = typeSelector;
+            TypeSelector = typeSelector;
         }
 
         public bool Contains(string name)
@@ -33,8 +33,7 @@ namespace ToTypeScriptD.Core.TypeWriters
 
             // HACK:
             // Types in here are causing some issues - removing for now - will work on later
-            if (fullname.StartsWith("Windows.UI.Input.Inking") ||
-                false)
+            if (fullname.StartsWith("Windows.UI.Input.Inking"))
             {
                 return;
             }
@@ -47,10 +46,7 @@ namespace ToTypeScriptD.Core.TypeWriters
 
         public string Render(string filterRegex)
         {
-            Func<string, string> getNamespace = name =>
-            {
-                return name.Substring(0, name.LastIndexOf('.'));
-            };
+            Func<string, string> getNamespace = name => name.Substring(0, name.LastIndexOf('.'));
 
             var items = from t in types
                         where !typesRendered.Contains(t.Key)
