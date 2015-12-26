@@ -6,12 +6,13 @@ namespace ToTypeScriptD.Core.TypeWriters
 {
     public class EnumWriter : ITypeWriter
     {
-        private ConfigBase config;
+        private readonly ConfigBase config;
+
         public EnumWriter(TypeDefinition typeDefinition, int indentCount, TypeCollection typeCollection, ConfigBase config)
         {
             this.config = config;
-            this.TypeDefinition = typeDefinition;
-            this.IndentCount = indentCount;
+            TypeDefinition = typeDefinition;
+            IndentCount = indentCount;
         }
 
         public void Write(StringBuilder sb)
@@ -29,15 +30,9 @@ namespace ToTypeScriptD.Core.TypeWriters
             sb.AppendLine(IndentValue + "}");
         }
 
-        public string IndentValue
-        {
-            get { return config.Indent.Dup(IndentCount); }
-        }
+        public string IndentValue => config.Indent.Dup(IndentCount);
 
-        public string FullName
-        {
-            get { return TypeDefinition.Namespace + "." + TypeDefinition.ToTypeScriptItemName(); }
-        }
+        public string FullName => TypeDefinition.Namespace + "." + TypeDefinition.ToTypeScriptItemName();
 
         public TypeDefinition TypeDefinition { get; set; }
 

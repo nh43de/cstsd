@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Runtime.InteropServices;
 using ToTypeScriptD;
 using ToTypeScriptD.Core;
 
@@ -14,15 +16,19 @@ namespace tsd
 
             string verbInvoked = null;
 
-            if (CommandLine.Parser.Default.ParseArgumentsStrict(args, options, (verb, subOptions) =>
+            bool outputToFile = false;
+
+            var parseSuccess = CommandLine.Parser.Default.ParseArgumentsStrict(args, options, (verb, subOptions) =>
             {
-                verb = (verb ?? "").ToLowerInvariant();
-                verbInvoked = verb;
-                if (verb == Options.DotNetCommandName)
+                verbInvoked = (verb ?? "").ToLowerInvariant();
+                switch (verbInvoked)
                 {
-                    var dotNetSubOptions = subOptions as DotNetSubOptions;
-                    if (dotNetSubOptions != null)
-                    {
+                    case Options.DotNetCommandName:
+                        var dotNetSubOptions = subOptions as DotNetSubOptions;
+                        if (dotNetSubOptions == null) break;
+
+                        outputToFile = dotNetSubOptions.OutputToFile;
+
                         config = new ToTypeScriptD.Core.DotNet.DotNetConfig
                         {
                             AssemblyPaths = dotNetSubOptions.Files,
@@ -31,14 +37,14 @@ namespace tsd
                             IndentationType = dotNetSubOptions.IndentationType,
                             RegexFilter = dotNetSubOptions.RegexFilter,
                             TypeNotFoundErrorHandler = new ConsoleErrorTypeNotFoundErrorHandler(),
-                        };
-                    }
-                }
-                else if (verb == Options.WinmdCommandName)
-                {
-                    var winmdSubOptions = subOptions as WinmdSubOptions;
-                    if (winmdSubOptions != null)
-                    {
+                        };                        
+                        break;
+                    case Options.WinmdCommandName:
+                        var winmdSubOptions = subOptions as WinmdSubOptions;
+                        if (winmdSubOptions == null) break;
+
+                        outputToFile = winmdSubOptions.OutputToFile;
+
                         config = new ToTypeScriptD.Core.WinMD.WinmdConfig
                         {
                             AssemblyPaths = winmdSubOptions.Files,
@@ -47,33 +53,43 @@ namespace tsd
                             RegexFilter = winmdSubOptions.RegexFilter,
                             TypeNotFoundErrorHandler = new ConsoleErrorTypeNotFoundErrorHandler(),
                         };
-                    }
+                        break;
                 }
-            }))
+            });
+
+            if (!parseSuccess) return;
+            bool skipPrintingHelp;
+            try
             {
-                bool skipPrintingHelp;
-
-                try
-                {
+                if (!outputToFile)
                     skipPrintingHelp = Render.AllAssemblies(config, Console.Out);
-                }
-                catch (Exception ex)
+                else
                 {
-                    if (ex is System.IO.DirectoryNotFoundException || ex is System.IO.FileNotFoundException)
-                    {
-                        skipPrintingHelp = true;
-                        Console.Error.WriteLine("Error: " + ex.Message);
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                    Console.WriteLine(@"Writing to output file: output.d.ts");
 
-                if (skipPrintingHelp) return;
-                Console.WriteLine(options.GetUsage(verbInvoked));
-                Environment.ExitCode = 1;
+                    TextWriter w = new StreamWriter(@"output.d.ts", false);
+                    
+                    skipPrintingHelp = Render.AllAssemblies(config, w);
+                    
+                    w.Flush();
+                }
             }
+            catch (Exception ex)
+            {
+                if (ex is System.IO.DirectoryNotFoundException || ex is System.IO.FileNotFoundException)
+                {
+                    skipPrintingHelp = true;
+                    Console.Error.WriteLine("Error: " + ex.Message);
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            if (skipPrintingHelp) return;
+            Console.WriteLine(options.GetUsage(verbInvoked));
+            Environment.ExitCode = 1;
         }
     }
 }

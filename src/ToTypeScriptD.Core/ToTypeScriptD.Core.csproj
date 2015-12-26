@@ -47,6 +47,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\TypeScriptExportAttribute.cs" />
     <Compile Include="Config\Config.cs" />
     <Compile Include="DotNet\DotNetConfig.cs" />
     <Compile Include="Config\IndentationFormatting.cs" />

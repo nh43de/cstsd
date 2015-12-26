@@ -56,11 +56,6 @@ namespace tsd
 
     public class BaseSubOption
     {
-        public BaseSubOption()
-        {
-            IndentationType = IndentationFormatting.SpaceX4;
-        }
-
         [ValueList(typeof(List<string>))]
         public IList<string> Files { get; set; }
 
@@ -68,7 +63,11 @@ namespace tsd
         public bool IncludeSpecialTypeDefinitions { get; set; }
 
         [Option('i', "indentWith", HelpText = "Override default indentation of SpaceX4 (four spaces). Possible options: [None, TabX1, TabX2, SpaceX1,...SpaceX8]")]
-        public IndentationFormatting IndentationType { get; set; }
+        public IndentationFormatting IndentationType { get; set; } = IndentationFormatting.SpaceX4;
+
+        [Option('o', "Output to File", HelpText = "Output results to file.")]
+        public bool OutputToFile { get; set; }
+
 
         private string _regexFilter;
         [Option('r', "regexFilter", HelpText = "A .net regular expression that can be used to filter the FullName of types exported. Picture this taking the FullName of the TypeScript type and running it through the .Net Regex.IsMatch(name, pattern)")]
