@@ -74,9 +74,6 @@
     <Compile Include="..\SharedItems\AssemblyInfo.Common.cs">
       <Link>Properties\AssemblyInfo.Common.cs</Link>
     </Compile>
-    <Compile Include="..\SharedItems\VersionInfo.cs">
-      <Link>Properties\VersionInfo.cs</Link>
-    </Compile>
     <Compile Include="TestAssembly.cs" />
     <Compile Include="Winmd\WinmdTestBase.cs" />
     <Compile Include="Winmd\WinmdTypeTests.cs" />
@@ -99,9 +96,6 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="AfterResolveReferences">
-    <Exec Command="copy $(SolutionDir)bin\ToTypeScriptD.Native.winmd $(TargetDir)ToTypeScriptD.Native.winmd" />
-  </Target>
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
