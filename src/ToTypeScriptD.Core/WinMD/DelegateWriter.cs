@@ -1,6 +1,7 @@
-﻿using Mono.Cecil;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using ToTypeScriptD.Core.TypeWriters;
 
@@ -8,7 +9,7 @@ namespace ToTypeScriptD.Core.WinMD
 {
     public class DelegateWriter : TypeWriterBase
     {
-        public DelegateWriter(Mono.Cecil.TypeDefinition typeDefinition, int indentCount, TypeCollection typeCollection, ConfigBase config)
+        public DelegateWriter(Type typeDefinition, int indentCount, TypeCollection typeCollection, ConfigBase config)
             : base(typeDefinition, indentCount, typeCollection, config)
         {
         }
@@ -18,10 +19,10 @@ namespace ToTypeScriptD.Core.WinMD
             ++IndentCount;
             Indent(sb); sb.AppendFormat("export interface {0}", TypeDefinition.ToTypeScriptItemName());
 
-            if (TypeDefinition.HasGenericParameters)
+            if (TypeDefinition.GenericTypeArguments.Any())
             {
                 sb.Append("<");
-                TypeDefinition.GenericParameters.For((genericParam, i, isLastItem) =>
+                TypeDefinition.GetGenericArguments().For((genericParam, i, isLastItem) =>
                 {
                     sb.AppendFormat("{0}{1}", genericParam.ToTypeScriptType(), (isLastItem ? "" : ", "));
                 });
@@ -33,10 +34,10 @@ namespace ToTypeScriptD.Core.WinMD
 
             // 'ctor' is at index 0
             // 'invoke' is at index 1
-            var invokeMethod = TypeDefinition.Methods[1];
-            if (invokeMethod.Parameters.Any())
+            var invokeMethod = TypeDefinition.GetMethods()[1];
+            if (invokeMethod.GetParameters().Any())
             {
-                var target = invokeMethod.Parameters[0];
+                var target = invokeMethod.GetParameters()[0];
                 Indent(sb); sb.AppendFormatLine("target: {0};", target.ParameterType.ToTypeScriptType());
             }
             else
@@ -55,21 +56,21 @@ namespace ToTypeScriptD.Core.WinMD
         {
             List<ITypeWriter> extendedTypes = new List<ITypeWriter>();
             var methodSignatures = new HashSet<string>();
-            foreach (var method in TypeDefinition.Methods)
+            foreach (var method in TypeDefinition.GetMethods())
             {
                 var methodSb = new StringBuilder();
 
                 var methodName = method.Name;
 
                 // ignore special event handler methods
-                if (method.HasParameters &&
-                    method.Parameters[0].Name.StartsWith("__param0") &&
+                if (method.GetParameters().Any() &&
+                    method.GetParameters()[0].Name.StartsWith("__param0") &&
                     (methodName.StartsWith("add_") || methodName.StartsWith("remove_")))
                     continue;
 
-                // already handled properties
-                if (method.IsGetter || method.IsSetter)
-                    continue;
+                //// already handled properties
+                //if (method.IsGetter || method.IsSetter)
+                //    continue;
 
                 // translate the constructor function
                 if (method.IsConstructor)
@@ -87,11 +88,11 @@ namespace ToTypeScriptD.Core.WinMD
                 }
                 methodSb.Append(methodName);
 
-                var outTypes = new List<ParameterDefinition>();
+                var outTypes = new List<ParameterInfo>();
 
                 methodSb.Append("(");
-                method.Parameters.Where(w => w.IsOut).Each(e => outTypes.Add(e));
-                method.Parameters.Where(w => !w.IsOut).For((parameter, i, isLast) =>
+                method.GetParameters().Where(w => w.IsOut).Each(e => outTypes.Add(e));
+                method.GetParameters().Where(w => !w.IsOut).For((parameter, i, isLast) =>
                 {
                     methodSb.AppendFormat("{0}{1}: {2}{3}",
                         (i == 0 ? "" : " "),                            // spacer

@@ -1,5 +1,4 @@
-﻿using Mono.Cecil;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,7 +6,7 @@ namespace ToTypeScriptD.Core.TypeWriters
 {
     public interface ITypeNotFoundErrorHandler
     {
-        void Handle(TypeReference typeReference);
+        void Handle(Type typeReference);
     }
 
     public class TypeWriterCollector
@@ -20,14 +19,14 @@ namespace ToTypeScriptD.Core.TypeWriters
             this.typeNotFoundErrorHandler = typeNotFoundErrorHandler;
             this.typeSelector = typeSelector;
         }
-        public void Collect(IEnumerable<Mono.Cecil.TypeDefinition> tds, TypeCollection typeCollection, ConfigBase config)
+        public void Collect(IEnumerable<Type> tds, TypeCollection typeCollection, ConfigBase config)
         {
             foreach (var item in tds)
             {
                 Collect(item, typeCollection, config);
             }
         }
-        public void Collect(Mono.Cecil.TypeDefinition td, TypeCollection typeCollection, ConfigBase config)
+        public void Collect(Type td, TypeCollection typeCollection, ConfigBase config)
         {
             if (td.ShouldIgnoreType())
             {
@@ -44,7 +43,7 @@ namespace ToTypeScriptD.Core.TypeWriters
             var indentCount = 0;
             ITypeWriter typeWriter = typeSelector.PickTypeWriter(td, indentCount, typeCollection, config);
 
-            td.Interfaces.Each(item =>
+            td.GetInterfaces().Each(item =>
             {
                 var foundType = typeCollection.LookupType(item);
 

@@ -1,9 +1,9 @@
-﻿using Mono.Cecil;
+﻿using System;
 
 namespace ToTypeScriptD.Core.TypeWriters
 {
     public interface ITypeWriterTypeSelector
     {
-        ITypeWriter PickTypeWriter(TypeDefinition td, int indentCount, TypeCollection typeCollection, ConfigBase config);
+        ITypeWriter PickTypeWriter(Type td, int indentCount, TypeCollection typeCollection, ConfigBase config);
     }
 }

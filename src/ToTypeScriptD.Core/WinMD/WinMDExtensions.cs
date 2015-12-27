@@ -1,5 +1,4 @@
-﻿using Mono.Cecil;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using ToTypeScriptD;
@@ -33,7 +32,7 @@ namespace ToTypeScriptD.Core.WinMD
         };
         static Dictionary<string, string> genericTypeMap = null;
 
-        public static bool ShouldIgnoreType(this Mono.Cecil.TypeDefinition name)
+        public static bool ShouldIgnoreType(this Type name)
         {
             if (!name.IsPublic)
                 return true;
@@ -58,7 +57,7 @@ namespace ToTypeScriptD.Core.WinMD
 
 
 
-        public static string ToTypeScriptType(this Mono.Cecil.TypeReference typeReference)
+        public static string ToTypeScriptType(this Type typeReference)
         {
             if (genericTypeMap == null)
             {

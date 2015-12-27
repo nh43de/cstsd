@@ -5,7 +5,7 @@ namespace ToTypeScriptD.Core.WinMD
 {
     public class WinMDTypeWriterTypeSelector : ITypeWriterTypeSelector
     {
-        public ITypeWriter PickTypeWriter(Mono.Cecil.TypeDefinition td, int indentCount, TypeCollection typeCollection, ConfigBase config)
+        public ITypeWriter PickTypeWriter(Type td, int indentCount, TypeCollection typeCollection, ConfigBase config)
         {
             if (td.IsEnum)
             {

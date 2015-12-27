@@ -1,5 +1,4 @@
-﻿using Mono.Cecil;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,12 +8,12 @@ namespace ToTypeScriptD.Core.DotNet
 {
     public abstract class TypeWriterBase : ITypeWriter
     {
-        public TypeDefinition TypeDefinition { get; set; }
+        public Type TypeDefinition { get; set; }
         public int IndentCount { get; set; }
         public TypeCollection TypeCollection { get; set; }
         protected DotNetConfig Config { get; set; }
 
-        public TypeWriterBase(TypeDefinition typeDefinition, int indentCount, TypeCollection typeCollection, DotNetConfig config)
+        public TypeWriterBase(Type typeDefinition, int indentCount, TypeCollection typeCollection, DotNetConfig config)
         {
             this.TypeDefinition = typeDefinition;
             this.IndentCount = indentCount;
@@ -56,13 +55,13 @@ namespace ToTypeScriptD.Core.DotNet
 
         private void WriteGenerics(StringBuilder sb)
         {
-            if (TypeDefinition.HasGenericParameters)
+            if (TypeDefinition.ContainsGenericParameters)
             {
                 sb.Append("<");
-                TypeDefinition.GenericParameters.For((genericParameter, i, isLastItem) =>
+                TypeDefinition.GetGenericArguments().For((genericParameter, i, isLastItem) =>
                 {
                     StringBuilder constraintsSB = new StringBuilder();
-                    genericParameter.Constraints.For((constraint, j, isLastItemJ) =>
+                    genericParameter.GetGenericParameterConstraints().For((constraint, j, isLastItemJ) =>
                     {
                         // Not sure how best to deal with multiple generic constraints (yet)
                         // For now place in a comment
@@ -99,7 +98,7 @@ namespace ToTypeScriptD.Core.DotNet
 
         private void WriteNestedTypes(StringBuilder sb)
         {
-            TypeDefinition.NestedTypes.Where(type => type.IsNestedPublic).Each(type =>
+            TypeDefinition.GetNestedTypes().Where(type => type.IsNestedPublic).Each(type =>
             {
                 var typeWriter = TypeCollection.TypeSelector.PickTypeWriter(type, IndentCount - 1, TypeCollection, this.Config);
                 sb.AppendLine();
@@ -109,7 +108,7 @@ namespace ToTypeScriptD.Core.DotNet
 
         private void WriteProperties(StringBuilder sb)
         {
-            TypeDefinition.Properties.Each(prop =>
+            TypeDefinition.GetProperties().Each(prop =>
             {
                 var propName = prop.Name.ToCamelCase(Config.CamelBackCase);
                 Indent(sb); Indent(sb); sb.AppendFormat("{0}{1}: {2};", propName, prop.PropertyType.ToTypeScriptNullable(), prop.PropertyType.ToTypeScriptType());
@@ -119,7 +118,7 @@ namespace ToTypeScriptD.Core.DotNet
 
         private void WriteFields(StringBuilder sb)
         {
-            TypeDefinition.Fields.Each(field =>
+            TypeDefinition.GetFields().Each(field =>
             {
                 if (!field.IsPublic) return;
                 var fieldName = field.Name.ToCamelCase(Config.CamelBackCase);
@@ -130,9 +129,9 @@ namespace ToTypeScriptD.Core.DotNet
 
         private void WriteExportedInterfaces(StringBuilder sb, string inheriterString)
         {
-            if (TypeDefinition.Interfaces.Any())
+            if (TypeDefinition.GetInterfaces().Any())
             {
-                var interfaceTypes = TypeDefinition.Interfaces.Where(w => !w.ShouldIgnoreTypeByName());
+                var interfaceTypes = TypeDefinition.GetInterfaces().Where(w => !w.ShouldIgnoreTypeByName());
                 if (interfaceTypes.Any())
                 {
                     sb.Append(inheriterString);

@@ -1,8 +1,9 @@
-﻿using Mono.Cecil;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using ToTypeScriptD.Core.DotNet;
 using ToTypeScriptD.Core.TypeWriters;
 using ToTypeScriptD.Core.WinMD;
 
@@ -11,11 +12,11 @@ namespace ToTypeScriptD.Core.WinMD
     public abstract class TypeWriterBase : ITypeWriter
     {
         protected ConfigBase Config { get; set; }
-        public TypeDefinition TypeDefinition { get; set; }
+        public Type TypeDefinition { get; set; }
         public int IndentCount { get; set; }
         public TypeCollection TypeCollection { get; set; }
 
-        public TypeWriterBase(TypeDefinition typeDefinition, int indentCount, TypeCollection typeCollection, ConfigBase config)
+        public TypeWriterBase(Type typeDefinition, int indentCount, TypeCollection typeCollection, ConfigBase config)
         {
             this.TypeDefinition = typeDefinition;
             this.IndentCount = indentCount;
@@ -119,7 +120,7 @@ namespace ToTypeScriptD.Core.WinMD
                 return true;
             }
 
-            foreach (var i in TypeDefinition.Interfaces)
+            foreach (var i in TypeDefinition.GetInterfaces())
             {
                 if (IsTypeArray(i, out genericTypeArgName))
                 {
@@ -130,20 +131,20 @@ namespace ToTypeScriptD.Core.WinMD
             return false;
         }
 
-        private bool IsTypeArray(TypeReference typeReference, out string genericTypeArgName)
+        private bool IsTypeArray(Type typeReference, out string genericTypeArgName)
         {
             if (typeReference.FullName.StartsWith("Windows.Foundation.Collections.IVector`1") ||
                 typeReference.FullName.StartsWith("Windows.Foundation.Collections.IVectorView`1")
                 )
             {
-                var genericInstanceType = typeReference as GenericInstanceType;
+                var genericInstanceType = typeReference; //as GenericInstanceType;
                 if (genericInstanceType == null)
                 {
                     genericTypeArgName = "T";
                 }
                 else
                 {
-                    genericTypeArgName = genericInstanceType.GenericArguments[0].ToTypeScriptType();
+                    genericTypeArgName = genericInstanceType.GetGenericArguments()[0].ToTypeScriptType();
                 }
                 return true;
             }
@@ -179,7 +180,7 @@ namespace ToTypeScriptD.Core.WinMD
                 return true;
             }
 
-            foreach (var i in TypeDefinition.Interfaces)
+            foreach (var i in TypeDefinition.GetInterfaces())
             {
                 if (IsTypeAsync(i, out genericTypeArgName))
                 {
@@ -190,20 +191,20 @@ namespace ToTypeScriptD.Core.WinMD
             return false;
         }
 
-        private bool IsTypeAsync(TypeReference typeReference, out string genericTypeArgName)
+        private bool IsTypeAsync(Type typeReference, out string genericTypeArgName)
         {
             if (typeReference.FullName.StartsWith("Windows.Foundation.IAsyncOperation`1") ||
                 typeReference.FullName.StartsWith("Windows.Foundation.IAsyncOperationWithProgress`2")
                 )
             {
-                var genericInstanceType = typeReference as GenericInstanceType;
+                var genericInstanceType = typeReference;// as GenericInstanceType;
                 if (genericInstanceType == null)
                 {
                     genericTypeArgName = "TResult";
                 }
                 else
                 {
-                    genericTypeArgName = genericInstanceType.GenericArguments[0].ToTypeScriptType();
+                    genericTypeArgName = genericInstanceType.GetGenericArguments()[0].ToTypeScriptType();
                 }
                 return true;
             }
@@ -215,13 +216,13 @@ namespace ToTypeScriptD.Core.WinMD
 
         private void WriteGenerics(StringBuilder sb)
         {
-            if (TypeDefinition.HasGenericParameters)
+            if (TypeDefinition.GetGenericArguments().Any())
             {
                 sb.Append("<");
-                TypeDefinition.GenericParameters.For((genericParameter, i, isLastItem) =>
+                TypeDefinition.GetGenericArguments().For((genericParameter, i, isLastItem) =>
                 {
                     StringBuilder constraintsSB = new StringBuilder();
-                    genericParameter.Constraints.For((constraint, j, isLastItemJ) =>
+                    genericParameter.GetGenericParameterConstraints().For((constraint, j, isLastItemJ) =>
                     {
                         // Not sure how best to deal with multiple generic constraints (yet)
                         // For now place in a comment
@@ -258,7 +259,7 @@ namespace ToTypeScriptD.Core.WinMD
 
         private void WriteNestedTypes(StringBuilder sb)
         {
-            TypeDefinition.NestedTypes.Where(type => type.IsNestedPublic).Each(type =>
+            TypeDefinition.GetNestedTypes().Where(type => type.IsNestedPublic).Each(type =>
             {
                 var typeWriter = TypeCollection.TypeSelector.PickTypeWriter(type, IndentCount - 1, TypeCollection, Config);
                 sb.AppendLine();
@@ -270,24 +271,25 @@ namespace ToTypeScriptD.Core.WinMD
         {
             List<ITypeWriter> extendedTypes = new List<ITypeWriter>();
             var methodSignatures = new HashSet<string>();
-            foreach (var method in TypeDefinition.Methods)
+            foreach (var method in TypeDefinition.GetMethods())
             {
                 var methodSb = new StringBuilder();
 
                 var methodName = method.Name;
 
                 // ignore special event handler methods
-                if (method.HasParameters &&
-                    method.Parameters[0].Name.StartsWith("__param0") &&
+                if (method.GetParameters().Any() &&
+                    method.GetParameters()[0].Name.StartsWith("__param0") &&
                     (methodName.StartsWith("add_") || methodName.StartsWith("remove_")))
                     continue;
 
                 if (method.IsSpecialName && !method.IsConstructor)
                     continue;
 
-                // already handled properties
-                if (method.IsGetter || method.IsSetter)
-                    continue;
+                //TODO: this should be fine
+                //// already handled properties
+                //if (method.IsGetter || method.IsSetter)
+                //    continue;
 
                 // translate the constructor function
                 if (method.IsConstructor)
@@ -305,11 +307,11 @@ namespace ToTypeScriptD.Core.WinMD
                 }
                 methodSb.Append(methodName);
 
-                var outTypes = new List<ParameterDefinition>();
+                var outTypes = new List<ParameterInfo>();
 
                 methodSb.Append("(");
-                method.Parameters.Where(w => w.IsOut).Each(e => outTypes.Add(e));
-                method.Parameters.Where(w => !w.IsOut).For((parameter, i, isLast) =>
+                method.GetParameters().Where(w => w.IsOut).Each(e => outTypes.Add(e));
+                method.GetParameters().Where(w => !w.IsOut).For((parameter, i, isLast) =>
                 {
                     methodSb.AppendFormat("{0}{1}: {2}{3}",
                         (i == 0 ? "" : " "),                            // spacer
@@ -362,7 +364,7 @@ namespace ToTypeScriptD.Core.WinMD
         {
             var wroteALengthPropertyLambdaWorkAround = false;
 
-            TypeDefinition.Properties.Each(prop =>
+            TypeDefinition.GetProperties().Each(prop =>
             {
                 var propName = prop.Name.ToTypeScriptName();
 
@@ -385,7 +387,7 @@ namespace ToTypeScriptD.Core.WinMD
 
         private void WriteFields(StringBuilder sb)
         {
-            TypeDefinition.Fields.Each(field =>
+            TypeDefinition.GetFields().Each(field =>
             {
                 if (!field.IsPublic) return;
                 var fieldName = field.Name.ToTypeScriptName();
@@ -396,7 +398,7 @@ namespace ToTypeScriptD.Core.WinMD
 
         private void WriteEvents(StringBuilder sb)
         {
-            if (TypeDefinition.HasEvents)
+            if (TypeDefinition.GetEvents().Any())
             {
                 Indent(sb); Indent(sb); sb.AppendLine("// Events");
 
@@ -404,9 +406,9 @@ namespace ToTypeScriptD.Core.WinMD
                 Indent(sb); Indent(sb); sb.AppendLine("removeEventListener(eventName: string, listener: any): void;");
                 var distinctListenerSignatures = new List<string>();
 
-                TypeDefinition.Events.For((item, i, isLast) =>
+                TypeDefinition.GetEvents().For((item, i, isLast) =>
                 {
-                    var eventListenerType = item.EventType.ToTypeScriptType();
+                    var eventListenerType = item.EventHandlerType.ToTypeScriptType();
                     var eventName = item.Name.ToLower();
 
                     var line = IndentValue + IndentValue + "addEventListener(eventName: \"{0}\", listener: {1}): void;".FormatWith(eventName, eventListenerType);
@@ -434,9 +436,9 @@ namespace ToTypeScriptD.Core.WinMD
 
         private void WriteExportedInterfaces(StringBuilder sb, string inheriterString)
         {
-            if (TypeDefinition.Interfaces.Any())
+            if (TypeDefinition.GetInterfaces().Any())
             {
-                var interfaceTypes = TypeDefinition.Interfaces.Where(w => !w.Name.ShouldIgnoreTypeByName());
+                var interfaceTypes = TypeDefinition.GetInterfaces().Where(w => !w.Name.ShouldIgnoreTypeByName());
                 if (interfaceTypes.Any())
                 {
                     sb.Append(inheriterString);

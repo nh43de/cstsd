@@ -1,5 +1,4 @@
-﻿using Mono.Cecil;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using ToTypeScriptD;
@@ -32,7 +31,7 @@ namespace ToTypeScriptD.Core.DotNet
         };
         static Dictionary<string, string> genericTypeMap = null;
 
-        public static bool ShouldIgnoreType(this Mono.Cecil.TypeDefinition name)
+        public static bool ShouldIgnoreType(this Type name)
         {
             if (!name.IsPublic)
                 return true;
@@ -40,57 +39,56 @@ namespace ToTypeScriptD.Core.DotNet
             return false;
         }
 
-        public static bool ShouldIgnoreTypeByName(this TypeReference typeReference)
+        public static bool ShouldIgnoreTypeByName(this Type Type)
         {
-            if (typeReference.FullName == "System.Collections.IEnumerable")
+            if (Type.FullName == "System.Collections.IEnumerable")
                 return true;
 
             return false;
         }
 
-        private static bool IsNullable(this Mono.Cecil.TypeReference typeReference)
+        private static bool IsNullable(this Type Type)
         {
-            if (typeReference.IsValueType)
+            if (Type.IsValueType)
                 return false;
 
             // TODO: is there a better way to determine if it's a Nullable?
-            return typeReference.Namespace == "System" && typeReference.Name == "Nullable`1";
+            return Type.Namespace == "System" && Type.Name == "Nullable`1";
         }
 
-        public static string ToTypeScriptNullable(this Mono.Cecil.TypeReference typeReference)
+        public static string ToTypeScriptNullable(this Type Type)
         {
-            return IsNullable(typeReference) ? "?" : "";
+            return IsNullable(Type) ? "?" : "";
         }
 
-        private static TypeReference GetNullableType(TypeReference typeReference)
+        private static Type GetNullableType(Type Type)
         {
-            if (IsNullable(typeReference))
+            if (!IsNullable(Type)) return Type;
+
+            var genericInstanceType = Type;// as GenericInstanceType;
+            if (genericInstanceType != null)
             {
-                var genericInstanceType = typeReference as GenericInstanceType;
-                if (genericInstanceType != null)
-                {
-                    typeReference = genericInstanceType.GenericArguments[0];
-                }
-                else
-                {
-                    throw new NotImplementedException("For some reason this Nullable didn't have a generic parameter type? " + typeReference.FullName);
-                }
+                Type = genericInstanceType.GetGenericArguments()[0];
+            }
+            else
+            {
+                throw new NotImplementedException("For some reason this Nullable didn't have a generic parameter type? " + Type.FullName);
             }
 
-            return typeReference;
+            return Type;
         }
 
-        public static string ToTypeScriptItemName(this Mono.Cecil.TypeReference typeReference)
+        public static string ToTypeScriptItemName(this Type Type)
         {
             // Nested classes don't report their namespace. So we have to walk up the 
             // DeclaringType tree to find the root most type to grab it's namespace.
-            var parentMostType = typeReference;
+            var parentMostType = Type;
             while (parentMostType.DeclaringType != null)
             {
                 parentMostType = parentMostType.DeclaringType;
             }
 
-            var mainTypeName = typeReference.FullName;
+            var mainTypeName = Type.FullName;
 
             // trim namespace off of the front.
             mainTypeName = mainTypeName.Substring(parentMostType.Namespace.Length + 1);
@@ -101,9 +99,9 @@ namespace ToTypeScriptD.Core.DotNet
             return mainTypeName.StripGenericTick();
         }
 
-        public static string ToTypeScriptType(this Mono.Cecil.TypeReference typeReference)
+        public static string ToTypeScriptType(this Type Type)
         {
-            typeReference = GetNullableType(typeReference);
+            Type = GetNullableType(Type);
 
             if (genericTypeMap == null)
             {
@@ -115,7 +113,7 @@ namespace ToTypeScriptD.Core.DotNet
                     .Each(x => genericTypeMap.Add(x.Key, x.Value));
             }
 
-            var fromName = typeReference.FullName;
+            var fromName = Type.FullName;
 
             // translate / in nested classes into underscores
             fromName = fromName.Replace("/", "_");
@@ -149,7 +147,7 @@ namespace ToTypeScriptD.Core.DotNet
 
             // If it's an array type return it as such.
             var genericTypeArgName = "";
-            if (IsTypeArray(typeReference, out genericTypeArgName))
+            if (IsTypeArray(Type, out genericTypeArgName))
             {
                 return genericTypeArgName + "[]";
             }
@@ -159,47 +157,34 @@ namespace ToTypeScriptD.Core.DotNet
         }
 
 
-        private static bool IsTypeArray(TypeReference typeReference, out string genericTypeArgName)
+        private static bool IsTypeArray(Type Type, out string genericTypeArgName)
         {
             genericTypeArgName = "";
 
-            if (!typeReference.IsGenericInstance)
-                return false;
-
-            if (IsTypeTypeArray(typeReference, out genericTypeArgName))
-            {
-                return true;
-            }
-
-            return false;
+            return Type.IsConstructedGenericType && IsTypeTypeArray(Type, out genericTypeArgName);
         }
-        private static bool IsTypeTypeArray(TypeReference typeReference, out string genericTypeArgName)
+        private static bool IsTypeTypeArray(Type Type, out string genericTypeArgName)
         {
-            var genericTypeInstanceReference = typeReference as GenericInstanceType;
+            var genericTypeInstanceReference = Type;// as GenericInstanceType;
             if (genericTypeInstanceReference != null)
             {
-                if (genericTypeInstanceReference == null)
-                {
-                    genericTypeArgName = "T";
-                }
-                else
-                {
-                    genericTypeArgName = genericTypeInstanceReference.GenericArguments[0].ToTypeScriptType();
-                }
+                genericTypeArgName = genericTypeInstanceReference == null 
+                    ? "T" 
+                    : genericTypeInstanceReference.GenericTypeArguments[0].ToTypeScriptType();
 
                 var enumerableNamePrefix = "System.Collections.IEnumerable";
 
                 // is this IEnumerable?
-                if (typeReference.FullName.StartsWith(enumerableNamePrefix))
+                if (Type.FullName.StartsWith(enumerableNamePrefix))
                 {
                     return true;
                 }
 
                 // does it have an interface that implements IEnumerable?
-                var possibleListType = GetTypeDefinition(genericTypeInstanceReference.ElementType);
+                var possibleListType = GetTypeDefinition(genericTypeInstanceReference.GetElementType());
                 if (possibleListType != null)
                 {
-                    if (possibleListType.Interfaces.Any(x => x.FullName.StartsWith(enumerableNamePrefix)))
+                    if (possibleListType.GetInterfaces().Any(x => x.FullName.StartsWith(enumerableNamePrefix)))
                     {
                         return true;
                     }
@@ -215,22 +200,21 @@ namespace ToTypeScriptD.Core.DotNet
             return false;
         }
 
-        public static TypeDefinition GetTypeDefinition(TypeReference typeReference)
+        public static Type GetTypeDefinition(Type Type)
         {
-            if (typeReference == null)
+            if (Type == null)
                 return null;
 
             try
             {
-                var resolver = new DefaultAssemblyResolver();
-                var ass = resolver.Resolve(typeReference.Scope.Name);
+                var ass = Type.Assembly;
 
                 var result = ass.Modules
-                    .SelectMany(x => x.Types)
-                    .FirstOrDefault(td => td.FullName == typeReference.FullName);
+                    .SelectMany(x => x.GetTypes())
+                    .FirstOrDefault(td => td.FullName == Type.FullName);
                 return result;
             }
-            catch (AssemblyResolutionException)
+            catch (Exception ex)
             {
                 // for now ignore...
                 // TODO: figure out a better way to handle non-framework assemblies...

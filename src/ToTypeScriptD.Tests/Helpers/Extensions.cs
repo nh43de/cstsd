@@ -1,4 +1,4 @@
-﻿using Mono.Cecil;
+﻿
 using System;
 using System.Collections.Generic;
 using ToTypeScriptD.Core;
@@ -9,12 +9,12 @@ namespace ToTypeScriptD.Tests
 {
     public static class Extensions
     {
-        public static string ToTypeScript(this TypeDefinition value)
+        public static string ToTypeScript(this Type value)
         {
             return ToTypeScript(new[] { value });
         }
 
-        public static string ToTypeScript(this IEnumerable<TypeDefinition> value, string filterRegex = null)
+        public static string ToTypeScript(this IEnumerable<Type> value, string filterRegex = null)
         {
             var typeCollection = new TypeCollection(new WinMDTypeWriterTypeSelector());
             var errors = new StringBuilderTypeNotFoundErrorHandler();

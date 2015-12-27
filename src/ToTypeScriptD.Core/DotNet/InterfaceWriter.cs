@@ -1,11 +1,12 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using ToTypeScriptD.Core.TypeWriters;
 
 namespace ToTypeScriptD.Core.DotNet
 {
     public class InterfaceWriter : TypeWriterBase
     {
-        public InterfaceWriter(Mono.Cecil.TypeDefinition typeDefinition, int indentCount, TypeCollection typeCollection, DotNetConfig config)
+        public InterfaceWriter(Type typeDefinition, int indentCount, TypeCollection typeCollection, DotNetConfig config)
             : base(typeDefinition, indentCount, typeCollection, config)
         {
         }

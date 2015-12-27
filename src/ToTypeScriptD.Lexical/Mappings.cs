@@ -18,7 +18,7 @@ namespace ToTypeScriptD.Lexical
                 { "System.UInt32",               "number"},
                 { "System.UInt64",               "number"},
                 { "System.Object",               "any"},
-                { "System.DateTime", "Date"},
+                { "System.DateTime",             "Date"},
                 { "System.Void",                 "void"},
                 { "System.Boolean",              "boolean"},
                 { "System.IntPtr",               "number"},

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using ToTypeScriptD.Core;
 using ToTypeScriptD.Core.TypeWriters;
@@ -12,6 +13,9 @@ namespace ToTypeScriptD
     {
         public static bool AllAssemblies(ConfigBase config, TextWriter w)
         {
+           config.AssemblyPaths
+                = config.AssemblyPaths.Select(path => new System.IO.FileInfo(path).FullName).ToArray();
+
             w.Write(GetHeader(config.AssemblyPaths, config.IncludeSpecialTypes));
 
             var typeCollection = new TypeCollection(config.GetTypeWriterTypeSelector());
@@ -106,12 +110,12 @@ namespace ToTypeScriptD
 
         private static void CollectTypes(string assemblyPath, ITypeNotFoundErrorHandler typeNotFoundErrorHandler, TypeCollection typeCollection, ConfigBase config)
         {
-            var assembly = Mono.Cecil.AssemblyDefinition.ReadAssembly(assemblyPath);
+            var assembly = Assembly.LoadFile(assemblyPath);
 
             typeCollection.AddAssembly(assembly);
 
             var typeWriterGenerator = new TypeWriterCollector(typeNotFoundErrorHandler, typeCollection.TypeSelector);
-            foreach (var item in assembly.MainModule.Types)
+            foreach (var item in assembly.ManifestModule.GetTypes())
             {
                 typeWriterGenerator.Collect(item, typeCollection, config);
             }

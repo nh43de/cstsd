@@ -1,12 +1,14 @@
-﻿using Mono.Cecil;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace ToTypeScriptD.Tests
 {
     public class TestAssembly
     {
-        private AssemblyDefinition _nativeAssemblyDefinition;
+        private Assembly _nativeAssemblyDefinition;
         private string path;
 
         public TestAssembly(string path)
@@ -18,21 +20,20 @@ namespace ToTypeScriptD.Tests
             get { return path; }
         }
 
-        public AssemblyDefinition AssemblyDefinition
+        public Assembly AssemblyDefinition => _nativeAssemblyDefinition ?? (_nativeAssemblyDefinition = Assembly.LoadFile(ComponentPath));
+
+
+        public Module ModuleDefinition => Assembly.GetExecutingAssembly().ManifestModule;
+
+
+        public Type GetNativeType(string name)
         {
-            get { return _nativeAssemblyDefinition ?? (_nativeAssemblyDefinition = Mono.Cecil.AssemblyDefinition.ReadAssembly(ComponentPath)); }
+            return ModuleDefinition.GetTypes().Single(s => s.FullName == name);
         }
-        public ModuleDefinition ModuleDefinition { get { return AssemblyDefinition.MainModule; } }
 
-
-        public TypeDefinition GetNativeType(string name)
+        protected IEnumerable<Type> GetAllTypesThatStartsWith(string name)
         {
-            return ModuleDefinition.Types.Where(s => s.FullName == name).Single();
-        }
-
-        protected IEnumerable<TypeDefinition> GetAllTypesThatStartsWith(string name)
-        {
-            return ModuleDefinition.Types.Where(s => s.FullName.StartsWith(name));
+            return ModuleDefinition.GetTypes().Where(s => s.FullName.StartsWith(name));
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using ApprovalTests;
-using Mono.Cecil;
 using System;
 using ToTypeScriptD.Core;
 using ToTypeScriptD.Core.WinMD;
@@ -10,12 +9,12 @@ namespace ToTypeScriptD.Tests.Winmd
 
     public class WinmdTypeTests : WinmdTestBase
     {
-        private TypeDefinition GetNativeType(string postfix)
+        private Type GetNativeType(string postfix)
         {
             return base.NativeAssembly.GetNativeType("ToTypeScriptD.Native." + postfix);
         }
 
-        private TypeDefinition GetWinNativeType(string type)
+        private Type GetWinNativeType(string type)
         {
             return base.WindowsAssembly.GetNativeType(type);
         }

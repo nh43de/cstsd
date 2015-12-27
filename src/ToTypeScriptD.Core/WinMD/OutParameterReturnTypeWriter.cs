@@ -1,8 +1,9 @@
-﻿using Mono.Cecil;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using ToTypeScriptD.Core.DotNet;
 using ToTypeScriptD.Core.TypeWriters;
 using ToTypeScriptD.Core.WinMD;
 
@@ -10,14 +11,14 @@ namespace ToTypeScriptD.Core.WinMD
 {
     public class OutParameterReturnTypeWriter : ITypeWriter
     {
-        private TypeReference ReturnTypeReference;
-        private List<ParameterDefinition> OutTypes;
+        private Type ReturnTypeReference;
+        private List<ParameterInfo> OutTypes;
         private int IndentCount;
-        private TypeDefinition TypeDefinition;
+        private Type TypeDefinition;
         private string MethodName;
         private ConfigBase config;
 
-        public OutParameterReturnTypeWriter(ConfigBase config, int indentCount, Mono.Cecil.TypeDefinition TypeDefinition, string methodName, TypeReference retrunTypeReference, List<ParameterDefinition> outTypes)
+        public OutParameterReturnTypeWriter(ConfigBase config, int indentCount, Type TypeDefinition, string methodName, Type retrunTypeReference, List<ParameterInfo> outTypes)
         {
             this.config = config;
             this.IndentCount = indentCount;
@@ -57,9 +58,9 @@ namespace ToTypeScriptD.Core.WinMD
             get
             {
                 string genericParams = "";
-                if (TypeDefinition.HasGenericParameters)
+                if (TypeDefinition.GetGenericArguments().Any())
                 {
-                    genericParams = "<" + TypeDefinition.GenericParameters.Select(s => s.FullName).Join(", ") + ">";
+                    genericParams = "<" + TypeDefinition.GetGenericArguments().Select(s => s.FullName).Join(", ") + ">";
                 }
                 return TypeDefinition.ToTypeScriptItemName() + "_" + MethodName + "_OUT" + genericParams;
             }

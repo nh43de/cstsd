@@ -1,7 +1,7 @@
-﻿using Mono.Cecil;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using ToTypeScriptD.Core.WinMD;
 
@@ -11,7 +11,7 @@ namespace ToTypeScriptD.Core.TypeWriters
     {
         Dictionary<string, ITypeWriter> types = new Dictionary<string, ITypeWriter>();
         HashSet<string> typesRendered = new HashSet<string>();
-        HashSet<AssemblyDefinition> assemblies = new HashSet<AssemblyDefinition>();
+        HashSet<Assembly> assemblies = new HashSet<Assembly>();
 
         public TypeCollection(ITypeWriterTypeSelector typeSelector)
         {
@@ -74,19 +74,19 @@ namespace ToTypeScriptD.Core.TypeWriters
             return sb.ToString();
         }
 
-        internal void AddAssembly(Mono.Cecil.AssemblyDefinition assembly)
+        internal void AddAssembly(Assembly assembly)
         {
             assemblies.Add(assembly);
         }
 
-        internal TypeDefinition LookupType(TypeReference item)
+        internal Type LookupType(Type item)
         {
             string lookupName = item.FullName;
-            if (item.IsGenericInstance)
+            if (item.IsConstructedGenericType)
             {
                 lookupName = item.GetElementType().FullName;
             }
-            var foundType = item.Module.Types.SingleOrDefault(w => w.FullName == lookupName);
+            var foundType = item.Module.GetTypes().SingleOrDefault(w => w.FullName == lookupName);
             return foundType;
         }
 

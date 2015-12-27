@@ -1,5 +1,4 @@
 ﻿using ApprovalTests;
-using Mono.Cecil;
 using System;
 using System.Collections.Generic;
 using ToTypeScriptD.Core;

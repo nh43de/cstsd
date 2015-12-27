@@ -1,5 +1,4 @@
-﻿using Mono.Cecil;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -30,7 +29,7 @@ namespace ToTypeScriptD
             return result;
         }
 
-        public static bool ShouldIgnoreType(this Mono.Cecil.TypeDefinition name)
+        public static bool ShouldIgnoreType(this Type name)
         {
             if (!name.IsPublic)
                 return true;
@@ -39,7 +38,7 @@ namespace ToTypeScriptD
         }
 
         // TODO: look to move this to the WinMDExtensions.cs
-        public static string ToTypeScriptItemName(this Mono.Cecil.TypeReference typeReference)
+        public static string ToTypeScriptItemName(this Type typeReference)
         {
             // Nested classes don't report their namespace. So we have to walk up the 
             // DeclaringType tree to find the root most type to grab it's namespace.

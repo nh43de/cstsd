@@ -7,7 +7,7 @@ namespace ToTypeScriptD
     public class StringBuilderTypeNotFoundErrorHandler : ITypeNotFoundErrorHandler
     {
         private StringBuilder sb = new StringBuilder();
-        public void Handle(Mono.Cecil.TypeReference typeReference)
+        public void Handle(Type typeReference)
         {
             sb.AppendLine("Hmm, don't seem to have this type lying around: " + typeReference.FullName);
         }
@@ -20,7 +20,7 @@ namespace ToTypeScriptD
 
     public class ConsoleErrorTypeNotFoundErrorHandler : ITypeNotFoundErrorHandler
     {
-        public void Handle(Mono.Cecil.TypeReference typeReference)
+        public void Handle(Type typeReference)
         {
             Console.Error.WriteLine("Warning: Don't seem to have this type lying around: " + typeReference.FullName);
         }

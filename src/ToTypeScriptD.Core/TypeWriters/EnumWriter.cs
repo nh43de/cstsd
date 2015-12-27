@@ -1,6 +1,7 @@
-﻿using Mono.Cecil;
+﻿using System;
 using System.Linq;
 using System.Text;
+using ToTypeScriptD.Core.DotNet;
 
 namespace ToTypeScriptD.Core.TypeWriters
 {
@@ -8,7 +9,7 @@ namespace ToTypeScriptD.Core.TypeWriters
     {
         private readonly ConfigBase config;
 
-        public EnumWriter(TypeDefinition typeDefinition, int indentCount, TypeCollection typeCollection, ConfigBase config)
+        public EnumWriter(Type typeDefinition, int indentCount, TypeCollection typeCollection, ConfigBase config)
         {
             this.config = config;
             TypeDefinition = typeDefinition;
@@ -20,7 +21,7 @@ namespace ToTypeScriptD.Core.TypeWriters
             ++IndentCount;
             sb.AppendLine(IndentValue + "enum " + TypeDefinition.ToTypeScriptItemName() + " {");
             ++IndentCount;
-            TypeDefinition.Fields.OrderBy(ob => ob.Constant).For((item, i, isLast) =>
+            TypeDefinition.GetFields().For((item, i, isLast) => //.OrderBy(ob => ob.Name)
             {
                 if (item.Name == "value__") return;
                 sb.AppendFormat("{0}{1}", IndentValue, item.Name.ToCamelCase(config.CamelBackCase));
@@ -34,7 +35,7 @@ namespace ToTypeScriptD.Core.TypeWriters
 
         public string FullName => TypeDefinition.Namespace + "." + TypeDefinition.ToTypeScriptItemName();
 
-        public TypeDefinition TypeDefinition { get; set; }
+        public Type TypeDefinition { get; set; }
 
         public int IndentCount { get; set; }
     }
