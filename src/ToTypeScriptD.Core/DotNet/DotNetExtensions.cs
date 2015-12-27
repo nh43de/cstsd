@@ -19,7 +19,7 @@ namespace ToTypeScriptD.Core.DotNet
                 { "System.UInt32",               "number"},
                 { "System.UInt64",               "number"},
                 { "System.Object",               "any"},
-                { "System.DateTime", "Date"},
+                { "System.DateTime",             "Date"},
                 { "System.Void",                 "void"},
                 { "System.Boolean",              "boolean"},
                 { "System.IntPtr",               "number"},
@@ -50,12 +50,11 @@ namespace ToTypeScriptD.Core.DotNet
 
         private static bool IsNullable(this Mono.Cecil.TypeReference typeReference)
         {
+            if (typeReference.IsValueType)
+                return false;
+
             // TODO: is there a better way to determine if it's a Nullable?
-            if (typeReference.Namespace == "System" && typeReference.Name == "Nullable`1")
-            {
-                return true;
-            }
-            return false;
+            return typeReference.Namespace == "System" && typeReference.Name == "Nullable`1";
         }
 
         public static string ToTypeScriptNullable(this Mono.Cecil.TypeReference typeReference)
