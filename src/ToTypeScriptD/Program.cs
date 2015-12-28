@@ -1,13 +1,17 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using ToTypeScriptD;
 using ToTypeScriptD.Core;
+using ToTypeScriptD.Core.Config;
 
 namespace tsd
 {
     class Program
     {
+
+        //TODO: location of output file
         static void Main(string[] args)
         {
             ConfigBase config = null;
@@ -17,45 +21,66 @@ namespace tsd
             string verbInvoked = null;
 
             bool outputToFile = false;
+            bool parseSuccess = false;
 
-            var parseSuccess = CommandLine.Parser.Default.ParseArgumentsStrict(args, options, (verb, subOptions) =>
+            if (Debugger.IsAttached)
             {
-                verbInvoked = (verb ?? "").ToLowerInvariant();
-                switch (verbInvoked)
+                parseSuccess = true;
+                outputToFile = true;
+
+                config = new ToTypeScriptD.Core.DotNet.DotNetConfig
                 {
-                    case Options.DotNetCommandName:
-                        var dotNetSubOptions = subOptions as DotNetSubOptions;
-                        if (dotNetSubOptions == null) break;
+                    AssemblyPaths = new[] {"cl.dll"},
+                    CamelBackCase = true,
+                    IncludeSpecialTypes = true,
+                    IndentationType = IndentationFormatting.SpaceX4,
+                    TypeNotFoundErrorHandler = new ConsoleErrorTypeNotFoundErrorHandler(),
+                };
+            }
+            else
+            {
+             
+                parseSuccess = CommandLine.Parser.Default.ParseArgumentsStrict(args, options, (verb, subOptions) =>
+                {
+                    verbInvoked = (verb ?? "").ToLowerInvariant();
+                    switch (verbInvoked)
+                    {
+                        case Options.DotNetCommandName:
+                            var dotNetSubOptions = subOptions as DotNetSubOptions;
+                            if (dotNetSubOptions == null) break;
 
-                        outputToFile = dotNetSubOptions.OutputToFile;
+                            outputToFile = dotNetSubOptions.OutputToFile;
 
-                        config = new ToTypeScriptD.Core.DotNet.DotNetConfig
-                        {
-                            AssemblyPaths = dotNetSubOptions.Files,
-                            CamelBackCase = dotNetSubOptions.CamelBackCase,
-                            IncludeSpecialTypes = dotNetSubOptions.IncludeSpecialTypeDefinitions,
-                            IndentationType = dotNetSubOptions.IndentationType,
-                            RegexFilter = dotNetSubOptions.RegexFilter,
-                            TypeNotFoundErrorHandler = new ConsoleErrorTypeNotFoundErrorHandler(),
-                        };                        
-                        break;
-                    case Options.WinmdCommandName:
-                        var winmdSubOptions = subOptions as WinmdSubOptions;
-                        if (winmdSubOptions == null) break;
+                            config = new ToTypeScriptD.Core.DotNet.DotNetConfig
+                            {
+                                AssemblyPaths = dotNetSubOptions.Files,
+                                CamelBackCase = dotNetSubOptions.CamelBackCase,
+                                IncludeSpecialTypes = dotNetSubOptions.IncludeSpecialTypeDefinitions,
+                                IndentationType = dotNetSubOptions.IndentationType,
+                                RegexFilter = dotNetSubOptions.RegexFilter,
+                                TypeNotFoundErrorHandler = new ConsoleErrorTypeNotFoundErrorHandler(),
+                            };                        
+                            break;
+                        case Options.WinmdCommandName:
+                            var winmdSubOptions = subOptions as WinmdSubOptions;
+                            if (winmdSubOptions == null) break;
 
-                        outputToFile = winmdSubOptions.OutputToFile;
+                            outputToFile = winmdSubOptions.OutputToFile;
 
-                        config = new ToTypeScriptD.Core.WinMD.WinmdConfig
-                        {
-                            AssemblyPaths = winmdSubOptions.Files,
-                            IncludeSpecialTypes = winmdSubOptions.IncludeSpecialTypeDefinitions,
-                            IndentationType = winmdSubOptions.IndentationType,
-                            RegexFilter = winmdSubOptions.RegexFilter,
-                            TypeNotFoundErrorHandler = new ConsoleErrorTypeNotFoundErrorHandler(),
-                        };
-                        break;
-                }
-            });
+                            config = new ToTypeScriptD.Core.WinMD.WinmdConfig
+                            {
+                                AssemblyPaths = winmdSubOptions.Files,
+                                IncludeSpecialTypes = winmdSubOptions.IncludeSpecialTypeDefinitions,
+                                IndentationType = winmdSubOptions.IndentationType,
+                                RegexFilter = winmdSubOptions.RegexFilter,
+                                TypeNotFoundErrorHandler = new ConsoleErrorTypeNotFoundErrorHandler(),
+                            };
+                            break;
+                    }
+                });
+
+            }
+
 
             if (!parseSuccess) return;
             bool skipPrintingHelp;

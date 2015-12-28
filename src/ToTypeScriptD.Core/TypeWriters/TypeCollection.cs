@@ -7,8 +7,17 @@ using ToTypeScriptD.Core.WinMD;
 
 namespace ToTypeScriptD.Core.TypeWriters
 {
+    //TODO: use this instead of dictionary~string,itypewriter
+    public class TsdTypeDefinition
+    {
+        public string Name { get; set; }
+        public string NameSpace { get; set; }
+        public ITypeWriter TypeWriter { get; set; }
+    }
+
     public class TypeCollection
     {
+        //TODO: rename to upper starting letter
         Dictionary<string, ITypeWriter> types = new Dictionary<string, ITypeWriter>();
         HashSet<string> typesRendered = new HashSet<string>();
         HashSet<Assembly> assemblies = new HashSet<Assembly>();
@@ -44,6 +53,11 @@ namespace ToTypeScriptD.Core.TypeWriters
             }
         }
 
+        /// <summary>
+        /// Renders a type collection beginning by namespace.
+        /// </summary>
+        /// <param name="filterRegex"></param>
+        /// <returns></returns>
         public string Render(string filterRegex)
         {
             Func<string, string> getNamespace = name => name.Substring(0, name.LastIndexOf('.'));
@@ -53,18 +67,22 @@ namespace ToTypeScriptD.Core.TypeWriters
                         where t.Value.FullName.Matches(filterRegex)
                         orderby t.Key
                         group t by getNamespace(t.Key) into namespaces
-                        select namespaces;
-
+                        select namespaces; //<- select namespaces 
+            
             var sb = new StringBuilder();
             foreach (var ns in items)
             {
-                sb.AppendFormat("declare module {0} {{", ns.Key);
+                //TS modules are namespaces
+                sb.Append($@"declare module {ns.Key}");
+                sb.AppendLine();
+                sb.Append("{");
                 sb.AppendLine();
                 sb.AppendLine();
 
                 foreach (var type in ns)
                 {
                     typesRendered.Add(type.Key);
+                    //type.Value is the TypeWriter instance to uses
                     type.Value.Write(sb);
                     sb.AppendLine();
                 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using ToTypeScriptD.Core.TypeWriters;
 
@@ -8,12 +9,21 @@ namespace ToTypeScriptD.Core.DotNet
 {
     public abstract class TypeWriterBase : ITypeWriter
     {
-        public Type TypeDefinition { get; set; }
-        public int IndentCount { get; set; }
-        public TypeCollection TypeCollection { get; set; }
-        protected DotNetConfig Config { get; set; }
+        public readonly Type TypeDefinition;
+        public readonly DotNetConfig Config;
 
-        public TypeWriterBase(Type typeDefinition, int indentCount, TypeCollection typeCollection, DotNetConfig config)
+        public TypeCollection TypeCollection { get; set; }
+        public abstract void Write(StringBuilder sb);
+        public virtual void Write(StringBuilder sb, Action midWrite) => midWrite();
+
+
+        public string FullName => TypeDefinition.Namespace + "." + TypeDefinition.ToTypeScriptItemName();
+        public void Indent(StringBuilder sb) => sb.Append(IndentValue);
+        protected int IndentCount;
+        public string IndentValue => Config.Indent.Dup(IndentCount);
+
+
+        protected TypeWriterBase(Type typeDefinition, int indentCount, TypeCollection typeCollection, DotNetConfig config)
         {
             this.TypeDefinition = typeDefinition;
             this.IndentCount = indentCount;
@@ -21,22 +31,8 @@ namespace ToTypeScriptD.Core.DotNet
             this.Config = config;
         }
 
-        public virtual void Write(StringBuilder sb, Action midWrite)
-        {
-            midWrite();
-        }
-        public abstract void Write(StringBuilder sb);
+        
 
-
-        public string IndentValue
-        {
-            get { return Config.Indent.Dup(IndentCount); }
-        }
-
-        public void Indent(StringBuilder sb)
-        {
-            sb.Append(IndentValue);
-        }
 
         internal void WriteOutMethodSignatures(StringBuilder sb, string exportType, string inheriterString)
         {
@@ -46,12 +42,17 @@ namespace ToTypeScriptD.Core.DotNet
             WriteExportedInterfaces(sb, inheriterString);
             sb.AppendLine("{");
 
+            var typeName = TypeDefinition.Name;
+
             WriteFields(sb);
             WriteProperties(sb);
+            WriteInterfaceMethods(sb);
+
             Indent(sb); sb.AppendLine("}");
 
             WriteNestedTypes(sb);
         }
+
 
         private void WriteGenerics(StringBuilder sb)
         {
@@ -106,9 +107,13 @@ namespace ToTypeScriptD.Core.DotNet
             });
         }
 
+        /// <summary>
+        /// Writes properties of type in TS.
+        /// </summary>
+        /// <param name="sb"></param>
         private void WriteProperties(StringBuilder sb)
         {
-            TypeDefinition.GetProperties().Each(prop =>
+            TypeDefinition.GetProperties(BindingFlags.DeclaredOnly & BindingFlags.Public).Each(prop =>
             {
                 var propName = prop.Name.ToCamelCase(Config.CamelBackCase);
                 Indent(sb); Indent(sb); sb.AppendFormat("{0}{1}: {2};", propName, prop.PropertyType.ToTypeScriptNullable(), prop.PropertyType.ToTypeScriptType());
@@ -126,25 +131,50 @@ namespace ToTypeScriptD.Core.DotNet
                 sb.AppendLine();
             });
         }
+        
+        private void WriteInterfaceMethods(StringBuilder sb)
+        {
+            if (TypeDefinition.IsInterface)
+            {
+                TypeDefinition.GetMethods().Each(method =>
+                {
+                    var methodName = method.Name.ToCamelCase(Config.CamelBackCase);
+                    var returnType = method.ReturnType.ToTypeScriptType();
+                    var methodParams = method.GetParameters().Select(param => $"{param.Name} : {param.ParameterType.ToTypeScriptType()}");
 
+                    Indent(sb); Indent(sb);
+                    sb.Append($"{methodName}({string.Join(",", methodParams)})");
+                    if (!string.IsNullOrWhiteSpace(returnType))
+                        sb.Append($" : {returnType}");
+
+                    sb.Append(";");
+                    sb.AppendLine();
+                });
+            }
+        }
+
+        //TODO: this is actually write base classes (ie. in ts, "extends [baseclass]")
         private void WriteExportedInterfaces(StringBuilder sb, string inheriterString)
         {
-            if (TypeDefinition.GetInterfaces().Any())
+            //TODO: dbug only- remove
+            var typeDefName = TypeDefinition.Name;
+
+            if (TypeDefinition.GetInterfaces().Any() || 
+                (TypeDefinition.BaseType != null && TypeDefinition.BaseType != typeof(object)))
             {
-                var interfaceTypes = TypeDefinition.GetInterfaces().Where(w => !w.ShouldIgnoreTypeByName());
+                var baseType = new Type[] {};
+
+                if(TypeDefinition.BaseType != null)
+                    baseType = new Type[] { TypeDefinition.BaseType };
+
+                var interfaceTypes = baseType.Union(TypeDefinition.GetInterfaces())
+                    .Where(w => !w.ShouldIgnoreTypeByName());
+                
                 if (interfaceTypes.Any())
                 {
                     sb.Append(inheriterString);
 
-                    var distinctTypes = new HashSet<string>();
-
-                    interfaceTypes.For((item, i, isLast) =>
-                    {
-                        var typeString = item.ToTypeScriptType();
-                        if (distinctTypes.Contains(typeString))
-                            return;
-                        distinctTypes.Add(typeString);
-                    });
+                    var distinctTypes = interfaceTypes.Select(item => item.ToTypeScriptType()).Distinct();
 
                     distinctTypes.For((item, i, isLast) =>
                     {
@@ -155,11 +185,6 @@ namespace ToTypeScriptD.Core.DotNet
             }
         }
 
-
-        public string FullName
-        {
-            get { return TypeDefinition.Namespace + "." + TypeDefinition.ToTypeScriptItemName(); }
-        }
 
     }
 }

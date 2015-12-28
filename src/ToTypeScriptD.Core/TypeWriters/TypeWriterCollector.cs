@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace ToTypeScriptD.Core.TypeWriters
@@ -28,6 +29,8 @@ namespace ToTypeScriptD.Core.TypeWriters
         }
         public void Collect(Type td, TypeCollection typeCollection, ConfigBase config)
         {
+            var typeName = td.Name;
+
             if (td.ShouldIgnoreType())
             {
                 return;
@@ -43,8 +46,24 @@ namespace ToTypeScriptD.Core.TypeWriters
             var indentCount = 0;
             ITypeWriter typeWriter = typeSelector.PickTypeWriter(td, indentCount, typeCollection, config);
 
-            td.GetInterfaces().Each(item =>
+            Type[] baseTypes;
+            if(td.BaseType == null)
+                baseTypes = new[] { td.BaseType};
+            else
+                baseTypes = new Type[] {};
+            
+            /*
+            Pat threw Di in the tornado.
+
+            And then what?
+
+            Well Pat didn't really mind.
+            */
+
+            td.GetInterfaces().Union(baseTypes).Each(item =>
             {
+                if(item == null) return;
+
                 var foundType = typeCollection.LookupType(item);
 
                 if (foundType == null)

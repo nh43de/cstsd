@@ -25,12 +25,24 @@ namespace ToTypeScriptD
             return wroteAnyTypes;
         }
 
+        //TODO: rename FromFiles (usage: Render.FromFiles())
+        /// <summary>
+        /// This is the main entry point to rendering the output.
+        /// </summary>
+        /// <param name="assemblyPaths">Must be absolute file paths.</param>
+        /// <param name="w">TextWriter stream to use.</param>
+        /// <param name="typeNotFoundErrorHandler">Error handler to use when type reference is not found in loaded assemblies.</param>
+        /// <param name="typeCollection">Collected types to render.</param>
+        /// <param name="filterRegex">Filter type names using regular expression string.</param>
+        /// <param name="config">Output configuration.</param>
+        /// <returns></returns>
         private static bool WriteFiles(IEnumerable<string> assemblyPaths, TextWriter w, ITypeNotFoundErrorHandler typeNotFoundErrorHandler, TypeCollection typeCollection, string filterRegex, ConfigBase config)
         {
             var filesAlreadyProcessed = new HashSet<string>(new IgnoreCaseStringEqualityComparer());
 
             var any = false;
 
+            //scan all assembly paths
             assemblyPaths.Each(assemblyPath =>
             {
                 any = true;
@@ -38,12 +50,14 @@ namespace ToTypeScriptD
                     return;
 
                 filesAlreadyProcessed.Add(assemblyPath);
+                //collect types to render
                 CollectTypes(assemblyPath, typeNotFoundErrorHandler, typeCollection, config);
             });
 
             if (any == false)
                 return false;
 
+            //render collected types
             var renderedOut = typeCollection.Render(filterRegex);
             w.WriteLine(renderedOut);
 
