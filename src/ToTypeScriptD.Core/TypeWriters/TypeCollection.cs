@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using ToTypeScriptD.Core.Attributes;
 using ToTypeScriptD.Core.WinMD;
 
 namespace ToTypeScriptD.Core.TypeWriters
@@ -46,6 +47,9 @@ namespace ToTypeScriptD.Core.TypeWriters
             {
                 return;
             }
+
+            //if (name != nameof(TypeScriptExportAttribute))
+            //    return;
 
             if (!types.ContainsKey(fullname))
             {

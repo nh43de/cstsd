@@ -12,11 +12,11 @@ namespace ToTypeScriptD.Core.Attributes
     }
     
     [AttributeUsage(AttributeTargets.Class)]
-    public class TSGenAttribute : Attribute
+    public class TypeScriptExportAttribute : Attribute
     {
         private CodeGen CodeGenerator { get; }
 
-        public TSGenAttribute(CodeGen codeGen)
+        public TypeScriptExportAttribute(CodeGen codeGen)
         {
             CodeGenerator = codeGen;
         }
