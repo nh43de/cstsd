@@ -20,7 +20,7 @@ namespace ToTypeScriptD
 
             var typeCollection = new TypeCollection();
 
-            var wroteAnyTypes = WriteSpecialTypes(config.IncludeSpecialTypes, w, config);
+            var wroteAnyTypes = false;
             wroteAnyTypes |= WriteFiles(config.AssemblyPaths, w, typeCollection, config.RegexFilter, config);
             return wroteAnyTypes;
         }
@@ -63,20 +63,7 @@ namespace ToTypeScriptD
 
             return true;
         }
-
-        private static bool WriteSpecialTypes(bool includeSpecialTypes, TextWriter w, ConfigBase config)
-        {
-            if (!includeSpecialTypes)
-                return false;
-
-            w.NewLine();
-
-            w.WriteLine(Resources.ToTypeScriptDSpecialTypes_d.Replace("    ", config.Indent));
-            w.NewLine();
-            w.NewLine();
-            return true;
-        }
-
+        
         public static string FullAssembly(string assemblyPath, TypeCollection typeCollection, ConfigBase config)
         {
             CollectTypes(assemblyPath, typeCollection, config);
