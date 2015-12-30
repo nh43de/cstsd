@@ -44,6 +44,8 @@ namespace ToTypeScriptD.Core
             }
         }
 
+
+
         
         private static string GetHeader(IEnumerable<string> assemblyPaths, bool forceDueToSpecialType)
         {

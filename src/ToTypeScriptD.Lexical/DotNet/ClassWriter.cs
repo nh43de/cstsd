@@ -1,4 +1,5 @@
 ﻿using System;
+using ToTypeScriptD.Lexical.WinMD;
 
 namespace ToTypeScriptD.Lexical.DotNet
 {
