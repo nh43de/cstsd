@@ -45,7 +45,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BijectiveMapping.cs" />
     <Compile Include="DotNet\ClassWriter.cs" />
     <Compile Include="DotNet\DotNetConfig.cs" />
     <Compile Include="DotNet\DotNetExtensions.cs" />
