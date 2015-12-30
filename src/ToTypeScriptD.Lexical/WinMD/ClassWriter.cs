@@ -1,7 +1,7 @@
 ﻿using System;
-using ToTypeScriptD.Core.TypeWriters;
+using ToTypeScriptD.Core.Config;
 
-namespace ToTypeScriptD.Core.WinMD
+namespace ToTypeScriptD.Lexical.WinMD
 {
     public class ClassWriter : TypeWriterBase
     {

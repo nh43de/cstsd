@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using ToTypeScriptD.Core.DotNet;
-using ToTypeScriptD.Core.TypeWriters;
-using ToTypeScriptD.Core.WinMD;
+using ToTypeScriptD.Core.Config;
+using ToTypeScriptD.Core.Extensions;
+using ToTypeScriptD.Lexical.TypeWriters;
 
-namespace ToTypeScriptD.Core.WinMD
+namespace ToTypeScriptD.Lexical.WinMD
 {
     public class OutParameterReturnTypeWriter : ITypeWriter
     {

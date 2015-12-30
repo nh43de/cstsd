@@ -1,5 +1,7 @@
 ﻿
-namespace ToTypeScriptD.Core.WinMD
+using ToTypeScriptD.Core.Config;
+
+namespace ToTypeScriptD.Lexical.WinMD
 {
     public class WinmdConfig : ConfigBase
     {

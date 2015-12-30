@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToTypeScriptD;
+using ToTypeScriptD.Core.Extensions;
 
-namespace ToTypeScriptD.Core.DotNet
+namespace ToTypeScriptD.Lexical.DotNet
 {
 
     public static class DotNetExtensions

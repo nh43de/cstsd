@@ -1,7 +1,6 @@
 ﻿using System;
-using ToTypeScriptD.Core.TypeWriters;
 
-namespace ToTypeScriptD.Core.DotNet
+namespace ToTypeScriptD.Lexical.DotNet
 {
     public class ClassWriter : TypeWriterBase
     {

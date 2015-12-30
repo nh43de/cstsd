@@ -1,6 +1,5 @@
 ﻿using ApprovalTests;
 using ToTypeScriptD.Core;
-using ToTypeScriptD.Core.DotNet;
 using Xunit;
 
 namespace ToTypeScriptD.Tests.DotNet

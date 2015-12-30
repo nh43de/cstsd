@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToTypeScriptD;
+using ToTypeScriptD.Core.Extensions;
 
-namespace ToTypeScriptD.Core.WinMD
+namespace ToTypeScriptD.Lexical.WinMD
 {
 
     public static class WinMDExtensions

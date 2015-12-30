@@ -4,10 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using ToTypeScriptD.Core;
-using ToTypeScriptD.Core.TypeWriters;
+using ToTypeScriptD.Core.Config;
 
-namespace ToTypeScriptD
+namespace ToTypeScriptD.Core
 {
     public class Render
     {
@@ -31,7 +30,6 @@ namespace ToTypeScriptD
         /// </summary>
         /// <param name="assemblyPaths">Must be absolute file paths.</param>
         /// <param name="w">TextWriter stream to use.</param>
-        /// <param name="typeNotFoundErrorHandler">Error handler to use when type reference is not found in loaded assemblies.</param>
         /// <param name="typeCollection">Collected types to render.</param>
         /// <param name="filterRegex">Filter type names using regular expression string.</param>
         /// <param name="config">Output configuration.</param>

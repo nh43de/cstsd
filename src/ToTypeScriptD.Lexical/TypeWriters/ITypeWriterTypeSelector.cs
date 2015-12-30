@@ -1,6 +1,7 @@
 ﻿using System;
+using ToTypeScriptD.Core.Config;
 
-namespace ToTypeScriptD.Core.TypeWriters
+namespace ToTypeScriptD.Lexical.TypeWriters
 {
     public interface ITypeWriterTypeSelector
     {

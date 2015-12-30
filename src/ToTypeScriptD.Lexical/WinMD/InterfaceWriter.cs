@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Text;
-using ToTypeScriptD.Core.TypeWriters;
+using ToTypeScriptD.Core.Config;
 
-namespace ToTypeScriptD.Core.WinMD
+namespace ToTypeScriptD.Lexical.WinMD
 {
     public class InterfaceWriter : TypeWriterBase
     {

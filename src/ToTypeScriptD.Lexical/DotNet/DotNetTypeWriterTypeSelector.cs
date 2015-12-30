@@ -1,7 +1,8 @@
 ﻿using System;
-using ToTypeScriptD.Core.TypeWriters;
+using ToTypeScriptD.Core.Config;
+using ToTypeScriptD.Lexical.TypeWriters;
 
-namespace ToTypeScriptD.Core.DotNet
+namespace ToTypeScriptD.Lexical.DotNet
 {
     public class DotNetTypeWriterTypeSelector : ITypeWriterTypeSelector
     {

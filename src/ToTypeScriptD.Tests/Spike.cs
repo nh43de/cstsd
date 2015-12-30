@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using ToTypeScriptD.Core;
-using ToTypeScriptD.Core.TypeWriters;
-using ToTypeScriptD.Core.WinMD;
 using ToTypeScriptD.Tests.ExeTests;
 using Xunit;
 

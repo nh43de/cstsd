@@ -4,7 +4,7 @@ using CommandLine;
 using CommandLine.Text;
 using ToTypeScriptD.Core.Config;
 
-namespace tsd
+namespace ToTypeScriptD
 {
     public class Options
     {

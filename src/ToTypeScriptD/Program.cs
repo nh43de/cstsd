@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
-using ToTypeScriptD;
 using ToTypeScriptD.Core;
 using ToTypeScriptD.Core.Config;
+using ToTypeScriptD.Lexical.DotNet;
+using ToTypeScriptD.Lexical.WinMD;
 
-namespace tsd
+namespace ToTypeScriptD
 {
     class Program
     {
@@ -28,7 +28,7 @@ namespace tsd
                 parseSuccess = true;
                 outputToFile = true;
 
-                config = new ToTypeScriptD.Core.DotNet.DotNetConfig
+                config = new DotNetConfig
                 {
                     AssemblyPaths = new[] {"cl.dll"},
                     CamelBackCase = true,
@@ -50,7 +50,7 @@ namespace tsd
 
                             outputToFile = dotNetSubOptions.OutputToFile;
 
-                            config = new ToTypeScriptD.Core.DotNet.DotNetConfig
+                            config = new DotNetConfig
                             {
                                 AssemblyPaths = dotNetSubOptions.Files,
                                 CamelBackCase = dotNetSubOptions.CamelBackCase,
@@ -65,7 +65,7 @@ namespace tsd
 
                             outputToFile = winmdSubOptions.OutputToFile;
 
-                            config = new ToTypeScriptD.Core.WinMD.WinmdConfig
+                            config = new WinmdConfig
                             {
                                 AssemblyPaths = winmdSubOptions.Files,
                                 IncludeSpecialTypes = winmdSubOptions.IncludeSpecialTypeDefinitions,

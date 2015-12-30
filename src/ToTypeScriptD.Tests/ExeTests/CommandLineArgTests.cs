@@ -1,6 +1,5 @@
 ﻿using ApprovalTests;
 using System.IO;
-using tsd;
 using Xunit;
 
 namespace ToTypeScriptD.Tests.ExeTests

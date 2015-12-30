@@ -1,5 +1,7 @@
 ﻿
-namespace ToTypeScriptD.Core.DotNet
+using ToTypeScriptD.Core.Config;
+
+namespace ToTypeScriptD.Lexical.DotNet
 {
     public class DotNetConfig : ConfigBase
     {

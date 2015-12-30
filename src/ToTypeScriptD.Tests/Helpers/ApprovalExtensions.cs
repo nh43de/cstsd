@@ -1,4 +1,9 @@
-﻿namespace ToTypeScriptD.Tests
+﻿using ToTypeScriptD.Core;
+using ToTypeScriptD.Core.Config;
+using ToTypeScriptD.Lexical.DotNet;
+using ToTypeScriptD.Lexical.WinMD;
+
+namespace ToTypeScriptD.Tests
 {
     public static class ApprovalsExtensions
     {
@@ -34,31 +39,31 @@
             ApprovalTests.Approvals.Verify(item);
         }
 
-        public static void DumpWinMDAndVerify(this string path, System.Action<ToTypeScriptD.Core.ConfigBase> configOverrideHook = null)
+        public static void DumpWinMDAndVerify(this string path, System.Action<ConfigBase> configOverrideHook = null)
         {
-            var config = new ToTypeScriptD.Core.WinMD.WinmdConfig();
+            var config = new WinmdConfig();
 
             if (configOverrideHook != null)
             {
                 configOverrideHook(config);
             }
 
-            var typeCollection = new ToTypeScriptD.Core.TypeWriters.TypeCollection();
-            var result = ToTypeScriptD.Render.FullAssembly(path, typeCollection, config).StripHeaderGarbageromOutput();
+            var typeCollection = new TypeCollection();
+            var result = Render.FullAssembly(path, typeCollection, config).StripHeaderGarbageromOutput();
             ApprovalTests.Approvals.Verify(result);
         }
 
-        public static void DumpDotNetAndVerify(this string path, System.Action<ToTypeScriptD.Core.ConfigBase> configOverrideHook = null)
+        public static void DumpDotNetAndVerify(this string path, System.Action<ConfigBase> configOverrideHook = null)
         {
-            var config = new ToTypeScriptD.Core.DotNet.DotNetConfig();
+            var config = new DotNetConfig();
 
             if (configOverrideHook != null)
             {
                 configOverrideHook(config);
             }
 
-            var typeCollection = new ToTypeScriptD.Core.TypeWriters.TypeCollection();
-            var result = ToTypeScriptD.Render.FullAssembly(path, typeCollection, config).StripHeaderGarbageromOutput();
+            var typeCollection = new TypeCollection();
+            var result = Render.FullAssembly(path, typeCollection, config).StripHeaderGarbageromOutput();
             ApprovalTests.Approvals.Verify(result);
         }
     }

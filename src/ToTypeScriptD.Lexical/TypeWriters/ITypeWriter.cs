@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace ToTypeScriptD.Core.TypeWriters
+namespace ToTypeScriptD.Lexical.TypeWriters
 {
     public interface ITypeWriter
     {

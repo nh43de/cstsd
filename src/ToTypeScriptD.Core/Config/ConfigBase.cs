@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using ToTypeScriptD.Core.Config;
 
-namespace ToTypeScriptD.Core
+namespace ToTypeScriptD.Core.Config
 {
 
     public abstract class ConfigBase

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using ToTypeScriptD.Core.DotNet;
+using ToTypeScriptD.Core.Config;
+using ToTypeScriptD.Core.Extensions;
 
-namespace ToTypeScriptD.Core.TypeWriters
+namespace ToTypeScriptD.Lexical.TypeWriters
 {
     public class EnumWriter : ITypeWriter
     {

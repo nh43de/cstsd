@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Text;
-using ToTypeScriptD.Core.TypeWriters;
 
-namespace ToTypeScriptD.Core.DotNet
+namespace ToTypeScriptD.Lexical.DotNet
 {
     public class InterfaceWriter : TypeWriterBase
     {

@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using ToTypeScriptD.Core.TypeWriters;
+using ToTypeScriptD.Core.Extensions;
+using ToTypeScriptD.Lexical.TypeWriters;
 
-namespace ToTypeScriptD.Core.DotNet
+namespace ToTypeScriptD.Lexical.DotNet
 {
     public abstract class TypeWriterBase : ITypeWriter
     {

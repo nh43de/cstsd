@@ -1,7 +1,8 @@
 ﻿using ApprovalTests;
 using System;
 using ToTypeScriptD.Core;
-using ToTypeScriptD.Core.WinMD;
+using ToTypeScriptD.Core.Extensions;
+using ToTypeScriptD.Lexical.WinMD;
 using Xunit;
 
 namespace ToTypeScriptD.Tests.Winmd
@@ -44,9 +45,9 @@ namespace ToTypeScriptD.Tests.Winmd
         public void FullSampleAssembly()
         {
             var file = base.NativeAssembly.ComponentPath;
-            var typeCollection = new ToTypeScriptD.Core.TypeWriters.TypeCollection();
+            var typeCollection = new TypeCollection();
             var config = new WinmdConfig();
-            var result = ToTypeScriptD.Render.FullAssembly(file, typeCollection, config);
+            var result = Render.FullAssembly(file, typeCollection, config);
             (result).Verify();
         }
 
@@ -75,9 +76,9 @@ namespace ToTypeScriptD.Tests.Winmd
         public void FullWindowsAssembly()
         {
             var file = @"C:\Windows\System32\WinMetadata\Windows.Foundation.winmd";
-            var typeCollection = new ToTypeScriptD.Core.TypeWriters.TypeCollection();
+            var typeCollection = new TypeCollection();
             var config = new WinmdConfig();
-            var result = ToTypeScriptD.Render.FullAssembly(file, typeCollection, config);
+            var result = Render.FullAssembly(file, typeCollection, config);
             (result).Verify();
         }
 
@@ -103,7 +104,7 @@ namespace ToTypeScriptD.Tests.Winmd
                 AssemblyPaths = allFiles,
                 IncludeSpecialTypes = false
             };
-            ToTypeScriptD.Render.AllAssemblies(config, sw);
+            Render.AllAssemblies(config, sw);
             var result = Environment.NewLine + Environment.NewLine + sw.ToString();
             result.Verify();
         }
