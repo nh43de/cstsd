@@ -10,7 +10,6 @@ namespace ToTypeScriptD.Core.Config
         public bool IncludeSpecialTypes { get; set; }
         public string RegexFilter { get; set; } = "";
         public IndentationFormatting IndentationType { get; set; } = IndentationFormatting.SpaceX4;        
-        public IEnumerable<string> AssemblyPaths { get; set; } = new string[0];
         
 
         public string Indent

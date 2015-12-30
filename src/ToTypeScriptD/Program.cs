@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using ToTypeScriptD.Core;
@@ -15,6 +16,7 @@ namespace ToTypeScriptD
         static void Main(string[] args)
         {
             ConfigBase config = null;
+            IList<string> assemblyPaths = new string[] { };
 
             var options = new Options();
 
@@ -28,9 +30,10 @@ namespace ToTypeScriptD
                 parseSuccess = true;
                 outputToFile = true;
 
+                assemblyPaths = new string[] {"cl.dll"};
+
                 config = new DotNetConfig
                 {
-                    AssemblyPaths = new[] {"cl.dll"},
                     CamelBackCase = true,
                     IncludeSpecialTypes = true,
                     IndentationType = IndentationFormatting.SpaceX4
@@ -49,10 +52,11 @@ namespace ToTypeScriptD
                             if (dotNetSubOptions == null) break;
 
                             outputToFile = dotNetSubOptions.OutputToFile;
+                            assemblyPaths = dotNetSubOptions.Files;
 
                             config = new DotNetConfig
                             {
-                                AssemblyPaths = dotNetSubOptions.Files,
+                                
                                 CamelBackCase = dotNetSubOptions.CamelBackCase,
                                 IncludeSpecialTypes = dotNetSubOptions.IncludeSpecialTypeDefinitions,
                                 IndentationType = dotNetSubOptions.IndentationType,
@@ -65,9 +69,10 @@ namespace ToTypeScriptD
 
                             outputToFile = winmdSubOptions.OutputToFile;
 
+                            assemblyPaths = winmdSubOptions.Files;
+
                             config = new WinmdConfig
                             {
-                                AssemblyPaths = winmdSubOptions.Files,
                                 IncludeSpecialTypes = winmdSubOptions.IncludeSpecialTypeDefinitions,
                                 IndentationType = winmdSubOptions.IndentationType,
                                 RegexFilter = winmdSubOptions.RegexFilter
@@ -80,18 +85,18 @@ namespace ToTypeScriptD
 
 
             if (!parseSuccess) return;
-            bool skipPrintingHelp;
+            bool skipPrintingHelp = true;
             try
             {
                 if (!outputToFile)
-                    skipPrintingHelp = Render.AllAssemblies(config, Console.Out);
+                    Render.FromAssemblies(assemblyPaths, config, Console.Out);
                 else
                 {
                     Console.WriteLine(@"Writing to output file: output.d.ts");
 
                     TextWriter w = new StreamWriter(@"output.d.ts", false);
                     
-                    skipPrintingHelp = Render.AllAssemblies(config, w);
+                    Render.FromAssemblies(assemblyPaths, config, w);
                     
                     w.Flush();
                 }

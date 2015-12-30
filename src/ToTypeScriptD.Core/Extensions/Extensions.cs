@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToTypeScriptD.Core.Config;
 
 namespace ToTypeScriptD.Core.Extensions
 {
@@ -12,7 +13,7 @@ namespace ToTypeScriptD.Core.Extensions
             return string.Join("", Enumerable.Range(0, count).Select(s => value));
         }
 
-        public static string ToTypeScript(this Type type)
+        public static string ToTypeScript(this Type type, ConfigBase config)
         {
             throw new NotImplementedException();
         }

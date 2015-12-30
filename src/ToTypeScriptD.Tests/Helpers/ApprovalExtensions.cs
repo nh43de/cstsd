@@ -47,8 +47,7 @@ namespace ToTypeScriptD.Tests
             {
                 configOverrideHook(config);
             }
-
-            var typeCollection = new TypeCollection();
+            
             var result = Render.FullAssembly(path, typeCollection, config).StripHeaderGarbageromOutput();
             ApprovalTests.Approvals.Verify(result);
         }
@@ -61,8 +60,7 @@ namespace ToTypeScriptD.Tests
             {
                 configOverrideHook(config);
             }
-
-            var typeCollection = new TypeCollection();
+            
             var result = Render.FullAssembly(path, typeCollection, config).StripHeaderGarbageromOutput();
             ApprovalTests.Approvals.Verify(result);
         }

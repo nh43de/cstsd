@@ -11,64 +11,40 @@ namespace ToTypeScriptD.Core
 {
     public class Render
     {
-        public static bool AllAssemblies(ConfigBase config, TextWriter w)
+        public static void FromAssemblies(ICollection<string> assemblyPaths, ConfigBase config, TextWriter w)
         {
-           config.AssemblyPaths
-                = config.AssemblyPaths.Select(path => new System.IO.FileInfo(path).FullName).ToArray();
+            w.Write(GetHeader(assemblyPaths, config.IncludeSpecialTypes));
 
-            w.Write(GetHeader(config.AssemblyPaths, config.IncludeSpecialTypes));
+            var allAssemblyTypes = assemblyPaths.SelectMany(GetAssemblyTypes);
 
-            var typeCollection = new TypeCollection();
-
-            var wroteAnyTypes = false;
-            wroteAnyTypes |= WriteFiles(config.AssemblyPaths, w, typeCollection, config.RegexFilter, config);
-            return wroteAnyTypes;
+            FromTypes(allAssemblyTypes, w, config);
         }
 
-        //TODO: rename FromFiles (usage: Render.FromFiles())
-        /// <summary>
-        /// This is the main entry point to rendering the output.
-        /// </summary>
-        /// <param name="assemblyPaths">Must be absolute file paths.</param>
-        /// <param name="w">TextWriter stream to use.</param>
-        /// <param name="typeCollection">Collected types to render.</param>
-        /// <param name="filterRegex">Filter type names using regular expression string.</param>
-        /// <param name="config">Output configuration.</param>
-        /// <returns></returns>
-        private static bool WriteFiles(IEnumerable<string> assemblyPaths, TextWriter w, TypeCollection typeCollection, string filterRegex, ConfigBase config)
+        public static void FromTypes(IEnumerable<Type> types, TextWriter w, ConfigBase config)
         {
-            var filesAlreadyProcessed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-            var any = false;
-
-            //scan all assembly paths
-            assemblyPaths.Each(assemblyPath =>
-            {
-                any = true;
-                if (filesAlreadyProcessed.Contains(assemblyPath))
-                    return;
-
-                filesAlreadyProcessed.Add(assemblyPath);
-                //collect types to render
-                CollectTypes(assemblyPath, typeCollection, config);
-            });
-
-            if (any == false)
-                return false;
+            var namespaces = types.Select(t => t.Namespace).Distinct();
             
-            //render collected types
-            var renderedOut = typeCollection.Render();
-            w.WriteLine(renderedOut);
+            foreach (var ns in namespaces)
+            {
+                //TS modules are namespaces
+                w.Write($@"declare module {ns}");
+                w.WriteLine();
+                w.Write("{");
+                w.WriteLine();
+                w.WriteLine();
 
-            return true;
+                foreach (var type in types.Where(t => t.Namespace == ns))
+                {
+                    //type.Value is the TypeWriter instance to uses
+                    w.Write(type.ToTypeScript(config));
+                    w.WriteLine();
+                }
+
+                w.WriteLine("}");
+            }
         }
+
         
-        public static string FullAssembly(string assemblyPath, TypeCollection typeCollection, ConfigBase config)
-        {
-            CollectTypes(assemblyPath, typeCollection, config);
-            return GetHeader(new[] { assemblyPath }, config.IncludeSpecialTypes) + typeCollection.Render();
-        }
-
         private static string GetHeader(IEnumerable<string> assemblyPaths, bool forceDueToSpecialType)
         {
             if (!forceDueToSpecialType && !assemblyPaths.Any())
@@ -108,14 +84,11 @@ namespace ToTypeScriptD.Core
             return sb.ToString();
         }
 
-        private static void CollectTypes(string assemblyPath, TypeCollection typeCollection, ConfigBase config)
+        private static Type[] GetAssemblyTypes(string assemblyPath)
         {
-            var assembly = Assembly.LoadFile(assemblyPath);
-            
-            foreach (var item in assembly.ManifestModule.GetTypes())
-            {
-                typeCollection.Add(item);
-            }
+            var assembly = Assembly.LoadFile(new System.IO.FileInfo(assemblyPath).FullName);
+
+            return assembly.ManifestModule.GetTypes();
         }
 
     }
