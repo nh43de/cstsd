@@ -36,38 +36,30 @@
 
         public static void DumpWinMDAndVerify(this string path, System.Action<ToTypeScriptD.Core.ConfigBase> configOverrideHook = null)
         {
-            var errors = new StringBuilderTypeNotFoundErrorHandler();
-            var config = new ToTypeScriptD.Core.WinMD.WinmdConfig
-            {
-                TypeNotFoundErrorHandler = errors,
-            };
+            var config = new ToTypeScriptD.Core.WinMD.WinmdConfig();
 
             if (configOverrideHook != null)
             {
                 configOverrideHook(config);
             }
 
-            var typeCollection = new ToTypeScriptD.Core.TypeWriters.TypeCollection(config.GetTypeWriterTypeSelector());
+            var typeCollection = new ToTypeScriptD.Core.TypeWriters.TypeCollection();
             var result = ToTypeScriptD.Render.FullAssembly(path, typeCollection, config).StripHeaderGarbageromOutput();
-            ApprovalTests.Approvals.Verify(errors + result);
+            ApprovalTests.Approvals.Verify(result);
         }
 
         public static void DumpDotNetAndVerify(this string path, System.Action<ToTypeScriptD.Core.ConfigBase> configOverrideHook = null)
         {
-            var errors = new StringBuilderTypeNotFoundErrorHandler();
-            var config = new ToTypeScriptD.Core.DotNet.DotNetConfig
-            {
-                TypeNotFoundErrorHandler = errors,
-            };
+            var config = new ToTypeScriptD.Core.DotNet.DotNetConfig();
 
             if (configOverrideHook != null)
             {
                 configOverrideHook(config);
             }
 
-            var typeCollection = new ToTypeScriptD.Core.TypeWriters.TypeCollection(config.GetTypeWriterTypeSelector());
+            var typeCollection = new ToTypeScriptD.Core.TypeWriters.TypeCollection();
             var result = ToTypeScriptD.Render.FullAssembly(path, typeCollection, config).StripHeaderGarbageromOutput();
-            ApprovalTests.Approvals.Verify(errors + result);
+            ApprovalTests.Approvals.Verify(result);
         }
     }
 }

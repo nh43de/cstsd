@@ -44,14 +44,10 @@ namespace ToTypeScriptD.Tests.Winmd
         public void FullSampleAssembly()
         {
             var file = base.NativeAssembly.ComponentPath;
-            var errors = new StringBuilderTypeNotFoundErrorHandler();
-            var typeCollection = new ToTypeScriptD.Core.TypeWriters.TypeCollection(new ToTypeScriptD.Core.WinMD.WinMDTypeWriterTypeSelector());
-            var config = new WinmdConfig
-            {
-                TypeNotFoundErrorHandler = errors,
-            };
+            var typeCollection = new ToTypeScriptD.Core.TypeWriters.TypeCollection();
+            var config = new WinmdConfig();
             var result = ToTypeScriptD.Render.FullAssembly(file, typeCollection, config);
-            (errors + result).Verify();
+            (result).Verify();
         }
 
         [Fact]
@@ -79,14 +75,10 @@ namespace ToTypeScriptD.Tests.Winmd
         public void FullWindowsAssembly()
         {
             var file = @"C:\Windows\System32\WinMetadata\Windows.Foundation.winmd";
-            var errors = new StringBuilderTypeNotFoundErrorHandler();
-            var typeCollection = new ToTypeScriptD.Core.TypeWriters.TypeCollection(new ToTypeScriptD.Core.WinMD.WinMDTypeWriterTypeSelector());
-            var config = new WinmdConfig
-            {
-                TypeNotFoundErrorHandler = errors,
-            };
+            var typeCollection = new ToTypeScriptD.Core.TypeWriters.TypeCollection();
+            var config = new WinmdConfig();
             var result = ToTypeScriptD.Render.FullAssembly(file, typeCollection, config);
-            (errors + result).Verify();
+            (result).Verify();
         }
 
         //[Fact]
@@ -106,15 +98,13 @@ namespace ToTypeScriptD.Tests.Winmd
         {
             var allFiles = System.IO.Directory.GetFiles(@"C:\Windows\System32\WinMetadata\", "*.winmd");
             var sw = new System.IO.StringWriter();
-            var error = new StringBuilderTypeNotFoundErrorHandler();
             var config = new WinmdConfig
             {
                 AssemblyPaths = allFiles,
-                IncludeSpecialTypes = false,
-                TypeNotFoundErrorHandler = error,
+                IncludeSpecialTypes = false
             };
             ToTypeScriptD.Render.AllAssemblies(config, sw);
-            var result = error.ToString() + Environment.NewLine + Environment.NewLine + sw.ToString();
+            var result = Environment.NewLine + Environment.NewLine + sw.ToString();
             result.Verify();
         }
 

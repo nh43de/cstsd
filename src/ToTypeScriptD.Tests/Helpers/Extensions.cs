@@ -9,29 +9,6 @@ namespace ToTypeScriptD.Tests
 {
     public static class Extensions
     {
-        public static string ToTypeScript(this Type value)
-        {
-            return ToTypeScript(new[] { value });
-        }
-
-        public static string ToTypeScript(this IEnumerable<Type> value, string filterRegex = null)
-        {
-            var typeCollection = new TypeCollection(new WinMDTypeWriterTypeSelector());
-            var errors = new StringBuilderTypeNotFoundErrorHandler();
-            var config = new WinmdConfig();
-
-            new TypeWriterCollector(errors, typeCollection.TypeSelector)
-                .Collect(value, typeCollection, config);
-            var result = typeCollection.Render(filterRegex);
-            var errorResult = errors.ToString();
-            if (string.IsNullOrEmpty(errorResult))
-            {
-                return result;
-            }
-            return errorResult + Environment.NewLine + Environment.NewLine + result;
-        }
-
-
         public static string StripVersionFromOutput(this string value)
         {
             return System.Text.RegularExpressions.Regex.Replace(value, "v[0-9].[0-9].[0-9]{0,4}.[0-9]{0,4}[0-9]? - SHA1:[a-zA-Z0-9]{0,7} - (Debug|Release)", "v0.0.0000.0000 SHA1:0000000 - Debug");

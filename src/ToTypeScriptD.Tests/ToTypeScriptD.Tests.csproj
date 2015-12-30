@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ToTypeScriptD.Tests</RootNamespace>
     <AssemblyName>ToTypeScriptD.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -69,6 +70,10 @@
     <ProjectReference Include="..\ToTypeScriptD.Core\ToTypeScriptD.Core.csproj">
       <Project>{fea71855-6f65-45cb-97c4-51f1891904f6}</Project>
       <Name>ToTypeScriptD.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToTypeScriptD.Lexical\ToTypeScriptD.Lexical.csproj">
+      <Project>{50fd28ea-65e4-479e-9193-20b758e10930}</Project>
+      <Name>ToTypeScriptD.Lexical</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToTypeScriptD.TestAssembly.CSharp\ToTypeScriptD.TestAssembly.CSharp.csproj">
       <Project>{c7f85246-c5d8-44b0-a125-e526e24f900b}</Project>

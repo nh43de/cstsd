@@ -18,10 +18,10 @@ namespace ToTypeScriptD
 
             w.Write(GetHeader(config.AssemblyPaths, config.IncludeSpecialTypes));
 
-            var typeCollection = new TypeCollection(config.GetTypeWriterTypeSelector());
+            var typeCollection = new TypeCollection();
 
             var wroteAnyTypes = WriteSpecialTypes(config.IncludeSpecialTypes, w, config);
-            wroteAnyTypes |= WriteFiles(config.AssemblyPaths, w, config.TypeNotFoundErrorHandler, typeCollection, config.RegexFilter, config);
+            wroteAnyTypes |= WriteFiles(config.AssemblyPaths, w, typeCollection, config.RegexFilter, config);
             return wroteAnyTypes;
         }
 
@@ -36,9 +36,9 @@ namespace ToTypeScriptD
         /// <param name="filterRegex">Filter type names using regular expression string.</param>
         /// <param name="config">Output configuration.</param>
         /// <returns></returns>
-        private static bool WriteFiles(IEnumerable<string> assemblyPaths, TextWriter w, ITypeNotFoundErrorHandler typeNotFoundErrorHandler, TypeCollection typeCollection, string filterRegex, ConfigBase config)
+        private static bool WriteFiles(IEnumerable<string> assemblyPaths, TextWriter w, TypeCollection typeCollection, string filterRegex, ConfigBase config)
         {
-            var filesAlreadyProcessed = new HashSet<string>(new IgnoreCaseStringEqualityComparer());
+            var filesAlreadyProcessed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             var any = false;
 
@@ -51,14 +51,14 @@ namespace ToTypeScriptD
 
                 filesAlreadyProcessed.Add(assemblyPath);
                 //collect types to render
-                CollectTypes(assemblyPath, typeNotFoundErrorHandler, typeCollection, config);
+                CollectTypes(assemblyPath, typeCollection, config);
             });
 
             if (any == false)
                 return false;
-
+            
             //render collected types
-            var renderedOut = typeCollection.Render(filterRegex);
+            var renderedOut = typeCollection.Render();
             w.WriteLine(renderedOut);
 
             return true;
@@ -79,8 +79,8 @@ namespace ToTypeScriptD
 
         public static string FullAssembly(string assemblyPath, TypeCollection typeCollection, ConfigBase config)
         {
-            CollectTypes(assemblyPath, config.TypeNotFoundErrorHandler, typeCollection, config);
-            return GetHeader(new[] { assemblyPath }, config.IncludeSpecialTypes) + typeCollection.Render(config.RegexFilter);
+            CollectTypes(assemblyPath, typeCollection, config);
+            return GetHeader(new[] { assemblyPath }, config.IncludeSpecialTypes) + typeCollection.Render();
         }
 
         private static string GetHeader(IEnumerable<string> assemblyPaths, bool forceDueToSpecialType)
@@ -122,16 +122,13 @@ namespace ToTypeScriptD
             return sb.ToString();
         }
 
-        private static void CollectTypes(string assemblyPath, ITypeNotFoundErrorHandler typeNotFoundErrorHandler, TypeCollection typeCollection, ConfigBase config)
+        private static void CollectTypes(string assemblyPath, TypeCollection typeCollection, ConfigBase config)
         {
             var assembly = Assembly.LoadFile(assemblyPath);
-
-            typeCollection.AddAssembly(assembly);
-
-            var typeWriterGenerator = new TypeWriterCollector(typeNotFoundErrorHandler, typeCollection.TypeSelector);
+            
             foreach (var item in assembly.ManifestModule.GetTypes())
             {
-                typeWriterGenerator.Collect(item, typeCollection, config);
+                typeCollection.Add(item);
             }
         }
 

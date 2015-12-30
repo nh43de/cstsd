@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ToTypeScriptD;
-using ToTypeScriptD.Core.WinMD;
 
 namespace ToTypeScriptD
 {
@@ -15,63 +14,9 @@ namespace ToTypeScriptD
             return string.Join("", Enumerable.Range(0, count).Select(s => value));
         }
 
-        [System.Diagnostics.DebuggerHidden]
-        public static string Join(this IEnumerable<string> items, string separator = "")
+        public static string ToTypeScript(this Type type)
         {
-            if (items == null) return string.Empty;
-
-            return string.Join(separator, items);
-        }
-
-        public static bool Matches(this string value, string pattern)
-        {
-            var result = System.Text.RegularExpressions.Regex.IsMatch(value, pattern ?? "");
-            return result;
-        }
-
-        public static bool ShouldIgnoreType(this Type name)
-        {
-            if (!name.IsPublic)
-                return true;
-
-            return false;
-        }
-
-        // TODO: look to move this to the WinMDExtensions.cs
-        public static string ToTypeScriptItemName(this Type typeReference)
-        {
-            // Nested classes don't report their namespace. So we have to walk up the 
-            // DeclaringType tree to find the root most type to grab it's namespace.
-            var parentMostType = typeReference;
-            while (parentMostType.DeclaringType != null)
-            {
-                parentMostType = parentMostType.DeclaringType;
-            }
-
-            var mainTypeName = typeReference.FullName;
-
-            // trim namespace off of the front.
-            mainTypeName = mainTypeName.Substring(parentMostType.Namespace.Length + 1);
-
-            // replace the nested class slash with an underscore
-            mainTypeName = mainTypeName.Replace("/", "_").StripGenericTick();
-
-            mainTypeName = mainTypeName.StripGenericTick();
-            return mainTypeName;
-        }
-
-        [System.Diagnostics.DebuggerHidden]
-        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> items)
-        {
-            var hashset = new HashSet<T>();
-            if (items != null)
-            {
-                foreach (var item in items)
-                {
-                    hashset.Add(item);
-                }
-            }
-            return hashset;
+            throw new NotImplementedException();
         }
 
         static Dictionary<string, string> _specialEnumNames = new Dictionary<string, string>
@@ -80,49 +25,7 @@ namespace ToTypeScriptD
             {"PC437", "pc437"},
             {"NKo", "nko"},
         };
-
-        // Copied and modified from Json.Net
-        // https://github.com/JamesNK/Newtonsoft.Json/blob/master/Src/Newtonsoft.Json/Utilities/StringUtils.cs
-        public static string ToCamelCase(this string s, bool camelCaseConfig)
-        {
-            if (!camelCaseConfig)
-                return s;
-
-            if (_specialEnumNames.ContainsKey(s))
-            {
-                return _specialEnumNames[s];
-            }
-
-            if (string.IsNullOrEmpty(s))
-                return s;
-
-            if (!char.IsUpper(s[0]))
-                return s;
-
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < s.Length; i++)
-            {
-                bool hasNext = (i + 1 < s.Length);
-                if ((i == 0 || !hasNext) || char.IsUpper(s[i + 1]))
-                {
-                    char lowerCase;
-#if !(NETFX_CORE || PORTABLE)
-                    lowerCase = char.ToLower(s[i], System.Globalization.CultureInfo.InvariantCulture);
-#else
-                    lowerCase = char.ToLower(s[i]);
-#endif
-
-                    sb.Append(lowerCase);
-                }
-                else
-                {
-                    sb.Append(s.Substring(i));
-                    break;
-                }
-            }
-
-            return sb.ToString();
-        }
+        
 
         /// <summary>
         /// For iterator extension method that also includes a bool with the 'isLastItem' value.
@@ -167,18 +70,11 @@ namespace ToTypeScriptD
         }
 
         [System.Diagnostics.DebuggerHidden]
-        public static string FormatWith(this string format, params object[] args)
+        public static string Join(this IEnumerable<string> items, string separator = "")
         {
-            return string.Format(System.Globalization.CultureInfo.CurrentCulture, format, args);
-        }
+            if (items == null) return string.Empty;
 
-        public static string StripGenericTick(this string value)
-        {
-            4.Times().Each(x =>
-            {
-                value = value.Replace("`" + x, "");
-            });
-            return value;
+            return string.Join(separator, items);
         }
 
         public static void NewLine(this System.IO.TextWriter textWriter)

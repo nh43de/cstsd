@@ -33,8 +33,7 @@ namespace tsd
                     AssemblyPaths = new[] {"cl.dll"},
                     CamelBackCase = true,
                     IncludeSpecialTypes = true,
-                    IndentationType = IndentationFormatting.SpaceX4,
-                    TypeNotFoundErrorHandler = new ConsoleErrorTypeNotFoundErrorHandler(),
+                    IndentationType = IndentationFormatting.SpaceX4
                 };
             }
             else
@@ -57,8 +56,7 @@ namespace tsd
                                 CamelBackCase = dotNetSubOptions.CamelBackCase,
                                 IncludeSpecialTypes = dotNetSubOptions.IncludeSpecialTypeDefinitions,
                                 IndentationType = dotNetSubOptions.IndentationType,
-                                RegexFilter = dotNetSubOptions.RegexFilter,
-                                TypeNotFoundErrorHandler = new ConsoleErrorTypeNotFoundErrorHandler(),
+                                RegexFilter = dotNetSubOptions.RegexFilter
                             };                        
                             break;
                         case Options.WinmdCommandName:
@@ -72,8 +70,7 @@ namespace tsd
                                 AssemblyPaths = winmdSubOptions.Files,
                                 IncludeSpecialTypes = winmdSubOptions.IncludeSpecialTypeDefinitions,
                                 IndentationType = winmdSubOptions.IndentationType,
-                                RegexFilter = winmdSubOptions.RegexFilter,
-                                TypeNotFoundErrorHandler = new ConsoleErrorTypeNotFoundErrorHandler(),
+                                RegexFilter = winmdSubOptions.RegexFilter
                             };
                             break;
                     }
