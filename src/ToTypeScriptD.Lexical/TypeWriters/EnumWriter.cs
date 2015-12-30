@@ -3,6 +3,8 @@ using System.Linq;
 using System.Text;
 using ToTypeScriptD.Core.Config;
 using ToTypeScriptD.Core.Extensions;
+using ToTypeScriptD.Lexical.DotNet;
+using ToTypeScriptD.Lexical.Extensions;
 
 namespace ToTypeScriptD.Lexical.TypeWriters
 {

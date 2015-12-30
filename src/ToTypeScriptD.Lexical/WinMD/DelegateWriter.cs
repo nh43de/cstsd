@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using ToTypeScriptD.Core.Config;
 using ToTypeScriptD.Core.Extensions;
+using ToTypeScriptD.Lexical.Extensions;
 using ToTypeScriptD.Lexical.TypeWriters;
 
 namespace ToTypeScriptD.Lexical.WinMD
@@ -19,7 +20,7 @@ namespace ToTypeScriptD.Lexical.WinMD
         public override void Write(System.Text.StringBuilder sb)
         {
             ++IndentCount;
-            Indent(sb); sb.AppendFormat("export interface {0}", TypeDefinition.ToTypeScriptItemName());
+            Indent(sb); sb.AppendFormat("export interface {0}", TypeDefinition.ToTypeScriptItemNameWinMD());
 
             if (TypeDefinition.GenericTypeArguments.Any())
             {

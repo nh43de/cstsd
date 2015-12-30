@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using ToTypeScriptD.Core.Extensions;
+using ToTypeScriptD.Lexical.Extensions;
 using ToTypeScriptD.Lexical.TypeWriters;
 
 namespace ToTypeScriptD.Lexical.DotNet

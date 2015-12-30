@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using ToTypeScriptD.Core.Config;
 using ToTypeScriptD.Core.Extensions;
+using ToTypeScriptD.Lexical.Extensions;
 using ToTypeScriptD.Lexical.TypeWriters;
 
 namespace ToTypeScriptD.Lexical.WinMD
@@ -41,7 +42,7 @@ namespace ToTypeScriptD.Lexical.WinMD
 
         internal void WriteOutMethodSignatures(StringBuilder sb, string exportType, string inheriterString)
         {
-            Indent(sb); sb.AppendFormat("export {0} {1}", exportType, TypeDefinition.ToTypeScriptItemName());
+            Indent(sb); sb.AppendFormat("export {0} {1}", exportType, TypeDefinition.ToTypeScriptItemNameWinMD());
             WriteGenerics(sb);
             sb.Append(" ");
             WriteExportedInterfaces(sb, inheriterString);
@@ -453,7 +454,7 @@ namespace ToTypeScriptD.Lexical.WinMD
 
         public string FullName
         {
-            get { return TypeDefinition.Namespace + "." + TypeDefinition.ToTypeScriptItemName(); }
+            get { return TypeDefinition.Namespace + "." + TypeDefinition.ToTypeScriptItemNameWinMD(); }
         }
     }
 }

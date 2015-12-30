@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using ToTypeScriptD.Core.Config;
+using ToTypeScriptD.Core.Extensions;
 
 namespace ToTypeScriptD.Core
 {

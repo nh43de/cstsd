@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using ToTypeScriptD.Core.Config;
 using ToTypeScriptD.Core.Extensions;
+using ToTypeScriptD.Lexical.Extensions;
 using ToTypeScriptD.Lexical.TypeWriters;
 
 namespace ToTypeScriptD.Lexical.WinMD
@@ -62,7 +63,7 @@ namespace ToTypeScriptD.Lexical.WinMD
                 {
                     genericParams = "<" + TypeDefinition.GetGenericArguments().Select(s => s.FullName).Join(", ") + ">";
                 }
-                return TypeDefinition.ToTypeScriptItemName() + "_" + MethodName + "_OUT" + genericParams;
+                return TypeDefinition.ToTypeScriptItemNameWinMD() + "_" + MethodName + "_OUT" + genericParams;
             }
         }
 
