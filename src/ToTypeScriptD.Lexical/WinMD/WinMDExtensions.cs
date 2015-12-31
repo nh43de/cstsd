@@ -70,7 +70,7 @@ namespace ToTypeScriptD.Lexical.WinMD
                     .Each(x => genericTypeMap.Add(x.Key, x.Value));
             }
 
-            var fromName = typeReference.FullName;
+            var fromName = string.IsNullOrWhiteSpace(typeReference.FullName) ? typeReference.Name : typeReference.FullName;
 
             // translate / in nested classes into underscores
             fromName = fromName.Replace("/", "_");

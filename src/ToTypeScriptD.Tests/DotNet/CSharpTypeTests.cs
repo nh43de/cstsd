@@ -1,5 +1,7 @@
-﻿using ApprovalTests;
+﻿using System.Text;
+using ApprovalTests;
 using ToTypeScriptD.Core;
+using ToTypeScriptD.Lexical.DotNet;
 using Xunit;
 
 namespace ToTypeScriptD.Tests.DotNet
@@ -12,6 +14,14 @@ namespace ToTypeScriptD.Tests.DotNet
         {
             var path = base.CSharpAssembly.ComponentPath;
             path.DumpDotNetAndVerify();
+        }
+
+        [Fact]
+        public void Test1()
+        {
+            var sb = new StringBuilder();
+            var a = new ClassWriter(CSharpAssembly.AssemblyDefinition.GetType("ToTypeScriptD.TestAssembly.CSharp.GenericClass`1"), 4, new DotNetConfig());
+            a.Write(sb);
         }
 
         [Fact]
