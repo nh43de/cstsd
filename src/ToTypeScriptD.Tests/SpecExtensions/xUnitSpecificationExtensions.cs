@@ -194,15 +194,15 @@ public static class xUnitSpecificationExtensions
 
 
 
-    public static Exception ShouldBeThrownBy(this Type exceptionType, Assert.ThrowsDelegate method)
-    {
-        return Assert.Throws(exceptionType, method);
-    }
+    //public static Exception ShouldBeThrownBy(this Type exceptionType, Assert.ThrowsDelegate method)
+    //{
+    //    return Assert.Throws(exceptionType, method);
+    //}
 
-    public static void ShouldNotThrow(this Assert.ThrowsDelegate method)
-    {
-        Assert.DoesNotThrow(method);
-    }
+    //public static void ShouldNotThrow(this Assert.ThrowsDelegate method)
+    //{
+    //    Assert.DoesNotThrow(method);
+    //}
 
 
 
