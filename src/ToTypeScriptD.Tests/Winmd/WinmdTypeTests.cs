@@ -1,5 +1,6 @@
 ﻿using ApprovalTests;
 using System;
+using System.IO;
 using ToTypeScriptD.Core;
 using ToTypeScriptD.Core.Extensions;
 using ToTypeScriptD.Lexical.WinMD;
@@ -45,10 +46,10 @@ namespace ToTypeScriptD.Tests.Winmd
         public void FullSampleAssembly()
         {
             var file = base.NativeAssembly.ComponentPath;
-            var typeCollection = new TypeCollection();
             var config = new WinmdConfig();
-            var result = Render.FullAssembly(file, typeCollection, config);
-            (result).Verify();
+            var w = new StringWriter();
+            Render.FromAssembly(file, config, w);
+            Approvals.Verify(w.GetStringBuilder().ToString());
         }
 
         [Fact]
@@ -76,10 +77,10 @@ namespace ToTypeScriptD.Tests.Winmd
         public void FullWindowsAssembly()
         {
             var file = @"C:\Windows\System32\WinMetadata\Windows.Foundation.winmd";
-            var typeCollection = new TypeCollection();
             var config = new WinmdConfig();
-            var result = Render.FullAssembly(file, typeCollection, config);
-            (result).Verify();
+            var s = new StringWriter();
+            Render.FromAssembly(file, config, s);
+            Approvals.Verify(s.GetStringBuilder().ToString());
         }
 
         //[Fact]
@@ -101,11 +102,10 @@ namespace ToTypeScriptD.Tests.Winmd
             var sw = new System.IO.StringWriter();
             var config = new WinmdConfig
             {
-                AssemblyPaths = allFiles,
                 IncludeSpecialTypes = false
             };
-            Render.FromAssemblies(config, sw);
-            var result = Environment.NewLine + Environment.NewLine + sw.ToString();
+            Render.FromAssemblies(allFiles, config, sw);
+            var result = Environment.NewLine + Environment.NewLine + sw;
             result.Verify();
         }
 

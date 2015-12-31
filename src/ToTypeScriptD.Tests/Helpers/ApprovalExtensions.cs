@@ -1,4 +1,5 @@
-﻿using ToTypeScriptD.Core;
+﻿using System.IO;
+using ToTypeScriptD.Core;
 using ToTypeScriptD.Core.Config;
 using ToTypeScriptD.Lexical.DotNet;
 using ToTypeScriptD.Lexical.WinMD;
@@ -47,9 +48,9 @@ namespace ToTypeScriptD.Tests
             {
                 configOverrideHook(config);
             }
-            
-            var result = Render.FullAssembly(path, typeCollection, config).StripHeaderGarbageromOutput();
-            ApprovalTests.Approvals.Verify(result);
+            var sw = new StringWriter();
+            Render.FromAssembly(path, config, sw);
+            ApprovalTests.Approvals.Verify(sw.ToString().StripHeaderGarbageromOutput());
         }
 
         public static void DumpDotNetAndVerify(this string path, System.Action<ConfigBase> configOverrideHook = null)
@@ -60,9 +61,9 @@ namespace ToTypeScriptD.Tests
             {
                 configOverrideHook(config);
             }
-            
-            var result = Render.FullAssembly(path, typeCollection, config).StripHeaderGarbageromOutput();
-            ApprovalTests.Approvals.Verify(result);
+            var w = new StringWriter();
+            Render.FromAssembly(path, config, w);
+            ApprovalTests.Approvals.Verify(w.GetStringBuilder().ToString().StripHeaderGarbageromOutput());
         }
     }
 }

@@ -3,9 +3,9 @@
 namespace ToTypeScriptD.Core.Config
 {
 
-    public abstract class ConfigBase
+    public class ConfigBase
     {
-        public abstract bool CamelBackCase { get; set; }
+        public virtual bool CamelBackCase { get; set; }
         
         public bool IncludeSpecialTypes { get; set; }
         public string RegexFilter { get; set; } = "";

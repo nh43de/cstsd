@@ -20,6 +20,15 @@ namespace ToTypeScriptD.Core
             FromTypes(allAssemblyTypes, w, config);
         }
 
+        public static void FromAssembly(string assemblyPath, ConfigBase config, TextWriter w)
+        {
+            w.Write(GetHeader(new[] { assemblyPath }, config.IncludeSpecialTypes));
+
+            var allAssemblyTypes = GetAssemblyTypes(assemblyPath);
+
+            FromTypes(allAssemblyTypes, w, config);
+        }
+
         public static void FromTypes(IEnumerable<Type> types, TextWriter w, ConfigBase config)
         {
             var namespaces = types.Select(t => t.Namespace).Distinct();
