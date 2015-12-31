@@ -7,7 +7,8 @@ namespace ToTypeScriptD.Lexical.DotNet
     public class DotNetTypeWriterTypeSelector : ITypeWriterTypeSelector
     {
         public ITypeWriter PickTypeWriter(Type td, int indentCount, ConfigBase config)
-         {
+        {
+            var typeName = td.Name;
             var castedConfig = (DotNetConfig)config;
             if (td.IsEnum)
             {

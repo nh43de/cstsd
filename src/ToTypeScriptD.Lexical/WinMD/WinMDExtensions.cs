@@ -30,6 +30,7 @@ namespace ToTypeScriptD.Lexical.WinMD
                 { "System.Char",                 "number"}, // TODO: should this be a string or number?
                 { "System.Guid",                 "string"},
                 { "System.Byte[]",               "any"},
+                { "System.Char[]",               "string"},
         };
         static Dictionary<string, string> genericTypeMap = null;
 

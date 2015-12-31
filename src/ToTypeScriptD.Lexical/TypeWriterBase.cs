@@ -216,7 +216,8 @@ namespace ToTypeScriptD.Lexical.WinMD
 
             TypeDefinition.GetProperties().Each(prop =>
             {
-                var propName = prop.Name.ToTypeScriptName();
+                var propName_ = prop.Name;
+                var propName = propName_.ToTypeScriptName();
 
                 
                 if (propName == "length")

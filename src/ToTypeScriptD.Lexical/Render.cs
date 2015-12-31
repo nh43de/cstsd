@@ -51,6 +51,7 @@ namespace ToTypeScriptD.Core
 
                 foreach (var type in types.Where(t => t.Namespace == ns && t.IsNested == false).OrderBy(t => t.Name))
                 {
+                    var typeName = type.Name;
                     //type.Value is the TypeWriter instance to uses
                     RenderType(type, selector, config, w);
                     w.WriteLine();
