@@ -13,14 +13,7 @@ namespace ToTypeScriptD.Core.Extensions
             return string.Join("", Enumerable.Range(0, count).Select(s => value));
         }
 
-        public static string ToTypeScript(this Type type, ConfigBase config = null)
-        {
-            if (config == null)
-                config = new ConfigBase();
-            
-             
-            throw new NotImplementedException();
-        }
+
 
         static Dictionary<string, string> _specialEnumNames = new Dictionary<string, string>
         {

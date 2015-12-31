@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using ToTypeScriptD.Core.Config;
 using ToTypeScriptD.Core.Extensions;
+using ToTypeScriptD.Lexical.Extensions;
 
 namespace ToTypeScriptD.Core
 {

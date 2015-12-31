@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ToTypeScriptD.Core.Config;
 using ToTypeScriptD.Core.Extensions;
 
 namespace ToTypeScriptD.Lexical.Extensions
@@ -8,13 +9,20 @@ namespace ToTypeScriptD.Lexical.Extensions
 
     public static class Extensions
     {
-
         [System.Diagnostics.DebuggerHidden]
         public static string FormatWith(this string format, params object[] args)
         {
             return string.Format(System.Globalization.CultureInfo.CurrentCulture, format, args);
         }
 
+
+        public static string ToTypeScript(this Type type, ConfigBase config = null)
+        {
+            if (config == null)
+                config = new ConfigBase();
+
+            throw new NotImplementedException();
+        }
 
         // TODO: look to move this to the WinMDExtensions.cs
         public static string ToTypeScriptItemNameWinMD(this Type typeReference)

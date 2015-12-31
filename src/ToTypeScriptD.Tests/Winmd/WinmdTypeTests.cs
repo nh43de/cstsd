@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using ToTypeScriptD.Core;
 using ToTypeScriptD.Core.Extensions;
+using ToTypeScriptD.Lexical.Extensions;
 using ToTypeScriptD.Lexical.WinMD;
 using Xunit;
 
