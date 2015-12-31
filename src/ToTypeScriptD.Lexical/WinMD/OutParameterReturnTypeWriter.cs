@@ -42,13 +42,13 @@ namespace ToTypeScriptD.Lexical.WinMD
             // return type
             if (!(ReturnTypeReference.FullName == "System.Void"))
             {
-                sb.AppendFormat("{0}{0}__returnValue: {1};{2}", IndentValue, ReturnTypeReference.ToTypeScriptType(), Environment.NewLine);
+                sb.AppendFormat("{0}{0}__returnValue: {1};{2}", IndentValue, ReturnTypeReference.ToTypeScriptTypeName(), Environment.NewLine);
             }
 
             // out parameter values
             OutTypes.Each(item =>
             {
-                sb.AppendFormat("{0}{0}{1}: {2};{3}", IndentValue, item.Name, item.ParameterType.ToTypeScriptType(), Environment.NewLine);
+                sb.AppendFormat("{0}{0}{1}: {2};{3}", IndentValue, item.Name, item.ParameterType.ToTypeScriptTypeName(), Environment.NewLine);
             });
 
             sb.Append(IndentValue + "}" + Environment.NewLine);

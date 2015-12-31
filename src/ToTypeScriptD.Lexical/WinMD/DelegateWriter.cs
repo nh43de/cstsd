@@ -27,7 +27,7 @@ namespace ToTypeScriptD.Lexical.WinMD
                 sb.Append("<");
                 TypeDefinition.GetGenericArguments().For((genericParam, i, isLastItem) =>
                 {
-                    sb.AppendFormat("{0}{1}", genericParam.ToTypeScriptType(), (isLastItem ? "" : ", "));
+                    sb.AppendFormat("{0}{1}", genericParam.ToTypeScriptTypeName(), (isLastItem ? "" : ", "));
                 });
                 sb.Append(">");
             }
@@ -41,7 +41,7 @@ namespace ToTypeScriptD.Lexical.WinMD
             if (invokeMethod.GetParameters().Any())
             {
                 var target = invokeMethod.GetParameters()[0];
-                Indent(sb); sb.AppendFormatLine("target: {0};", target.ParameterType.ToTypeScriptType());
+                Indent(sb); sb.AppendFormatLine("target: {0};", target.ParameterType.ToTypeScriptTypeName());
             }
             else
             {
@@ -100,7 +100,7 @@ namespace ToTypeScriptD.Lexical.WinMD
                     methodSb.AppendFormat("{0}{1}: {2}{3}",
                         (i == 0 ? "" : " "),                            // spacer
                         parameter.Name,                                 // argument name
-                        parameter.ParameterType.ToTypeScriptType(),     // type
+                        parameter.ParameterType.ToTypeScriptTypeName(),     // type
                         (isLast ? "" : ","));                           // last one gets a comma
                 });
                 methodSb.Append(")");
@@ -117,7 +117,7 @@ namespace ToTypeScriptD.Lexical.WinMD
                     }
                     else
                     {
-                        returnType = method.ReturnType.ToTypeScriptType();
+                        returnType = method.ReturnType.ToTypeScriptTypeName();
                     }
 
                     methodSb.AppendFormat(": {0}", returnType);

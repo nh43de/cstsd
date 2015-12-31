@@ -76,22 +76,22 @@ namespace ToTypeScriptD.Lexical.WinMD
                         var isOnlyItem = isFirstItem && isLastItemJ;
                         if (isOnlyItem)
                         {
-                            constraintsSB.AppendFormat(" extends {0}", constraint.ToTypeScriptType());
+                            constraintsSB.AppendFormat(" extends {0}", constraint.ToTypeScriptTypeName());
                         }
                         else
                         {
                             if (isFirstItem)
                             {
-                                constraintsSB.AppendFormat(" extends {0} /*TODO:{1}", constraint.ToTypeScriptType(), (isLastItemJ ? "*/" : ", "));
+                                constraintsSB.AppendFormat(" extends {0} /*TODO:{1}", constraint.ToTypeScriptTypeName(), (isLastItemJ ? "*/" : ", "));
                             }
                             else
                             {
-                                constraintsSB.AppendFormat("{0}{1}", constraint.ToTypeScriptType(), (isLastItemJ ? "*/" : ", "));
+                                constraintsSB.AppendFormat("{0}{1}", constraint.ToTypeScriptTypeName(), (isLastItemJ ? "*/" : ", "));
                             }
                         }
                     });
 
-                    sb.AppendFormat("{0}{1}{2}", genericParameter.ToTypeScriptType(), constraintsSB.ToString(), (isLastItem ? "" : ", "));
+                    sb.AppendFormat("{0}{1}{2}", genericParameter.ToTypeScriptTypeName(), constraintsSB.ToString(), (isLastItem ? "" : ", "));
                 });
                 sb.Append(">");
             }
@@ -118,7 +118,10 @@ namespace ToTypeScriptD.Lexical.WinMD
         {
             List<ITypeWriter> extendedTypes = new List<ITypeWriter>();
             var methodSignatures = new HashSet<string>();
-            foreach (var method in TypeDefinition.GetMethods())
+            var methods =
+                TypeDefinition.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly |
+                                          BindingFlags.NonPublic).Where(m => m.IsSpecialName == false);
+            foreach (var method in methods)
             {
                 var methodSb = new StringBuilder();
 
@@ -163,7 +166,7 @@ namespace ToTypeScriptD.Lexical.WinMD
                     methodSb.AppendFormat("{0}{1}: {2}{3}",
                         (i == 0 ? "" : " "),                            // spacer
                         parameter.Name,                                 // argument name
-                        parameter.ParameterType.ToTypeScriptType(),     // type
+                        parameter.ParameterType.ToTypeScriptTypeName(),     // type
                         (isLast ? "" : ","));                           // last one gets a comma
                 });
                 methodSb.Append(")");
@@ -181,7 +184,7 @@ namespace ToTypeScriptD.Lexical.WinMD
                     }
                     else
                     {
-                        returnType = method.ReturnType.ToTypeScriptType();
+                        returnType = method.ReturnType.ToTypeScriptTypeName();
                     }
 
                     methodSb.AppendFormat(": {0}", returnType);
@@ -215,7 +218,7 @@ namespace ToTypeScriptD.Lexical.WinMD
             {
                 var propName = prop.Name.ToTypeScriptName();
 
-
+                
                 if (propName == "length")
                 {
                     wroteALengthPropertyLambdaWorkAround = true;
@@ -225,7 +228,7 @@ namespace ToTypeScriptD.Lexical.WinMD
 
                 var staticText = propMethod.IsStatic ? "static " : "";
 
-                Indent(sb); Indent(sb); sb.AppendFormat("{0}{1}: {2};", staticText, propName, prop.PropertyType.ToTypeScriptType());
+                Indent(sb); Indent(sb); sb.AppendFormat("{0}{1}: {2};", staticText, propName, prop.PropertyType.UnderlyingSystemType.ToTypeScriptTypeName());
                 sb.AppendLine();
             });
 
@@ -234,11 +237,11 @@ namespace ToTypeScriptD.Lexical.WinMD
 
         private void WriteFields(StringBuilder sb)
         {
-            TypeDefinition.GetFields().Each(field =>
+            TypeDefinition.GetFields(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic).Where(f => f.IsSpecialName == false).Each(field =>
             {
                 if (!field.IsPublic) return;
                 var fieldName = field.Name.ToTypeScriptName();
-                Indent(sb); Indent(sb); sb.AppendFormat("{0}: {1};", fieldName, field.FieldType.ToTypeScriptType());
+                Indent(sb); Indent(sb); sb.AppendFormat("{0}: {1};", fieldName, field.FieldType.ToTypeScriptTypeName());
                 sb.AppendLine();
             });
         }
@@ -255,7 +258,7 @@ namespace ToTypeScriptD.Lexical.WinMD
 
                 TypeDefinition.GetEvents().For((item, i, isLast) =>
                 {
-                    var eventListenerType = item.EventHandlerType.ToTypeScriptType();
+                    var eventListenerType = item.EventHandlerType.ToTypeScriptTypeName();
                     var eventName = item.Name.ToLower();
 
                     var line = IndentValue + IndentValue + "addEventListener(eventName: \"{0}\", listener: {1}): void;".FormatWith(eventName, eventListenerType);
@@ -331,7 +334,7 @@ namespace ToTypeScriptD.Lexical.WinMD
                 }
                 else
                 {
-                    genericTypeArgName = genericInstanceType.GetGenericArguments()[0].ToTypeScriptType();
+                    genericTypeArgName = genericInstanceType.GetGenericArguments()[0].ToTypeScriptTypeName();
                 }
                 return true;
             }
@@ -350,7 +353,7 @@ namespace ToTypeScriptD.Lexical.WinMD
                     sb.Append(inheriterString);
                     interfaceTypes.For((item, i, isLast) =>
                     {
-                        sb.AppendFormat(" {0}{1}", item.ToTypeScriptType(), isLast ? " " : ",");
+                        sb.AppendFormat(" {0}{1}", item.ToTypeScriptTypeName(), isLast ? " " : ",");
                     });
                 }
             }
@@ -438,7 +441,7 @@ namespace ToTypeScriptD.Lexical.WinMD
                 }
                 else
                 {
-                    genericTypeArgName = genericInstanceType.GetGenericArguments()[0].ToTypeScriptType();
+                    genericTypeArgName = genericInstanceType.GetGenericArguments()[0].ToTypeScriptTypeName();
                 }
                 return true;
             }

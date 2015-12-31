@@ -58,7 +58,7 @@ namespace ToTypeScriptD.Lexical.WinMD
 
 
 
-        public static string ToTypeScriptType(this Type typeReference)
+        public static string ToTypeScriptTypeName(this Type typeReference)
         {
             if (genericTypeMap == null)
             {
@@ -70,7 +70,31 @@ namespace ToTypeScriptD.Lexical.WinMD
                     .Each(x => genericTypeMap.Add(x.Key, x.Value));
             }
 
-            var fromName = string.IsNullOrWhiteSpace(typeReference.FullName) ? typeReference.Name : typeReference.FullName;
+            //TODO: hacky
+            string fromName;
+
+            Func<Type, bool> collectionInterfaces =
+                i =>
+                    (i.Name.Contains("ICollection") || i.Name.Contains("IEnumerable"))
+                    && i.IsGenericType;
+
+            if (typeReference.GetInterfaces().Any(collectionInterfaces))
+            {
+                var iCollectionTypes = typeReference.GetInterfaces().Where(collectionInterfaces);
+                var iCollectionGenertc = iCollectionTypes.FirstOrDefault(i => i.GetGenericArguments().Any()); //TODO: repeat getintfcs() - fix
+                if (iCollectionGenertc == default(Type))
+                {
+                    fromName = $"int[]";
+                }
+                else
+                {
+                    fromName = $"{iCollectionGenertc.GetGenericArguments()[0].FullName}[]";
+                }
+            }
+            else
+            {
+                fromName = string.IsNullOrWhiteSpace(typeReference.FullName) ? typeReference.Name : typeReference.FullName;
+            }
 
             // translate / in nested classes into underscores
             fromName = fromName.Replace("/", "_");
@@ -81,7 +105,7 @@ namespace ToTypeScriptD.Lexical.WinMD
             }
 
             var genericType = genericTypeMap.FirstOrDefault(x => fromName.Contains(x.Key));
-            if (!genericType.Equals(default(System.Collections.Generic.KeyValuePair<string, string>)))
+            if (!genericType.Equals(default(KeyValuePair<string, string>)))
             {
                 fromName = fromName.Replace(genericType.Key, genericType.Value);
             }
