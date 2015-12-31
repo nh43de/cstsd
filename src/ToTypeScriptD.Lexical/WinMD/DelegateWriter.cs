@@ -12,8 +12,8 @@ namespace ToTypeScriptD.Lexical.WinMD
 {
     public class DelegateWriter : TypeWriterBase
     {
-        public DelegateWriter(Type typeDefinition, int indentCount, ConfigBase config)
-            : base(typeDefinition, indentCount, config)
+        public DelegateWriter(Type typeDefinition, int indentCount, ConfigBase config, ITypeWriterTypeSelector selector)
+            : base(typeDefinition, indentCount, config, selector)
         {
         }
 

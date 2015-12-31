@@ -12,7 +12,7 @@ namespace ToTypeScriptD.Lexical.TypeWriters
     {
         private readonly ConfigBase config;
 
-        public EnumWriter(Type typeDefinition, int indentCount, ConfigBase config)
+        public EnumWriter(Type typeDefinition, int indentCount, ConfigBase config, ITypeWriterTypeSelector selector)
         {
             this.config = config;
             TypeDefinition = typeDefinition;

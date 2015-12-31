@@ -29,11 +29,12 @@ namespace ToTypeScriptD.Lexical.WinMD
 
 
 
-        protected TypeWriterBase(Type typeDefinition, int indentCount, ConfigBase config)
+        protected TypeWriterBase(Type typeDefinition, int indentCount, ConfigBase config, ITypeWriterTypeSelector typeSelector)
         {
             this.TypeDefinition = typeDefinition;
             this.IndentCount = indentCount;
             this.Config = config;
+            this.TypeSelector = typeSelector;
         }
 
         

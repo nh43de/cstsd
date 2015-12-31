@@ -16,13 +16,6 @@ namespace ToTypeScriptD.Tests.DotNet
             path.DumpDotNetAndVerify();
         }
 
-        [Fact]
-        public void Test1()
-        {
-            var sb = new StringBuilder();
-            var a = new ClassWriter(CSharpAssembly.AssemblyDefinition.GetType("ToTypeScriptD.TestAssembly.CSharp.GenericClass`1"), 4, new DotNetConfig());
-            a.Write(sb);
-        }
 
         [Fact]
         public void UpperCasePropertyName()

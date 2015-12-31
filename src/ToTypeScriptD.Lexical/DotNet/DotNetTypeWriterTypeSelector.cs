@@ -11,17 +11,17 @@ namespace ToTypeScriptD.Lexical.DotNet
             var castedConfig = (DotNetConfig)config;
             if (td.IsEnum)
             {
-                return new EnumWriter(td, indentCount, config);
+                return new EnumWriter(td, indentCount, config, this);
             }
 
             if (td.IsInterface)
             {
-                return new InterfaceWriter(td, indentCount, castedConfig);
+                return new InterfaceWriter(td, indentCount, castedConfig, this);
             }
 
             if (td.IsClass)
             {
-                return new ClassWriter(td, indentCount, castedConfig);
+                return new ClassWriter(td, indentCount, castedConfig, this);
             }
 
             throw new NotImplementedException("Could not get a type to generate for:" + td.FullName);

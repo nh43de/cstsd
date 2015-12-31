@@ -6,7 +6,10 @@ using System.Reflection;
 using System.Text;
 using ToTypeScriptD.Core.Config;
 using ToTypeScriptD.Core.Extensions;
+using ToTypeScriptD.Lexical.DotNet;
 using ToTypeScriptD.Lexical.Extensions;
+using ToTypeScriptD.Lexical.TypeWriters;
+using ToTypeScriptD.Lexical.WinMD;
 
 namespace ToTypeScriptD.Core
 {
@@ -34,6 +37,9 @@ namespace ToTypeScriptD.Core
         {
             var namespaces = types.Select(t => t.Namespace).Distinct();
             
+            //TODO: make dynamic
+            var selector = new DotNetTypeWriterTypeSelector();
+
             foreach (var ns in namespaces)
             {
                 //TS modules are namespaces
@@ -46,7 +52,7 @@ namespace ToTypeScriptD.Core
                 foreach (var type in types.Where(t => t.Namespace == ns))
                 {
                     //type.Value is the TypeWriter instance to uses
-                    w.Write(type.ToTypeScript(config));
+                    RenderType(type, selector, config, w);
                     w.WriteLine();
                 }
 
@@ -54,7 +60,22 @@ namespace ToTypeScriptD.Core
             }
         }
 
+        public static void RenderDotNetType(Type type, ConfigBase config, TextWriter w)
+        {
+            RenderType(type, new DotNetTypeWriterTypeSelector(), config, w);
+        }
+        public static void RenderWinMdType(Type type, ConfigBase config, TextWriter w)
+        {
+            RenderType(type, new WinMDTypeWriterTypeSelector(), config, w);
+        }
 
+        public static void RenderType(Type type, ITypeWriterTypeSelector selector, ConfigBase config, TextWriter w)
+        {
+            //TODO: really hacky
+            var sb = new StringBuilder();
+            selector.PickTypeWriter(type, config.Indent.Length, config).Write(sb);
+            w.Write(sb.ToString());
+        }
 
         
         private static string GetHeader(IEnumerable<string> assemblyPaths, bool forceDueToSpecialType)
