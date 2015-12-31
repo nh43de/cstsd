@@ -120,7 +120,7 @@ namespace ToTypeScriptD.Lexical.WinMD
             var methodSignatures = new HashSet<string>();
             var methods =
                 TypeDefinition.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly |
-                                          BindingFlags.NonPublic).Where(m => m.IsSpecialName == false);
+                                          BindingFlags.NonPublic).Where(m => m.IsSpecialName == false && m.IsHideBySig == false);
             foreach (var method in methods)
             {
                 var methodSb = new StringBuilder();

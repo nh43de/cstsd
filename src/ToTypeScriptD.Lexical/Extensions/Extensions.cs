@@ -41,7 +41,7 @@ namespace ToTypeScriptD.Lexical.Extensions
             mainTypeName = mainTypeName.Substring(parentMostType.Namespace.Length + 1);
 
             // replace the nested class slash with an underscore
-            mainTypeName = mainTypeName.Replace("/", "_").StripGenericTick();
+            mainTypeName = mainTypeName.Replace("/", "_").Replace("+", "_").StripGenericTick();
 
             mainTypeName = mainTypeName.StripGenericTick();
             return mainTypeName;

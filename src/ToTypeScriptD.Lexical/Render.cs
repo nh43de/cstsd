@@ -19,7 +19,7 @@ namespace ToTypeScriptD.Core
         {
             w.Write(GetHeader(assemblyPaths, config.IncludeSpecialTypes));
 
-            var allAssemblyTypes = assemblyPaths.SelectMany(GetAssemblyTypes);
+            var allAssemblyTypes = assemblyPaths.SelectMany(GetAssemblyTypes).ToArray();
 
             FromTypes(allAssemblyTypes, w, config);
         }
@@ -33,7 +33,7 @@ namespace ToTypeScriptD.Core
             FromTypes(allAssemblyTypes, w, config);
         }
 
-        public static void FromTypes(IEnumerable<Type> types, TextWriter w, ConfigBase config)
+        public static void FromTypes(ICollection<Type> types, TextWriter w, ConfigBase config)
         {
             var namespaces = types.Select(t => t.Namespace).Distinct();
             
@@ -49,7 +49,7 @@ namespace ToTypeScriptD.Core
                 w.WriteLine();
                 w.WriteLine();
 
-                foreach (var type in types.Where(t => t.Namespace == ns))
+                foreach (var type in types.Where(t => t.Namespace == ns && t.IsNested == false).OrderBy(t => t.Name))
                 {
                     //type.Value is the TypeWriter instance to uses
                     RenderType(type, selector, config, w);
@@ -73,7 +73,7 @@ namespace ToTypeScriptD.Core
         {
             //TODO: really hacky
             var sb = new StringBuilder();
-            selector.PickTypeWriter(type, config.Indent.Length, config).Write(sb);
+            selector.PickTypeWriter(type, 0, config).Write(sb);
             w.Write(sb.ToString());
         }
 

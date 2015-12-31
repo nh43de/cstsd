@@ -75,8 +75,7 @@ namespace ToTypeScriptD.Lexical.WinMD
 
             Func<Type, bool> collectionInterfaces =
                 i =>
-                    (i.Name.Contains("ICollection") || i.Name.Contains("IEnumerable"))
-                    && i.IsGenericType;
+                    (i.Name.Contains("ICollection") || i.Name.Contains("IEnumerable"));
 
             if (typeReference.GetInterfaces().Any(collectionInterfaces))
             {
@@ -84,11 +83,11 @@ namespace ToTypeScriptD.Lexical.WinMD
                 var iCollectionGenertc = iCollectionTypes.FirstOrDefault(i => i.GetGenericArguments().Any()); //TODO: repeat getintfcs() - fix
                 if (iCollectionGenertc == default(Type))
                 {
-                    fromName = $"int[]";
+                    fromName = $"System.Int32[]";
                 }
                 else
                 {
-                    fromName = $"{iCollectionGenertc.GetGenericArguments()[0].FullName}[]";
+                    fromName = $"{iCollectionGenertc.GetGenericArguments()[0].FullName ?? iCollectionGenertc.GetGenericArguments()[0].Name}[]";
                 }
             }
             else
