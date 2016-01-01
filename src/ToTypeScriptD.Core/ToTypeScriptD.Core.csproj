@@ -45,6 +45,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="TypeScript\TSClass.cs" />
+    <Compile Include="TypeScript\TSField.cs" />
+    <Compile Include="TypeScript\TSFormattingConfig.cs" />
+    <Compile Include="TypeScript\TSFormattingExtensions.cs" />
+    <Compile Include="TypeScript\TSFuncParameter.cs" />
+    <Compile Include="TypeScript\TSInterface.cs" />
+    <Compile Include="TypeScript\TSInterfaceMember.cs" />
+    <Compile Include="TypeScript\TSMethod.cs" />
+    <Compile Include="TypeScript\TSModule.cs" />
+    <Compile Include="TypeScript\TSType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
