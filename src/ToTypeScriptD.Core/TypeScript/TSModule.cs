@@ -15,13 +15,13 @@ namespace ToTypeScriptD.Core.TypeScript
         public override string ToString()
         {
             var interfaces = string.Join("\r\n\r\n", Interfaces.Select(i => i.ToString()));
-            var classes = string.Join("\r\n", Clases.Select(c => c.ToString()));
+            var classes = string.Join("\r\r\n\n", Clases.Select(c => c.ToString()));
 
-            return $@"module {NameSpace}" +
-                   @"{" +
-                   $@"{interfaces.Indent(TSFormattingConfig.IndentSpaces)}" +
-                   @"" +
-                   $@"{classes.Indent(TSFormattingConfig.IndentSpaces)}" +
+            return $@"module {NameSpace}" + Environment.NewLine +
+                   @"{" + Environment.NewLine +
+                   $@"{interfaces.Indent(TSFormattingConfig.IndentSpaces)}" + Environment.NewLine +
+                   @"" + Environment.NewLine +
+                   $@"{classes.Indent(TSFormattingConfig.IndentSpaces)}" + Environment.NewLine +
                    @"}";
         }
     }

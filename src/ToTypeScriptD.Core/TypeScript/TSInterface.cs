@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,9 +13,9 @@ namespace ToTypeScriptD.Core.TypeScript
         {
             var exportStr = IsExport ? "export " : "";
             var interfaceMembers = string.Join("\r\n", InterfaceMembers.Select(m => m.ToString() + ";"));
-            return $"{exportStr}interface {Name}" +
-                   @"{" +
-                   $"{interfaceMembers.Indent(TSFormattingConfig.IndentSpaces)}" +
+            return $"{exportStr}interface {Name}" + Environment.NewLine +
+                   @"{" + Environment.NewLine +
+                   $"{interfaceMembers.Indent(TSFormattingConfig.IndentSpaces)}" + Environment.NewLine +
                    @"}";
         }
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,11 +16,11 @@ namespace ToTypeScriptD.Core.TypeScript
             var methods = string.Join("\r\n\r\n", Methods.Select(m => m.ToString()));
             var fields = string.Join("\r\n", Fields.Select(f => f.ToString() + ";"));
 
-            return $"{exportStr}class {Name}" +
-                   @"{" +
-                   $"{fields.Indent(TSFormattingConfig.IndentSpaces)}" +
-                   @"" +
-                   $"{methods.Indent(TSFormattingConfig.IndentSpaces)}" +
+            return $"{exportStr}class {Name}" + Environment.NewLine +
+                   @"{" + Environment.NewLine +
+                   $"{fields.Indent(TSFormattingConfig.IndentSpaces)}" + Environment.NewLine +
+                   @"" + Environment.NewLine +
+                   $"{methods.Indent(TSFormattingConfig.IndentSpaces)}" + Environment.NewLine +
                    @"}";
         }
     }

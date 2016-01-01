@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,9 +19,9 @@ namespace ToTypeScriptD.Core.TypeScript
             var returnType = string.IsNullOrWhiteSpace(returnTypeStr) ? "void" : returnTypeStr;
             var exportStr = IsExport ? "export " : "";
 
-            return $"{exportStr}{Name}({funParams}) : {returnType}" +
-                   @"{" +
-                   $@"{Body.Indent(TSFormattingConfig.IndentSpaces)}" +
+            return $"{exportStr}{Name}({funParams}) : {returnType}" + Environment.NewLine +
+                   @"{" + Environment.NewLine +
+                   $@"{Body.Indent(TSFormattingConfig.IndentSpaces)}" + Environment.NewLine +
                    @"}";
         }
     }
