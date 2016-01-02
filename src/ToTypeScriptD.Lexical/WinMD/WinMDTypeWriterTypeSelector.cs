@@ -26,7 +26,7 @@ namespace ToTypeScriptD.Lexical.WinMD
                     return new DelegateWriter(td, indentCount, config, this);
                 }
 
-                return new ClassWriter(td, indentCount, config, this);
+                return null; //new ClassWriter(td, indentCount, config, this);
             }
 
             throw new NotImplementedException("Could not get a type to generate for:" + td.FullName);

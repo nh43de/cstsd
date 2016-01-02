@@ -15,7 +15,7 @@ namespace ToTypeScriptD.Lexical.WinMD
         public override void Write(StringBuilder sb)
         {
             ++IndentCount;
-            base.WriteOutMethodSignatures(sb, "interface", "extends");
+            //base.GetClass(sb, "interface", "extends");
         }
     }
 }

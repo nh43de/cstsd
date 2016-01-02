@@ -57,6 +57,16 @@ namespace ToTypeScriptD.Core
                     w.WriteLine();
                 }
 
+                /*
+
+                    var tsClasses = new List<TSClass>();
+
+                    TypeDefinition.GetNestedTypes().Where(type => type.IsNested).Each(type =>
+                    {
+                        tsClasses.Add(GetClass(type));
+                    });
+                */
+
                 w.WriteLine("}");
             }
         }

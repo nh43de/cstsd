@@ -45,7 +45,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DotNet\ClassWriter.cs" />
     <Compile Include="DotNet\DotNetConfig.cs" />
     <Compile Include="DotNet\DotNetExtensions.cs" />
     <Compile Include="DotNet\DotNetTypeWriterTypeSelector.cs" />
@@ -58,7 +57,6 @@
     <Compile Include="TypeWriters\EnumWriter.cs" />
     <Compile Include="TypeWriters\ITypeWriter.cs" />
     <Compile Include="TypeWriters\ITypeWriterTypeSelector.cs" />
-    <Compile Include="WinMD\ClassWriter.cs" />
     <Compile Include="WinMD\DelegateWriter.cs" />
     <Compile Include="WinMD\InterfaceWriter.cs" />
     <Compile Include="WinMD\OutParameterReturnTypeWriter.cs" />

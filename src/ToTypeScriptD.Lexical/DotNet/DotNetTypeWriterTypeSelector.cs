@@ -22,7 +22,7 @@ namespace ToTypeScriptD.Lexical.DotNet
 
             if (td.IsClass)
             {
-                return new ClassWriter(td, indentCount, castedConfig, this);
+                //return new ClassWriter(td, indentCount, castedConfig, this);
             }
 
             throw new NotImplementedException("Could not get a type to generate for:" + td.FullName);

@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using ToTypeScriptD.Core.Config;
 using ToTypeScriptD.Core.Extensions;
+using ToTypeScriptD.Core.TypeScript;
 using ToTypeScriptD.Lexical.DotNet;
 using ToTypeScriptD.Lexical.Extensions;
 using ToTypeScriptD.Lexical.TypeWriters;
@@ -38,92 +39,74 @@ namespace ToTypeScriptD.Lexical.WinMD
         }
 
         
-        public void WriteOutMethodSignatures(StringBuilder sb, string exportType, string inheriterString)
+        public TSClass GetClass()
         {
-            Indent(sb); sb.AppendFormat("export {0} {1}", exportType, TypeDefinition.ToTypeScriptItemNameWinMD());
-            WriteGenerics(sb);
-            sb.Append(" ");
-            WriteExportedInterfaces(sb, inheriterString);
-            sb.AppendLine("{");
-            bool wroteALengthProperty;
-
-            List<ITypeWriter> extendedTypes = WriteMethods(sb);
-            WriteFields(sb);
-            WriteProperties(sb, out wroteALengthProperty);
-            WriteEvents(sb);
-
-            Indent(sb); sb.AppendLine("}");
-
-            WriteExtendedTypes(sb, extendedTypes);
-            WriteNestedTypes(sb);
+            var tsClass = new TSClass
+            {
+                Name = TypeDefinition.ToTypeScriptItemNameWinMD(),
+                GenericParameters = GetGenericConstraints(),
+                BaseTypes = GetExportedInterfaces(),
+                Methods = GetMethods(),
+                Fields = GetFields(),
+                Properties = GetProperties(),
+                Events = GetEvents()
+            };
+            return tsClass;
         }
 
-
-        private void WriteGenerics(StringBuilder sb)
+        private List<TSType> GetGenericConstraints()
         {
+            var tsTypes = new List<TSType>();
+
+            //generic constraints
             if (TypeDefinition.GetGenericArguments().Any())
             {
-                sb.Append("<");
                 TypeDefinition.GetGenericArguments().For((genericParameter, i, isLastItem) =>
                 {
-                    StringBuilder constraintsSB = new StringBuilder();
                     genericParameter.GetGenericParameterConstraints().For((constraint, j, isLastItemJ) =>
                     {
                         // Not sure how best to deal with multiple generic constraints (yet)
                         // For now place in a comment
                         // TODO: possible generate a new interface type that extends all of the constraints?
-                        var isFirstItem = j == 0;
-                        var isOnlyItem = isFirstItem && isLastItemJ;
-                        if (isOnlyItem)
-                        {
-                            constraintsSB.AppendFormat(" extends {0}", constraint.ToTypeScriptTypeName());
-                        }
-                        else
-                        {
-                            if (isFirstItem)
-                            {
-                                constraintsSB.AppendFormat(" extends {0} /*TODO:{1}", constraint.ToTypeScriptTypeName(), (isLastItemJ ? "*/" : ", "));
-                            }
-                            else
-                            {
-                                constraintsSB.AppendFormat("{0}{1}", constraint.ToTypeScriptTypeName(), (isLastItemJ ? "*/" : ", "));
-                            }
-                        }
+                        tsTypes.Add(new TSType(constraint.ToTypeScriptTypeName()));
                     });
-
-                    sb.AppendFormat("{0}{1}{2}", genericParameter.ToTypeScriptTypeName(), constraintsSB.ToString(), (isLastItem ? "" : ", "));
                 });
-                sb.Append(">");
             }
+
+            return tsTypes;
         }
 
-
-        private static void WriteExtendedTypes(StringBuilder sb, List<ITypeWriter> extendedTypes)
+        private List<TSType> GetExportedInterfaces()
         {
-            extendedTypes.Each(item => item.Write(sb));
-        }
+            var types = new List<TSType>();
 
-        private void WriteNestedTypes(StringBuilder sb)
-        {
-            TypeDefinition.GetNestedTypes().Where(type => type.IsNested).Each(type =>
+            //WriteExportedInterfaces(sb, inheriterString);
+            if (TypeDefinition.GetInterfaces().Any())
             {
-                var typeWriter = TypeSelector.PickTypeWriter(type, IndentCount - 1, Config);
-                sb.AppendLine();
-                typeWriter.Write(sb);
-            });
+                var interfaceTypes = TypeDefinition.GetInterfaces().Where(w => !w.Name.ShouldIgnoreTypeByName());
+                if (interfaceTypes.Any())
+                {
+                    foreach (var item in interfaceTypes)
+                    {
+                        types.Add(new TSType(item.ToTypeScriptTypeName()));
+                    }
+                }
+            }
+
+            return types;
         }
 
 
-        private List<ITypeWriter> WriteMethods(StringBuilder sb)
+        private List<TSMethod> GetMethods()
         {
-            List<ITypeWriter> extendedTypes = new List<ITypeWriter>();
-            var methodSignatures = new HashSet<string>();
+            var tsMethods = new List<TSMethod>();
             var methods =
                 TypeDefinition.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly |
-                                          BindingFlags.NonPublic).Where(m => m.IsSpecialName == false && m.IsHideBySig == false);
+                                          BindingFlags.NonPublic).Where(m => m.IsHideBySig == false);
+
             foreach (var method in methods)
             {
-                var methodSb = new StringBuilder();
+                var tsMethod = new TSMethod();
 
                 var methodName = method.Name;
 
@@ -136,11 +119,6 @@ namespace ToTypeScriptD.Lexical.WinMD
                 if (method.IsSpecialName && !method.IsConstructor)
                     continue;
 
-                //TODO: this should be fine
-                //// already handled properties
-                //if (method.IsGetter || method.IsSetter)
-                //    continue;
-
                 // translate the constructor function
                 if (method.IsConstructor)
                 {
@@ -150,26 +128,19 @@ namespace ToTypeScriptD.Lexical.WinMD
                 // Lowercase first char of the method
                 methodName = methodName.ToTypeScriptName();
 
-                Indent(methodSb); Indent(methodSb);
-                if (method.IsStatic)
-                {
-                    methodSb.Append("static ");
-                }
-                methodSb.Append(methodName);
+                tsMethod.IsStatic = method.IsStatic;
+                tsMethod.Name = methodName;
 
                 var outTypes = new List<ParameterInfo>();
-
-                methodSb.Append("(");
                 method.GetParameters().Where(w => w.IsOut).Each(e => outTypes.Add(e));
                 method.GetParameters().Where(w => !w.IsOut).For((parameter, i, isLast) =>
                 {
-                    methodSb.AppendFormat("{0}{1}: {2}{3}",
-                        (i == 0 ? "" : " "),                            // spacer
-                        parameter.Name,                                 // argument name
-                        parameter.ParameterType.ToTypeScriptTypeName(),     // type
-                        (isLast ? "" : ","));                           // last one gets a comma
+                    tsMethod.Parameters.Add(new TSFuncParameter
+                    {
+                        Name = parameter.Name,
+                        Type = new TSType(parameter.ParameterType.ToTypeScriptTypeName())
+                    });
                 });
-                methodSb.Append(")");
 
                 // constructors don't have return types.
                 if (!method.IsConstructor)
@@ -178,8 +149,8 @@ namespace ToTypeScriptD.Lexical.WinMD
                     if (outTypes.Any())
                     {
                         var outWriter = new OutParameterReturnTypeWriter(Config, IndentCount, TypeDefinition, methodName, method.ReturnType, outTypes);
-                        extendedTypes.Add(outWriter);
-                        //TypeCollection.Add(TypeDefinition.Namespace, outWriter.TypeName, outWriter);
+                        
+                        //extendedTypes.Add(outWriter);
                         returnType = outWriter.TypeName;
                     }
                     else
@@ -187,102 +158,76 @@ namespace ToTypeScriptD.Lexical.WinMD
                         returnType = method.ReturnType.ToTypeScriptTypeName();
                     }
 
-                    methodSb.AppendFormat(": {0}", returnType);
+                    tsMethod.ReturnType = new TSType(returnType);
                 }
-                methodSb.AppendLine(";");
 
-                var renderedMethod = methodSb.ToString();
-                if (!methodSignatures.Contains(renderedMethod))
-                    methodSignatures.Add(renderedMethod);
+                tsMethods.Add(tsMethod);
             }
-
-            // HACK: This not a sustainable approach (but working for now)
-            //       The IWebSocket inherits from IClosable and the websocket's close 
-            //       conflicts with the closable close so we have to hack this method
-            //       onto the websocket interface.
-            if (TypeDefinition.FullName == "Windows.Networking.Sockets.IWebSocket")
-            {
-                methodSignatures.Add(IndentValue + IndentValue + "close(): void;" + Environment.NewLine);
-            }
-
-            methodSignatures.Each(method => sb.Append(method));
-
-            return extendedTypes;
+            return tsMethods;
         }
 
-        private void WriteProperties(StringBuilder sb, out bool wroteALengthProperty)
+        private List<TSProperty> GetProperties()
         {
-            var wroteALengthPropertyLambdaWorkAround = false;
+            var tsProperties = new List<TSProperty>();
 
             TypeDefinition.GetProperties().Each(prop =>
             {
                 var propName_ = prop.Name;
                 var propName = propName_.ToTypeScriptName();
-
                 
-                if (propName == "length")
-                {
-                    wroteALengthPropertyLambdaWorkAround = true;
-                }
-
                 var propMethod = prop.GetMethod ?? prop.SetMethod;
 
-                var staticText = propMethod.IsStatic ? "static " : "";
+                var tsProperty = new TSProperty
+                {
+                    IsStatic = propMethod.IsStatic,
+                    Name = propName,
+                    Type = new TSType(prop.PropertyType.UnderlyingSystemType.ToTypeScriptTypeName())
+                };
 
-                Indent(sb); Indent(sb); sb.AppendFormat("{0}{1}: {2};", staticText, propName, prop.PropertyType.UnderlyingSystemType.ToTypeScriptTypeName());
-                sb.AppendLine();
+                tsProperties.Add(tsProperty);
             });
 
-            wroteALengthProperty = wroteALengthPropertyLambdaWorkAround;
+            return tsProperties;
         }
 
-        private void WriteFields(StringBuilder sb)
+        private List<TSField> GetFields()
         {
+            var fields = new List<TSField>();
+
             TypeDefinition.GetFields(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic).Where(f => f.IsSpecialName == false).Each(field =>
             {
                 if (!field.IsPublic) return;
                 var fieldName = field.Name.ToTypeScriptName();
-                Indent(sb); Indent(sb); sb.AppendFormat("{0}: {1};", fieldName, field.FieldType.ToTypeScriptTypeName());
-                sb.AppendLine();
+
+                var tsField = new TSField
+                {
+                    Name = fieldName,
+                    Type = new TSType(field.FieldType.ToTypeScriptType())
+                };
+
+                fields.Add(tsField);
             });
+
+            return fields;
         }
 
-        private void WriteEvents(StringBuilder sb)
+        private List<TSEvent> GetEvents()
         {
+            var events = new List<TSEvent>();
+
             if (TypeDefinition.GetEvents().Any())
             {
-                Indent(sb); Indent(sb); sb.AppendLine("// Events");
-
-                Indent(sb); Indent(sb); sb.AppendLine("addEventListener(eventName: string, listener: any): void;");
-                Indent(sb); Indent(sb); sb.AppendLine("removeEventListener(eventName: string, listener: any): void;");
-                var distinctListenerSignatures = new List<string>();
-
                 TypeDefinition.GetEvents().For((item, i, isLast) =>
                 {
-                    var eventListenerType = item.EventHandlerType.ToTypeScriptTypeName();
-                    var eventName = item.Name.ToLower();
-
-                    var line = IndentValue + IndentValue + "addEventListener(eventName: \"{0}\", listener: {1}): void;".FormatWith(eventName, eventListenerType);
-                    if (!distinctListenerSignatures.Contains(line))
-                        distinctListenerSignatures.Add(line);
-
-                    line = IndentValue + IndentValue + "removeEventListener(eventName: \"{0}\", listener: {1}): void;".FormatWith(eventName, eventListenerType);
-                    if (!distinctListenerSignatures.Contains(line))
-                        distinctListenerSignatures.Add(line);
-
-                    line = IndentValue + IndentValue + "on{0}: (ev: {1}) => void;".FormatWith(eventName, eventListenerType);
-                    if (!distinctListenerSignatures.Contains(line))
+                    events.Add(new TSEvent
                     {
-                        distinctListenerSignatures.Add(line);
-                    }
+                        EventHandlerType = new TSType(item.EventHandlerType.ToTypeScriptTypeName()),
+                        Name = item.Name.ToLower()
+                    });
                 });
-
-                distinctListenerSignatures.Each(item =>
-                {
-                    sb.AppendLine(item);
-                });
-                sb.AppendLine();
             }
+
+            return events;
         }
 
         #region Promise Extension
@@ -343,23 +288,7 @@ namespace ToTypeScriptD.Lexical.WinMD
             genericTypeArgName = "";
             return false;
         }
-
-        private void WriteExportedInterfaces(StringBuilder sb, string inheriterString)
-        {
-            if (TypeDefinition.GetInterfaces().Any())
-            {
-                var interfaceTypes = TypeDefinition.GetInterfaces().Where(w => !w.Name.ShouldIgnoreTypeByName());
-                if (interfaceTypes.Any())
-                {
-                    sb.Append(inheriterString);
-                    interfaceTypes.For((item, i, isLast) =>
-                    {
-                        sb.AppendFormat(" {0}{1}", item.ToTypeScriptTypeName(), isLast ? " " : ",");
-                    });
-                }
-            }
-        }
-
+        
         #endregion
 
         #region Array Extension
