@@ -22,17 +22,17 @@ namespace ToTypeScriptD
 
             string verbInvoked = null;
 
-            bool outputToFile = false;
+            string outputPath = null;
             bool parseSuccess = false;
 
             if (Debugger.IsAttached)
             {
                 parseSuccess = true;
-                outputToFile = true;
+                outputPath = "output.d.ts";
 
                 assemblyPaths = new string[] {"cl.dll"};
 
-                config = new DotNetConfig
+                config = new TsdConfig
                 {
                     CamelBackCase = true,
                     IncludeSpecialTypes = true,
@@ -44,26 +44,19 @@ namespace ToTypeScriptD
              
                 parseSuccess = CommandLine.Parser.Default.ParseArgumentsStrict(args, options, (verb, subOptions) =>
                 {
-                    verbInvoked = (verb ?? "").ToLowerInvariant();
-                    switch (verbInvoked)
+                    //verbInvoked = (verb ?? "").ToLowerInvariant();
+
+                    outputPath = options.OutputFilePath;
+                    assemblyPaths = options.Files;
+
+                    config = new TsdConfig
                     {
-                        case Options.DotNetCommandName:
-                            var dotNetSubOptions = subOptions as DotNetSubOptions;
-                            if (dotNetSubOptions == null) break;
 
-                            outputToFile = dotNetSubOptions.OutputToFile;
-                            assemblyPaths = dotNetSubOptions.Files;
-
-                            config = new DotNetConfig
-                            {
-                                
-                                CamelBackCase = dotNetSubOptions.CamelBackCase,
-                                IncludeSpecialTypes = dotNetSubOptions.IncludeSpecialTypeDefinitions,
-                                IndentationType = dotNetSubOptions.IndentationType,
-                                RegexFilter = dotNetSubOptions.RegexFilter
-                            };                        
-                            break;
-                    }
+                        CamelBackCase = options.CamelBackCase,
+                        IncludeSpecialTypes = options.IncludeSpecialTypeDefinitions,
+                        IndentationType = options.IndentationType,
+                        RegexFilter = options.RegexFilter
+                    };
                 });
 
             }
@@ -73,13 +66,13 @@ namespace ToTypeScriptD
             bool skipPrintingHelp = true;
             try
             {
-                if (!outputToFile)
+                if (string.IsNullOrWhiteSpace(outputPath))
                     Render.FromAssemblies(assemblyPaths, config, Console.Out);
                 else
                 {
-                    Console.WriteLine(@"Writing to output file: output.d.ts");
+                    Console.WriteLine($"Writing to output file: {outputPath}");
 
-                    TextWriter w = new StreamWriter(@"output.d.ts", false);
+                    TextWriter w = new StreamWriter(outputPath, false);
                     
                     Render.FromAssemblies(assemblyPaths, config, w);
                     

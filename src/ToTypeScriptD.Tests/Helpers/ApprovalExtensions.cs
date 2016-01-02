@@ -42,7 +42,7 @@ namespace ToTypeScriptD.Tests
 
         public static void DumpDotNetAndVerify(this string path, System.Action<ConfigBase> configOverrideHook = null)
         {
-            var config = new DotNetConfig();
+            var config = new TsdConfig();
 
             if (configOverrideHook != null)
             {
