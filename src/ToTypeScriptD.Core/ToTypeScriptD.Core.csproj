@@ -53,7 +53,6 @@
     <Compile Include="TypeScript\TSFormattingExtensions.cs" />
     <Compile Include="TypeScript\TSFuncParameter.cs" />
     <Compile Include="TypeScript\TSInterface.cs" />
-    <Compile Include="TypeScript\TSInterfaceMember.cs" />
     <Compile Include="TypeScript\TSMethod.cs" />
     <Compile Include="TypeScript\TSModule.cs" />
     <Compile Include="TypeScript\TSProperty.cs" />

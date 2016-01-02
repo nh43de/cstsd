@@ -4,28 +4,8 @@ using System.Linq;
 
 namespace ToTypeScriptD.Core.TypeScript
 {
-    public class TSClass
+    public class TSClass : TSInterface
     {
-        public string Name { get; set; }
-        public bool IsExport { get; set; }
-        public ICollection<TSMethod> Methods { get; set; } = new List<TSMethod>();
-        public ICollection<TSField> Fields { get; set; } = new List<TSField>(); 
-        public ICollection<TSType> BaseTypes { get; set; } = new List<TSType>(); 
-        public ICollection<TSType> GenericParameters { get; set; } = new List<TSType>();
-        public ICollection<TSProperty> Properties { get; set; } = new List<TSProperty>();
-        public ICollection<TSEvent> Events { get; set; } = new List<TSEvent>(); 
-        /*
-      
-                //if there are any events
-                sb.AppendLine("addEventListener(eventName: string, listener: any): void;");
-                sb.AppendLine("removeEventListener(eventName: string, listener: any): void;");
-                
-                //for each event
-                var line = "addEventListener(eventName: \"{0}\", listener: {1}): void;".FormatWith(eventName, eventListenerType);
-                line = "removeEventListener(eventName: \"{0}\", listener: {1}): void;".FormatWith(eventName, eventListenerType);
-                line = "on{0}: (ev: {1}) => void;".FormatWith(eventName, eventListenerType);
-  
-        */
 
         public override string ToString()
         {

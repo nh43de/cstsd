@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using ToTypeScriptD.Core.Config;
 using ToTypeScriptD.Core.Extensions;
+using ToTypeScriptD.Lexical;
 using ToTypeScriptD.Lexical.DotNet;
 using ToTypeScriptD.Lexical.Extensions;
 using ToTypeScriptD.Lexical.WinMD;
@@ -35,97 +36,17 @@ namespace ToTypeScriptD.Core
         public static void FromTypes(ICollection<Type> types, TextWriter w, ConfigBase config)
         {
             var namespaces = types.Select(t => t.Namespace).Distinct();
-            
-            foreach (var ns in namespaces)
+
+            foreach (var tsModule in namespaces.Select(ns => TypeScriptTypeConverter.GetModule(ns,
+                types.Where(t => t.Namespace == ns && t.IsNested == false)
+                    .OrderBy(t => t.Name)
+                    .ToArray())))
             {
-                //TS modules are namespaces
-                //TODO: get rid of this stuff
-                w.Write($@"declare module {ns}");
-                w.WriteLine();
-                w.Write("{");
-                w.WriteLine();
-                w.WriteLine();
-
-                foreach (var type in types.Where(t => t.Namespace == ns && t.IsNested == false).OrderBy(t => t.Name))
-                {
-                    var typeName = type.Name;
-                    //type.Value is the TypeWriter instance to uses
-                    RenderType(type, config, w);
-                    w.WriteLine();
-                }
-
-                /*
-
-                    var tsClasses = new List<TSClass>();
-
-                    TypeDefinition.GetNestedTypes().Where(type => type.IsNested).Each(type =>
-                    {
-                        tsClasses.Add(GetClass(type));
-                    });
-                
-                
-
-
-                    if (td.IsEnum)
-                    {
-                        return new EnumWriter(td, indentCount, config, this);
-                    }
-
-                    if (td.IsInterface)
-                    {
-                        return new InterfaceWriter(td, indentCount, castedConfig, this);
-                    }
-
-                    if (td.IsClass)
-                    {
-                        //return new ClassWriter(td, indentCount, castedConfig, this);
-                    }
-
-
-
-                    if (td.IsEnum)
-                    {
-                        return new EnumWriter(td, indentCount, config, this);
-                    }
-
-                    if (td.IsInterface)
-                    {
-                        return new InterfaceWriter(td, indentCount, config, this);
-                    }
-
-                    if (td.IsClass)
-                    {
-                        if (td.BaseType.FullName == "System.MulticastDelegate" ||
-                            td.BaseType.FullName == "System.Delegate")
-                        {
-                            return new DelegateWriter(td, indentCount, config, this);
-                        }
-
-                        return null; //new ClassWriter(td, indentCount, config, this);
-                    }
-
-                    throw new NotImplementedException("Could not get a type to generate for:" + td.FullName);
-
-
-
-                */
-
-                w.WriteLine("}");
+                w.Write(tsModule.ToString());
             }
         }
-        
-        public static void RenderType(Type rd, ConfigBase config, TextWriter w)
-        {
-            //TODO: not implemented
 
-            throw new NotImplementedException("Not ready yet");
 
-            //var sb = new StringBuilder();
-            //selector.PickTypeWriter(type, 0, config).Write(sb);
-            //w.Write(sb.ToString());
-        }
-
-        
         private static string GetHeader(IEnumerable<string> assemblyPaths, bool forceDueToSpecialType)
         {
             if (!forceDueToSpecialType && !assemblyPaths.Any())
