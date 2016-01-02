@@ -15,16 +15,16 @@ namespace ToTypeScriptD.Lexical.WinMD
     {
         //TODO: these need to be moved to the writing part
         public static readonly ConfigBase Config;
+
+
         protected static int IndentCount;
-        public static Type TypeDefinition;
+
+        public static void Indent(StringBuilder sb) => sb.Append(IndentValue);
+
+        public static string IndentValue => Config.Indent.Dup(IndentCount);
 
 
-        public void Indent(StringBuilder sb) => sb.Append(IndentValue);
-        
-        public string IndentValue => Config.Indent.Dup(IndentCount);
 
-        
-        
         public static TSClass GetClass(Type td)
         {
             var tsClass = new TSClass
@@ -239,10 +239,10 @@ namespace ToTypeScriptD.Lexical.WinMD
 
         #region Promise Extension
 
-        private void WriteAsyncPromiseMethods(StringBuilder sb)
+        private static void WriteAsyncPromiseMethods(StringBuilder sb, Type td)
         {
             string genericTypeArgName;
-            if (IsTypeAsync(out genericTypeArgName))
+            if (IsTypeAsync(out genericTypeArgName, td))
             {
                 sb.AppendLine();
                 Indent(sb); Indent(sb); sb.AppendFormatLine("// Promise Extension");
@@ -254,16 +254,16 @@ namespace ToTypeScriptD.Lexical.WinMD
             }
         }
 
-        private bool IsTypeAsync(out string genericTypeArgName)
+        private static bool IsTypeAsync(out string genericTypeArgName, Type td)
         {
-            var currType = TypeDefinition;
+            var currType = td;
 
-            if (IsTypeAsync(TypeDefinition, out genericTypeArgName))
+            if (IsTypeAsync(td, out genericTypeArgName))
             {
                 return true;
             }
 
-            foreach (var i in TypeDefinition.GetInterfaces())
+            foreach (var i in td.GetInterfaces())
             {
                 if (IsTypeAsync(i, out genericTypeArgName))
                 {
@@ -274,7 +274,7 @@ namespace ToTypeScriptD.Lexical.WinMD
             return false;
         }
 
-        private bool IsTypeAsync(Type typeReference, out string genericTypeArgName)
+        private static bool IsTypeAsync(Type typeReference, out string genericTypeArgName)
         {
             if (typeReference.FullName.StartsWith("Windows.Foundation.IAsyncOperation`1") ||
                 typeReference.FullName.StartsWith("Windows.Foundation.IAsyncOperationWithProgress`2")
@@ -299,10 +299,10 @@ namespace ToTypeScriptD.Lexical.WinMD
         #endregion
 
         #region Array Extension
-        private void WriteVectorArrayPrototypeExtensions(StringBuilder sb, bool wroteALengthProperty)
+        private static void WriteVectorArrayPrototypeExtensions(StringBuilder sb, bool wroteALengthProperty, Type td)
         {
             string genericTypeArgName;
-            if (IsTypeArray(out genericTypeArgName))
+            if (IsTypeArray(out genericTypeArgName, td))
             {
                 sb.AppendLine();
                 Indent(sb); Indent(sb); sb.AppendFormatLine("// Array.prototype extensions", genericTypeArgName);
@@ -345,16 +345,16 @@ namespace ToTypeScriptD.Lexical.WinMD
             }
         }
 
-        private bool IsTypeArray(out string genericTypeArgName)
+        private static bool IsTypeArray(out string genericTypeArgName, Type td)
         {
-            var currType = TypeDefinition;
+            var currType = td;
 
-            if (IsTypeArray(TypeDefinition, out genericTypeArgName))
+            if (IsTypeArray(td, out genericTypeArgName))
             {
                 return true;
             }
 
-            foreach (var i in TypeDefinition.GetInterfaces())
+            foreach (var i in td.GetInterfaces())
             {
                 if (IsTypeArray(i, out genericTypeArgName))
                 {
@@ -365,7 +365,7 @@ namespace ToTypeScriptD.Lexical.WinMD
             return false;
         }
 
-        private bool IsTypeArray(Type typeReference, out string genericTypeArgName)
+        private static bool IsTypeArray(Type typeReference, out string genericTypeArgName)
         {
             if (typeReference.FullName.StartsWith("Windows.Foundation.Collections.IVector`1") ||
                 typeReference.FullName.StartsWith("Windows.Foundation.Collections.IVectorView`1")

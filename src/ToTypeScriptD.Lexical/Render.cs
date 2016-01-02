@@ -36,11 +36,10 @@ namespace ToTypeScriptD.Core
         {
             var namespaces = types.Select(t => t.Namespace).Distinct();
             
-            //TODO: make dynamic
-            
             foreach (var ns in namespaces)
             {
                 //TS modules are namespaces
+                //TODO: get rid of this stuff
                 w.Write($@"declare module {ns}");
                 w.WriteLine();
                 w.Write("{");
