@@ -52,9 +52,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GenerateTypeScript.cs" />
     <Compile Include="Render.cs" />
-    <Compile Include="TypeScriptTypeConverter.cs" />
+    <Compile Include="TypeParser.cs" />
     <Compile Include="WinMD\DelegateWriter.cs" />
-    <Compile Include="WinMD\TSOutParameter.cs" />
     <Compile Include="PromisesStuff.cs" />
     <Compile Include="WinMD\WinMDExtensions.cs" />
   </ItemGroup>

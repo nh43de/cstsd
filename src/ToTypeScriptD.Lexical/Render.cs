@@ -37,12 +37,12 @@ namespace ToTypeScriptD.Core
         {
             var namespaces = types.Select(t => t.Namespace).Distinct();
 
-            foreach (var tsModule in namespaces.Select(ns => TypeScriptTypeConverter.GetModule(ns,
+            foreach (var tsModule in namespaces.Select(ns => TypeParser.GetModule(ns,
                 types.Where(t => t.Namespace == ns && t.IsNested == false)
                     .OrderBy(t => t.Name)
                     .ToArray())))
             {
-                w.Write(tsModule.ToString() + "\r\n\r\n");
+                w.Write(tsModule + "\r\n\r\n");
             }
         }
 

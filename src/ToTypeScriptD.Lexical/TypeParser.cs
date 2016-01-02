@@ -12,7 +12,10 @@ using ToTypeScriptD.Lexical.WinMD;
 
 namespace ToTypeScriptD.Lexical
 {
-    public static class TypeScriptTypeConverter
+    /// <summary>
+    /// Returns TS generation AST objects (TS* classes).
+    /// </summary>
+    public static class TypeParser
     {
         public static TSModule GetModule(string namespaceStr, ICollection<Type> types)
         {
@@ -26,11 +29,11 @@ namespace ToTypeScriptD.Lexical
 
                 if (td.IsEnum)
                 {
-                    tsModule.Enums.Add(GetEnum(td));
+                    tsModule.TypeDeclarations.Add(GetEnum(td));
                 }
                 else if (td.IsInterface)
                 {
-                    tsModule.Interfaces.Add(GetInterface(td));
+                    tsModule.TypeDeclarations.Add(GetInterface(td));
                 }
                 else if (td.IsClass)
                 {
@@ -42,7 +45,7 @@ namespace ToTypeScriptD.Lexical
                     }
                     else
                     {
-                        tsModule.Clases.Add(GetClass(td));
+                        tsModule.TypeDeclarations.Add(GetClass(td));
                     }
                 }
             }

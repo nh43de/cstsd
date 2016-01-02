@@ -45,6 +45,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="TypeScript\Abstract\PrimaryTypeScriptType.cs" />
+    <Compile Include="TypeScript\TSAssembly.cs" />
     <Compile Include="TypeScript\TSClass.cs" />
     <Compile Include="TypeScript\TSEnum.cs" />
     <Compile Include="TypeScript\TSEvent.cs" />

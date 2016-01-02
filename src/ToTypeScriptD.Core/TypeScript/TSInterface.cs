@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToTypeScriptD.Core.TypeScript.Abstract;
 
 namespace ToTypeScriptD.Core.TypeScript
 {
-    public class TSInterface
+    public class TSInterface : PrimaryTypeScriptType
     {
         //TODO: interface/class events
         /*
@@ -17,9 +18,6 @@ namespace ToTypeScriptD.Core.TypeScript
         line = "removeEventListener(eventName: \"{0}\", listener: {1}): void;".FormatWith(eventName, eventListenerType);
         line = "on{0}: (ev: {1}) => void;".FormatWith(eventName, eventListenerType);
         */
-
-        public string Name { get; set; }
-        public bool IsExport { get; set; }
         public ICollection<TSMethod> Methods { get; set; } = new List<TSMethod>();
         public ICollection<TSField> Fields { get; set; } = new List<TSField>();
         public ICollection<TSType> BaseTypes { get; set; } = new List<TSType>();
