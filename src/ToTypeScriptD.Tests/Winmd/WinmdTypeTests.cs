@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using ToTypeScriptD.Core;
 using ToTypeScriptD.Core.Extensions;
+using ToTypeScriptD.Lexical.DotNet;
 using ToTypeScriptD.Lexical.Extensions;
 using ToTypeScriptD.Lexical.WinMD;
 using Xunit;
@@ -47,7 +48,7 @@ namespace ToTypeScriptD.Tests.Winmd
         public void FullSampleAssembly()
         {
             var file = base.NativeAssembly.ComponentPath;
-            var config = new WinmdConfig();
+            var config = new DotNetConfig();
             var w = new StringWriter();
             Render.FromAssembly(file, config, w);
             Approvals.Verify(w.GetStringBuilder().ToString());
@@ -78,7 +79,7 @@ namespace ToTypeScriptD.Tests.Winmd
         public void FullWindowsAssembly()
         {
             var file = @"C:\Windows\System32\WinMetadata\Windows.Foundation.winmd";
-            var config = new WinmdConfig();
+            var config = new DotNetConfig();
             var s = new StringWriter();
             Render.FromAssembly(file, config, s);
             Approvals.Verify(s.GetStringBuilder().ToString());
@@ -101,10 +102,7 @@ namespace ToTypeScriptD.Tests.Winmd
         {
             var allFiles = System.IO.Directory.GetFiles(@"C:\Windows\System32\WinMetadata\", "*.winmd");
             var sw = new System.IO.StringWriter();
-            var config = new WinmdConfig
-            {
-                IncludeSpecialTypes = false
-            };
+            var config = new DotNetConfig();
             Render.FromAssemblies(allFiles, config, sw);
             var result = Environment.NewLine + Environment.NewLine + sw;
             result.Verify();

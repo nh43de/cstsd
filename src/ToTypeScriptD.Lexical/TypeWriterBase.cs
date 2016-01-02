@@ -148,8 +148,9 @@ namespace ToTypeScriptD.Lexical.WinMD
                     string returnType;
                     if (outTypes.Any())
                     {
+                        //TODO: hook in outwriter
                         var outWriter = new OutParameterReturnTypeWriter(Config, IndentCount, TypeDefinition, methodName, method.ReturnType, outTypes);
-                        
+
                         //extendedTypes.Add(outWriter);
                         returnType = outWriter.TypeName;
                     }

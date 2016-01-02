@@ -40,19 +40,6 @@ namespace ToTypeScriptD.Tests
             ApprovalTests.Approvals.Verify(item);
         }
 
-        public static void DumpWinMDAndVerify(this string path, System.Action<ConfigBase> configOverrideHook = null)
-        {
-            var config = new WinmdConfig();
-
-            if (configOverrideHook != null)
-            {
-                configOverrideHook(config);
-            }
-            var sw = new StringWriter();
-            Render.FromAssembly(path, config, sw);
-            ApprovalTests.Approvals.Verify(sw.ToString().StripHeaderGarbageromOutput());
-        }
-
         public static void DumpDotNetAndVerify(this string path, System.Action<ConfigBase> configOverrideHook = null)
         {
             var config = new DotNetConfig();

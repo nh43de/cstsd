@@ -58,7 +58,6 @@
     <Compile Include="WinMD\DelegateWriter.cs" />
     <Compile Include="WinMD\OutParameterReturnTypeWriter.cs" />
     <Compile Include="TypeWriterBase.cs" />
-    <Compile Include="WinMD\WinmdConfig.cs" />
     <Compile Include="WinMD\WinMDExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

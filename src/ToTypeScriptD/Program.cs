@@ -63,21 +63,6 @@ namespace ToTypeScriptD
                                 RegexFilter = dotNetSubOptions.RegexFilter
                             };                        
                             break;
-                        case Options.WinmdCommandName:
-                            var winmdSubOptions = subOptions as WinmdSubOptions;
-                            if (winmdSubOptions == null) break;
-
-                            outputToFile = winmdSubOptions.OutputToFile;
-
-                            assemblyPaths = winmdSubOptions.Files;
-
-                            config = new WinmdConfig
-                            {
-                                IncludeSpecialTypes = winmdSubOptions.IncludeSpecialTypeDefinitions,
-                                IndentationType = winmdSubOptions.IndentationType,
-                                RegexFilter = winmdSubOptions.RegexFilter
-                            };
-                            break;
                     }
                 });
 
