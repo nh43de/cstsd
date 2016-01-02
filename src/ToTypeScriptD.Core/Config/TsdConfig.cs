@@ -4,13 +4,17 @@ using System.Linq;
 namespace ToTypeScriptD.Core.Config
 {
 
-    public class ConfigBase
+    public class TsdConfig
     {
-        public virtual bool CamelBackCase { get; set; }
+        public virtual bool CamelBackCase { get; set; } = true;
         
         public bool IncludeSpecialTypes { get; set; }
         public string RegexFilter { get; set; } = "";
         public IndentationFormatting IndentationType { get; set; } = IndentationFormatting.SpaceX4;
+
+
+
+        public bool RequireTypeScriptExportAttribute { get; set; } = true;
 
         public string NewLine { get; set; } = "\r\n";
 

@@ -40,7 +40,7 @@ namespace ToTypeScriptD.Tests
             ApprovalTests.Approvals.Verify(item);
         }
 
-        public static void DumpDotNetAndVerify(this string path, System.Action<ConfigBase> configOverrideHook = null)
+        public static void DumpDotNetAndVerify(this string path, System.Action<TsdConfig> configOverrideHook = null)
         {
             var config = new TsdConfig();
 

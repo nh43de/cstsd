@@ -36,7 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\TypeScriptExportAttribute.cs" />
-    <Compile Include="Config\ConfigBase.cs" />
+    <Compile Include="Config\TsdConfig.cs" />
     <Compile Include="Config\IndentationFormatting.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -12,10 +12,10 @@ namespace ToTypeScriptD.Lexical
 {
     public class TSWriter
     {
-        private readonly ConfigBase _config;
+        private readonly TsdConfig _config;
         private readonly TextWriter _w;
 
-        public TSWriter(ConfigBase config, TextWriter w)
+        public TSWriter(TsdConfig config, TextWriter w)
         {
             _config = config;
             _w = w;

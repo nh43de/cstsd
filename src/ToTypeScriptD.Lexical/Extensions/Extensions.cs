@@ -16,10 +16,10 @@ namespace ToTypeScriptD.Lexical.Extensions
         }
 
 
-        public static string ToTypeScript(this Type type, ConfigBase config = null)
+        public static string ToTypeScript(this Type type, TsdConfig config = null)
         {
             if (config == null)
-                config = new ConfigBase();
+                config = new TsdConfig();
 
             throw new NotImplementedException();
         }

@@ -45,7 +45,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DotNet\TsdConfig.cs" />
     <Compile Include="DotNet\DotNetExtensions.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Mappings.cs" />

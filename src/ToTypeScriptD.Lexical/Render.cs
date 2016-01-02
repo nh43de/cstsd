@@ -16,28 +16,39 @@ namespace ToTypeScriptD.Core
 {
     public class Render
     {
-        public static void FromAssemblies(ICollection<string> assemblyPaths, ConfigBase config, TextWriter w)
+        public static void FromAssemblies(ICollection<string> assemblyPaths, TsdConfig config, TextWriter w)
         {
             w.Write(GetHeader(assemblyPaths, config.IncludeSpecialTypes));
 
-            var allAssemblyTypes = assemblyPaths.SelectMany(GetAssemblyTypes).ToArray();
+            var allAssemblyTypes = assemblyPaths
+                .SelectMany(p => GetAssemblyTypes(p, config.RequireTypeScriptExportAttribute))
+                .ToArray();
             
             FromTypes(allAssemblyTypes, w, config);
         }
 
         //TODO: typescriptexport attribute - flag to do all or look for attribute? what about namespace-level exports? inherited attribute? 
-        public static void FromAssembly(string assemblyPath, ConfigBase config, TextWriter w)
+        public static void FromAssembly(string assemblyPath, TsdConfig config, TextWriter w)
         {
             w.Write(GetHeader(new[] { assemblyPath }, config.IncludeSpecialTypes));
 
-            var allAssemblyTypes = GetAssemblyTypes(assemblyPath)
-                .Where(t => t.GetCustomAttribute(typeof(TypeScriptExportAttribute)) != null)
-                .ToArray();
+            var allAssemblyTypes = GetAssemblyTypes(assemblyPath, config.RequireTypeScriptExportAttribute).ToArray();
 
             FromTypes(allAssemblyTypes, w, config);
         }
 
-        public static void FromTypes(ICollection<Type> types, TextWriter w, ConfigBase config)
+        private static Type[] GetAssemblyTypes(string assemblyPath, bool useAttributeFilters)
+        {
+            var assembly = Assembly.LoadFile(new System.IO.FileInfo(assemblyPath).FullName);
+
+            return assembly
+                .ManifestModule
+                .GetTypes()
+                .Where(t => useAttributeFilters == false || t.GetCustomAttribute(typeof(TypeScriptExportAttribute)) != null)
+                .ToArray();
+        }
+
+        public static void FromTypes(ICollection<Type> types, TextWriter w, TsdConfig config)
         {
             var tsWriter = new TSWriter(config, w);
 
@@ -92,12 +103,7 @@ namespace ToTypeScriptD.Core
             return sb.ToString();
         }
 
-        private static Type[] GetAssemblyTypes(string assemblyPath)
-        {
-            var assembly = Assembly.LoadFile(new System.IO.FileInfo(assemblyPath).FullName);
 
-            return assembly.ManifestModule.GetTypes();
-        }
 
     }
 }

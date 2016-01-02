@@ -10,16 +10,21 @@ namespace ToTypeScriptD
     {
         public const string DotNetCommandName = "dotnet";
         public const string WinmdCommandName = "winmd";
-
-
-
+        
         [ValueList(typeof(List<string>))]
         public IList<string> Files { get; set; }
+
+        
+        [Option('a', "includeAllTypes",
+            HelpText = "Writes all assembly types regardless of whether TypeScriptExport attributes are present")]
+        public bool IncludeAllTypes { get; set; } = false;
+
 
         [Option('s', "specialTypes", HelpText = "Writes the ToTypeScriptD special types to standard out")]
         public bool IncludeSpecialTypeDefinitions { get; set; }
 
-        [Option('i', "indentWith", HelpText = "Override default indentation of SpaceX4 (four spaces). Possible options: [None, TabX1, TabX2, SpaceX1,...SpaceX8]")]
+        [Option('i', "indentWith", 
+            HelpText = "Override default indentation of SpaceX4 (four spaces). Possible options: [None, TabX1, TabX2, SpaceX1,...SpaceX8]")]
         public IndentationFormatting IndentationType { get; set; } = IndentationFormatting.SpaceX4;
 
         [Option('o', "Output to File", HelpText = "Output results to file.")]

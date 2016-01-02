@@ -15,7 +15,7 @@ namespace ToTypeScriptD
         //TODO: location of output file
         static void Main(string[] args)
         {
-            ConfigBase config = null;
+            TsdConfig config = null;
             IList<string> assemblyPaths = new string[] { };
 
             var options = new Options();
@@ -23,7 +23,7 @@ namespace ToTypeScriptD
             string verbInvoked = null;
 
             string outputPath = null;
-            bool parseSuccess = false;
+            var parseSuccess = false;
 
             if (Debugger.IsAttached)
             {
@@ -41,21 +41,19 @@ namespace ToTypeScriptD
             }
             else
             {
-             
                 parseSuccess = CommandLine.Parser.Default.ParseArgumentsStrict(args, options, (verb, subOptions) =>
                 {
                     //verbInvoked = (verb ?? "").ToLowerInvariant();
-
                     outputPath = options.OutputFilePath;
                     assemblyPaths = options.Files;
-
+                    
                     config = new TsdConfig
                     {
-
                         CamelBackCase = options.CamelBackCase,
                         IncludeSpecialTypes = options.IncludeSpecialTypeDefinitions,
                         IndentationType = options.IndentationType,
-                        RegexFilter = options.RegexFilter
+                        RegexFilter = options.RegexFilter,
+                        RequireTypeScriptExportAttribute = !options.IncludeAllTypes
                     };
                 });
 
