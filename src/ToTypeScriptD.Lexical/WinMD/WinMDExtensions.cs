@@ -6,7 +6,6 @@ using ToTypeScriptD.Lexical.Extensions;
 
 namespace ToTypeScriptD.Lexical.WinMD
 {
-
     public static class WinMDExtensions
     {
 
@@ -58,7 +57,7 @@ namespace ToTypeScriptD.Lexical.WinMD
 
 
 
-
+        //TODO: move this somewhere else?
         public static string ToTypeScriptTypeName(this Type typeReference)
         {
             if (genericTypeMap == null)

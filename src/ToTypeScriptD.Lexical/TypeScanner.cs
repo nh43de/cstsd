@@ -16,8 +16,15 @@ namespace ToTypeScriptD.Lexical
     /// <summary>
     /// Returns TS generation AST objects (TS* classes).
     /// </summary>
-    public static class TypeParser
+    public static class TypeScanner
     {
+        public static TSAssembly GetTSAssembly(ICollection<Type> types)
+        {
+            //TODO: implement gettsassembly
+            throw new NotImplementedException();
+        }
+
+
         public static TSModule GetModule(string namespaceStr, ICollection<Type> types)
         {
             var tsModule = new TSModule
@@ -27,13 +34,14 @@ namespace ToTypeScriptD.Lexical
             
             foreach (var td in types.Where(t => t.IsNested == false).OrderBy(t => t.Name))
             {
-                tsModule.TypeDeclarations.Add(GetPrimaryDeclaration(td));
+                tsModule.TypeDeclarations.Add(GetModuleDeclaration(td));
             }
 
             return tsModule;
         }
 
-        public static PrimaryTypeScriptType GetPrimaryDeclaration(Type td)
+
+        public static TSModuleTypeDeclaration GetModuleDeclaration(Type td)
         {
             if (td.IsEnum)
             {
@@ -60,12 +68,13 @@ namespace ToTypeScriptD.Lexical
             return null;
         }
 
+
         public static TSInterface GetInterface(Type td)
         {
             var tsInterface = new TSInterface
             {
                 Name = td.ToTypeScriptItemNameWinMD(),
-                GenericParameters = GetGenericConstraints(td),
+                GenericParameters = GetGenericParameters(td),
                 BaseTypes = GetExportedInterfaces(td),
                 Methods = GetMethods(td),
                 Fields = GetFields(td),
@@ -75,21 +84,24 @@ namespace ToTypeScriptD.Lexical
             return tsInterface;
         }
 
+
         public static TSClass GetClass(Type td)
         {
             var tsClass = new TSClass
             {
                 Name = td.ToTypeScriptItemNameWinMD(),
-                GenericParameters = GetGenericConstraints(td),
+                GenericParameters = GetGenericParameters(td),
                 BaseTypes = GetExportedInterfaces(td),
                 Methods = GetMethods(td),
                 Fields = GetFields(td),
                 Properties = GetProperties(td),
                 Events = GetEvents(td),
-                NestedClasses = GetNestedTypes(td)
+                NestedClasses = GetNestedTypes(td) //only difference between getinterface and getclass
             };
             return tsClass;
         }
+
+
         public static TSEnum GetEnum(Type td)
         {
             var tsEnum = new TSEnum
@@ -106,38 +118,55 @@ namespace ToTypeScriptD.Lexical
 
             return tsEnum;
         }
+        
 
-
-        public static List<PrimaryTypeScriptType> GetNestedTypes(Type td)
+        public static List<TSModuleTypeDeclaration> GetNestedTypes(Type td)
         {
             return
                 td.GetNestedTypes()
                     .Where(type => type.IsNestedPublic)
-                    .Select(GetPrimaryDeclaration)
+                    .Select(GetModuleDeclaration)
                     .ToList();
         } 
 
-        public static List<TSType> GetGenericConstraints(Type td)
+
+        public static List<TSGenericParameter> GetGenericParameters(Type td)
         {
-            var tsTypes = new List<TSType>();
+            var tsTypes = new List<TSGenericParameter>();
 
-            //generic constraints
-            if (td.GetGenericArguments().Any())
+            //generic arguments e.g. "T"
+            td.GetGenericArguments().For((genericParameter, i, isLastItem) =>
             {
-                td.GetGenericArguments().For((genericParameter, i, isLastItem) =>
-                {
-                    genericParameter.GetGenericParameterConstraints().For((constraint, j, isLastItemJ) =>
-                    {
-                        // Not sure how best to deal with multiple generic constraints (yet)
-                        // For now place in a comment
-                        // TODO: possible generate a new interface type that extends all of the constraints?
-                        tsTypes.Add(new TSType(constraint.ToTypeScriptTypeName()));
-                    });
-                });
-            }
+                var genParameter = new TSGenericParameter(genericParameter.Name); //e.g. "T"
 
+                //param constraints e.g. "where T : class" or "where T : ICollection<T>"
+                genericParameter.GetGenericParameterConstraints().For((constraint, j, isLastItemJ) =>
+                {
+                    // Not sure how best to deal with multiple generic constraints (yet)
+                    // For now place in a comment
+                    // TODO: possible generate a new interface type that extends all of the constraints?
+                    genParameter.ParameterConstraints.Add(GetType(constraint));
+                });
+                
+                tsTypes.Add(genParameter);
+            });
+            
             return tsTypes;
         }
+
+        public static TSType GetType(Type td)
+        {
+            // TODO: possible generate a new interface type that extends all of the constraints?
+
+            if (td.IsGenericType)
+                return new TSGenericType(td.ToTypeScriptTypeName(), td.Namespace)
+                { 
+                    GenericParameters = td.GetGenericArguments().Select(a => new TSType(a.ToTypeScriptTypeName(), a.Namespace)).ToArray()
+                };
+            else 
+                return new TSType(td.ToTypeScriptTypeName(), td.Namespace);
+        }
+
 
         public static List<TSType> GetExportedInterfaces(Type td)
         {
@@ -151,14 +180,14 @@ namespace ToTypeScriptD.Lexical
                 {
                     foreach (var item in interfaceTypes)
                     {
-                        types.Add(new TSType(item.ToTypeScriptTypeName()));
+                        types.Add(GetType(item));
                     }
                 }
             }
 
             return types;
         }
-
+        
 
         public static List<TSMethod> GetMethods(Type td)
         {
@@ -201,7 +230,7 @@ namespace ToTypeScriptD.Lexical
                     tsMethod.Parameters.Add(new TSFuncParameter
                     {
                         Name = parameter.Name,
-                        Type = new TSType(parameter.ParameterType.ToTypeScriptTypeName())
+                        Type = new TSType(parameter.ParameterType.ToTypeScriptTypeName(), parameter.ParameterType.Namespace)
                     });
                 });
 
@@ -220,13 +249,14 @@ namespace ToTypeScriptD.Lexical
                     //    returnType = outWriter.TypeName;
                     //}
 
-                    tsMethod.ReturnType = new TSType(returnType);
+                    tsMethod.ReturnType = new TSType(returnType, method.ReturnType.Namespace);
                 }
 
                 tsMethods.Add(tsMethod);
             }
             return tsMethods;
         }
+
 
         public static List<TSProperty> GetProperties(Type td)
         {
@@ -243,7 +273,7 @@ namespace ToTypeScriptD.Lexical
                 {
                     IsStatic = propMethod.IsStatic,
                     Name = propName,
-                    Type = new TSType(prop.PropertyType.UnderlyingSystemType.ToTypeScriptTypeName())
+                    Type = new TSType(prop.PropertyType.UnderlyingSystemType.ToTypeScriptTypeName(), prop.PropertyType.UnderlyingSystemType.Namespace)
                 };
 
                 tsProperties.Add(tsProperty);
@@ -252,8 +282,7 @@ namespace ToTypeScriptD.Lexical
             return tsProperties;
         }
 
-
-
+        
         public static List<TSField> GetFields(Type td)
         {
             var fields = new List<TSField>();
@@ -266,7 +295,7 @@ namespace ToTypeScriptD.Lexical
                 var tsField = new TSField
                 {
                     Name = fieldName,
-                    Type = new TSType(field.FieldType.ToTypeScriptType())
+                    Type = new TSType(field.FieldType.ToTypeScriptType(), field.FieldType.Namespace)
                 };
 
                 fields.Add(tsField);
@@ -274,7 +303,7 @@ namespace ToTypeScriptD.Lexical
 
             return fields;
         }
-
+        
         public static List<TSEvent> GetEvents(Type td)
         {
             var events = new List<TSEvent>();
@@ -285,7 +314,7 @@ namespace ToTypeScriptD.Lexical
                 {
                     events.Add(new TSEvent
                     {
-                        EventHandlerType = new TSType(item.EventHandlerType.ToTypeScriptTypeName()),
+                        EventHandlerType = new TSType(item.EventHandlerType.ToTypeScriptTypeName(), item.EventHandlerType.Namespace),
                         Name = item.Name.ToLower()
                     });
                 });

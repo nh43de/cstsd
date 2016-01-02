@@ -45,7 +45,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="TypeScript\Abstract\PrimaryTypeScriptType.cs" />
+    <Compile Include="TypeScript\Abstract\TSModuleTypeDeclaration.cs" />
     <Compile Include="TypeScript\TSAssembly.cs" />
     <Compile Include="TypeScript\TSClass.cs" />
     <Compile Include="TypeScript\TSEnum.cs" />
@@ -54,6 +54,7 @@
     <Compile Include="TypeScript\TSFormattingConfig.cs" />
     <Compile Include="TypeScript\TSFormattingExtensions.cs" />
     <Compile Include="TypeScript\TSFuncParameter.cs" />
+    <Compile Include="TypeScript\TSGenericParameter.cs" />
     <Compile Include="TypeScript\TSInterface.cs" />
     <Compile Include="TypeScript\TSMethod.cs" />
     <Compile Include="TypeScript\TSModule.cs" />

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using ToTypeScriptD.Core.Attributes;
 using ToTypeScriptD.Core.Config;
 using ToTypeScriptD.Core.Extensions;
 using ToTypeScriptD.Lexical;
@@ -20,15 +21,18 @@ namespace ToTypeScriptD.Core
             w.Write(GetHeader(assemblyPaths, config.IncludeSpecialTypes));
 
             var allAssemblyTypes = assemblyPaths.SelectMany(GetAssemblyTypes).ToArray();
-
+            
             FromTypes(allAssemblyTypes, w, config);
         }
 
+        //TODO: typescriptexport attribute - flag to do all or look for attribute? what about namespace-level exports? inherited attribute? 
         public static void FromAssembly(string assemblyPath, ConfigBase config, TextWriter w)
         {
             w.Write(GetHeader(new[] { assemblyPath }, config.IncludeSpecialTypes));
 
-            var allAssemblyTypes = GetAssemblyTypes(assemblyPath);
+            var allAssemblyTypes = GetAssemblyTypes(assemblyPath)
+                .Where(t => t.GetCustomAttribute(typeof(TypeScriptExportAttribute)) != null)
+                .ToArray();
 
             FromTypes(allAssemblyTypes, w, config);
         }
@@ -37,7 +41,7 @@ namespace ToTypeScriptD.Core
         {
             var namespaces = types.Select(t => t.Namespace).Distinct();
 
-            foreach (var tsModule in namespaces.Select(ns => TypeParser.GetModule(ns,
+            foreach (var tsModule in namespaces.Select(ns => TypeScanner.GetModule(ns,
                 types.Where(t => t.Namespace == ns && t.IsNested == false)
                     .OrderBy(t => t.Name)
                     .ToArray())))

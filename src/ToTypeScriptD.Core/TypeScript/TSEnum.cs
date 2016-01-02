@@ -7,7 +7,7 @@ using ToTypeScriptD.Core.TypeScript.Abstract;
 
 namespace ToTypeScriptD.Core.TypeScript
 {
-    public class TSEnum : PrimaryTypeScriptType
+    public class TSEnum : TSModuleTypeDeclaration
     {
         public HashSet<string> Enums { get; set; } = new HashSet<string>();
 

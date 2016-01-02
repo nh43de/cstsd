@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ToTypeScriptD.Core.TypeScript
 {
-    class TSAssembly
+    public class TSAssembly
     {
         //TODO: TS Assembly will hold all modules and print as render.fromtypes (by namespaces)
     }

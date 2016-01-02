@@ -51,6 +51,12 @@
       <Link>Properties\AssemblyInfo.Common.cs</Link>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ToTypeScriptD.Core\ToTypeScriptD.Core.csproj">
+      <Project>{fea71855-6f65-45cb-97c4-51f1891904f6}</Project>
+      <Name>ToTypeScriptD.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

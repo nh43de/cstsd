@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ToTypeScriptD.Core.TypeScript.Abstract
 {
-    public class PrimaryTypeScriptType
+    public class TSModuleTypeDeclaration
     {
         public string Name { get; set; }
         public bool IsExport { get; set; }

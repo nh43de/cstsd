@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ToTypeScriptD.Core.Attributes;
 
 namespace ToTypeScriptD.TestAssembly.CSharp
 {
+    [TypeScriptExport]
     public class GenericClass<T>
     {
         public T GetItem(T input)
@@ -14,6 +16,7 @@ namespace ToTypeScriptD.TestAssembly.CSharp
         }
     }
 
+    [TypeScriptExport]
     public class GenericClassWithConstraint<T>
         where T : IAmAnInterface
     {
@@ -23,7 +26,7 @@ namespace ToTypeScriptD.TestAssembly.CSharp
         }
     }
 
-
+    [TypeScriptExport]
     public class GenericClassWithMultipleTypesConstrained<T, K>
         where T : IAmAnInterface
         where K : IAmAnInterface
@@ -39,20 +42,32 @@ namespace ToTypeScriptD.TestAssembly.CSharp
         }
     }
 
-
+    [TypeScriptExport]
     public interface IAmAnotherInterfaceButGeneric1<T> { }
+
+    [TypeScriptExport]
     public interface IAmAnotherInterfaceButGeneric2<T> { }
+
+    [TypeScriptExport]
     public interface IAmAnotherInterfaceButGeneric3<T> : IAmAnotherInterfaceButGeneric1<T>, IAmAnotherInterfaceButGeneric2<T> { }
+
+    [TypeScriptExport]
     public class GenericClassIsGettingALittleCrazy<T> where T : IAmAnotherInterfaceButGeneric3<T>
     {
 
     }
 
 
-
+    [TypeScriptExport]
     public interface IAmAnotherInterface1 { }
+
+    [TypeScriptExport]
     public interface IAmAnotherInterface2 { }
+
+    [TypeScriptExport]
     public interface IAmAnotherInterface3<T, K> { }
+
+    [TypeScriptExport]
     public class GenericClassWithOneTypeConstraintMultipleTimes<T, K>
         where T : IAmAnInterface, IAmAnotherInterface1, IAmAnotherInterface2, IAmAnotherInterface3<T, K>
     {
@@ -62,7 +77,7 @@ namespace ToTypeScriptD.TestAssembly.CSharp
         }
     }
 
-
+    [TypeScriptExport]
     public class GenericClassWith<T, K>
     {
         public void GetSomething(T inT, K inK, out IAmAnotherInterface3<T, K> outParam1)

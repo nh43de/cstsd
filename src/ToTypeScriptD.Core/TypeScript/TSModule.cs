@@ -11,7 +11,7 @@ namespace ToTypeScriptD.Core.TypeScript
     public class TSModule
     {
         public string Namespace { get; set; }
-        public ICollection<PrimaryTypeScriptType> TypeDeclarations { get; set; } = new List<PrimaryTypeScriptType>();
+        public ICollection<TSModuleTypeDeclaration> TypeDeclarations { get; set; } = new List<TSModuleTypeDeclaration>();
         
         public override string ToString()
         {

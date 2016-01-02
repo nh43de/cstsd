@@ -11,10 +11,15 @@ namespace ToTypeScriptD.Core.Attributes
         public Func<Type, string> Invoke;
     }
     
-    [AttributeUsage(AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.All)]
     public class TypeScriptExportAttribute : Attribute
     {
         private CodeGen CodeGenerator { get; }
+
+        public TypeScriptExportAttribute()
+        {
+            
+        }
 
         public TypeScriptExportAttribute(CodeGen codeGen)
         {

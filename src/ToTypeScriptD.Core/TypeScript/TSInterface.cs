@@ -5,7 +5,7 @@ using ToTypeScriptD.Core.TypeScript.Abstract;
 
 namespace ToTypeScriptD.Core.TypeScript
 {
-    public class TSInterface : PrimaryTypeScriptType
+    public class TSInterface : TSModuleTypeDeclaration
     {
         //TODO: interface/class events
         /*
@@ -21,10 +21,11 @@ namespace ToTypeScriptD.Core.TypeScript
         public ICollection<TSMethod> Methods { get; set; } = new List<TSMethod>();
         public ICollection<TSField> Fields { get; set; } = new List<TSField>();
         public ICollection<TSType> BaseTypes { get; set; } = new List<TSType>();
-        public ICollection<TSType> GenericParameters { get; set; } = new List<TSType>();
+        public ICollection<TSGenericParameter> GenericParameters { get; set; } = new List<TSGenericParameter>();
         public ICollection<TSProperty> Properties { get; set; } = new List<TSProperty>();
         public ICollection<TSEvent> Events { get; set; } = new List<TSEvent>();
         
+
         public override string ToString()
         {
             var exportStr = IsExport ? "export " : "";
@@ -47,7 +48,6 @@ namespace ToTypeScriptD.Core.TypeScript
             var events = string.Join("\r\n", Events.Select(p => p.ToString() + ";"));
             if (!string.IsNullOrWhiteSpace(events))
                 events = events.Indent(TSFormattingConfig.IndentSpaces) + Environment.NewLine;
-
 
 
             return $"{exportStr}interface {Name}{generics}{extends}" + Environment.NewLine +

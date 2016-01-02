@@ -8,8 +8,8 @@ namespace ToTypeScriptD.Core.TypeScript
     public class TSClass : TSInterface
     {
         //TODO: replace \r\n to config 
-
-        public ICollection<PrimaryTypeScriptType> NestedClasses { get; set; } = new List<PrimaryTypeScriptType>(); 
+        
+        public ICollection<TSModuleTypeDeclaration> NestedClasses { get; set; } = new List<TSModuleTypeDeclaration>(); 
 
         public override string ToString()
         {
@@ -44,7 +44,7 @@ namespace ToTypeScriptD.Core.TypeScript
                 nestedClasses = "\r\n\r\n" + nestedClasses;
 
             //TODO: config for brackets on same line as declaration
-            return $"{exportStr}interface {Name}{generics}{extends}" + "\r\n" +
+            return $"{exportStr}class {Name}{generics}{extends}" + "\r\n" +
                    @"{" + "\r\n" +
                    body +
                    @"}" +
