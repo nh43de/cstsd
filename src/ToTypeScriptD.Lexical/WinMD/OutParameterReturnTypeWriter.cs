@@ -8,11 +8,11 @@ using System.Text;
 using ToTypeScriptD.Core.Config;
 using ToTypeScriptD.Core.Extensions;
 using ToTypeScriptD.Lexical.Extensions;
-using ToTypeScriptD.Lexical.TypeWriters;
+
 
 namespace ToTypeScriptD.Lexical.WinMD
 {
-    public class OutParameterReturnTypeWriter : ITypeWriter
+    public class OutParameterReturnTypeWriter 
     {
         private Type ReturnTypeReference;
         private List<ParameterInfo> OutTypes;

@@ -8,7 +8,6 @@ using ToTypeScriptD.Core.Config;
 using ToTypeScriptD.Core.Extensions;
 using ToTypeScriptD.Lexical.DotNet;
 using ToTypeScriptD.Lexical.Extensions;
-using ToTypeScriptD.Lexical.TypeWriters;
 using ToTypeScriptD.Lexical.WinMD;
 
 namespace ToTypeScriptD.Core

@@ -8,60 +8,46 @@ using ToTypeScriptD.Core.Extensions;
 using ToTypeScriptD.Core.TypeScript;
 using ToTypeScriptD.Lexical.DotNet;
 using ToTypeScriptD.Lexical.Extensions;
-using ToTypeScriptD.Lexical.TypeWriters;
 
 namespace ToTypeScriptD.Lexical.WinMD
 {
-    public abstract class TypeWriterBase : ITypeWriter
+    public class TypeWriterBase
     {
-        public abstract void Write(System.Text.StringBuilder sb);
+        //TODO: these need to be moved to the writing part
+        public static readonly ConfigBase Config;
+        protected static int IndentCount;
+        public static Type TypeDefinition;
 
-        public readonly Type TypeDefinition;
-        public readonly ConfigBase Config;
 
-        public ITypeWriterTypeSelector TypeSelector { get; private set; }
-        
-
-        public string FullName => TypeDefinition.Namespace + "." + TypeDefinition.ToTypeScriptItemName();
         public void Indent(StringBuilder sb) => sb.Append(IndentValue);
-        protected int IndentCount;
+        
         public string IndentValue => Config.Indent.Dup(IndentCount);
 
-
-
-
-        protected TypeWriterBase(Type typeDefinition, int indentCount, ConfigBase config, ITypeWriterTypeSelector typeSelector)
-        {
-            this.TypeDefinition = typeDefinition;
-            this.IndentCount = indentCount;
-            this.Config = config;
-            this.TypeSelector = typeSelector;
-        }
-
         
-        public TSClass GetClass()
+        
+        public static TSClass GetClass(Type td)
         {
             var tsClass = new TSClass
             {
-                Name = TypeDefinition.ToTypeScriptItemNameWinMD(),
-                GenericParameters = GetGenericConstraints(),
-                BaseTypes = GetExportedInterfaces(),
-                Methods = GetMethods(),
-                Fields = GetFields(),
-                Properties = GetProperties(),
-                Events = GetEvents()
+                Name = td.ToTypeScriptItemNameWinMD(),
+                GenericParameters = GetGenericConstraints(td),
+                BaseTypes = GetExportedInterfaces(td),
+                Methods = GetMethods(td),
+                Fields = GetFields(td),
+                Properties = GetProperties(td),
+                Events = GetEvents(td)
             };
             return tsClass;
         }
 
-        private List<TSType> GetGenericConstraints()
+        private static List<TSType> GetGenericConstraints(Type td)
         {
             var tsTypes = new List<TSType>();
 
             //generic constraints
-            if (TypeDefinition.GetGenericArguments().Any())
+            if (td.GetGenericArguments().Any())
             {
-                TypeDefinition.GetGenericArguments().For((genericParameter, i, isLastItem) =>
+                td.GetGenericArguments().For((genericParameter, i, isLastItem) =>
                 {
                     genericParameter.GetGenericParameterConstraints().For((constraint, j, isLastItemJ) =>
                     {
@@ -76,14 +62,14 @@ namespace ToTypeScriptD.Lexical.WinMD
             return tsTypes;
         }
 
-        private List<TSType> GetExportedInterfaces()
+        private static List<TSType> GetExportedInterfaces(Type td)
         {
             var types = new List<TSType>();
 
             //WriteExportedInterfaces(sb, inheriterString);
-            if (TypeDefinition.GetInterfaces().Any())
+            if (td.GetInterfaces().Any())
             {
-                var interfaceTypes = TypeDefinition.GetInterfaces().Where(w => !w.Name.ShouldIgnoreTypeByName());
+                var interfaceTypes = td.GetInterfaces().Where(w => !w.Name.ShouldIgnoreTypeByName());
                 if (interfaceTypes.Any())
                 {
                     foreach (var item in interfaceTypes)
@@ -97,11 +83,11 @@ namespace ToTypeScriptD.Lexical.WinMD
         }
 
 
-        private List<TSMethod> GetMethods()
+        private static List<TSMethod> GetMethods(Type td)
         {
             var tsMethods = new List<TSMethod>();
             var methods =
-                TypeDefinition.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly |
+                td.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly |
                                           BindingFlags.NonPublic).Where(m => m.IsHideBySig == false);
 
             foreach (var method in methods)
@@ -149,7 +135,7 @@ namespace ToTypeScriptD.Lexical.WinMD
                     if (outTypes.Any())
                     {
                         //TODO: hook in outwriter
-                        var outWriter = new OutParameterReturnTypeWriter(Config, IndentCount, TypeDefinition, methodName, method.ReturnType, outTypes);
+                        var outWriter = new OutParameterReturnTypeWriter(Config, IndentCount, td, methodName, method.ReturnType, outTypes);
 
                         //extendedTypes.Add(outWriter);
                         returnType = outWriter.TypeName;
@@ -167,11 +153,11 @@ namespace ToTypeScriptD.Lexical.WinMD
             return tsMethods;
         }
 
-        private List<TSProperty> GetProperties()
+        private static List<TSProperty> GetProperties(Type td)
         {
             var tsProperties = new List<TSProperty>();
 
-            TypeDefinition.GetProperties().Each(prop =>
+            td.GetProperties().Each(prop =>
             {
                 var propName_ = prop.Name;
                 var propName = propName_.ToTypeScriptName();
@@ -191,14 +177,14 @@ namespace ToTypeScriptD.Lexical.WinMD
             return tsProperties;
         }
 
-        public static TSEnum GetEnum(Type TypeDefinition)
+        public static TSEnum GetEnum(Type td)
         {
             var tsEnum = new TSEnum
             {
-                Name = TypeDefinition.ToTypeScriptItemName()
+                Name = td.ToTypeScriptItemName()
             };
 
-            TypeDefinition.GetFields().OrderBy(ob => ob.Name).For((item, i, isLast) => //.OrderBy(ob => ob.Name)
+            td.GetFields().OrderBy(ob => ob.Name).For((item, i, isLast) => //.OrderBy(ob => ob.Name)
             {
                 if (item.Name == "value__") return;
 
@@ -208,11 +194,11 @@ namespace ToTypeScriptD.Lexical.WinMD
             return tsEnum;
         }
 
-        private List<TSField> GetFields()
+        private static List<TSField> GetFields(Type td)
         {
             var fields = new List<TSField>();
 
-            TypeDefinition.GetFields(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic).Where(f => f.IsSpecialName == false).Each(field =>
+            td.GetFields(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic).Where(f => f.IsSpecialName == false).Each(field =>
             {
                 if (!field.IsPublic) return;
                 var fieldName = field.Name.ToTypeScriptName();
@@ -229,13 +215,13 @@ namespace ToTypeScriptD.Lexical.WinMD
             return fields;
         }
 
-        private List<TSEvent> GetEvents()
+        private static List<TSEvent> GetEvents(Type td)
         {
             var events = new List<TSEvent>();
 
-            if (TypeDefinition.GetEvents().Any())
+            if (td.GetEvents().Any())
             {
-                TypeDefinition.GetEvents().For((item, i, isLast) =>
+                td.GetEvents().For((item, i, isLast) =>
                 {
                     events.Add(new TSEvent
                     {
@@ -247,6 +233,9 @@ namespace ToTypeScriptD.Lexical.WinMD
 
             return events;
         }
+
+
+
 
         #region Promise Extension
 

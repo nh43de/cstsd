@@ -47,14 +47,11 @@
   <ItemGroup>
     <Compile Include="DotNet\DotNetConfig.cs" />
     <Compile Include="DotNet\DotNetExtensions.cs" />
-    <Compile Include="DotNet\InterfaceWriter.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Mappings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GenerateTypeScript.cs" />
     <Compile Include="Render.cs" />
-    <Compile Include="TypeWriters\ITypeWriter.cs" />
-    <Compile Include="TypeWriters\ITypeWriterTypeSelector.cs" />
     <Compile Include="WinMD\DelegateWriter.cs" />
     <Compile Include="WinMD\OutParameterReturnTypeWriter.cs" />
     <Compile Include="TypeWriterBase.cs" />
