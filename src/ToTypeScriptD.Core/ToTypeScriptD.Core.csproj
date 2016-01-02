@@ -46,6 +46,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="TypeScript\TSClass.cs" />
+    <Compile Include="TypeScript\TSEnum.cs" />
     <Compile Include="TypeScript\TSEvent.cs" />
     <Compile Include="TypeScript\TSField.cs" />
     <Compile Include="TypeScript\TSFormattingConfig.cs" />

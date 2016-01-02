@@ -38,8 +38,7 @@ namespace ToTypeScriptD.Core
             var namespaces = types.Select(t => t.Namespace).Distinct();
             
             //TODO: make dynamic
-            var selector = new DotNetTypeWriterTypeSelector();
-
+            
             foreach (var ns in namespaces)
             {
                 //TS modules are namespaces
@@ -53,7 +52,7 @@ namespace ToTypeScriptD.Core
                 {
                     var typeName = type.Name;
                     //type.Value is the TypeWriter instance to uses
-                    RenderType(type, selector, config, w);
+                    RenderType(type, config, w);
                     w.WriteLine();
                 }
 
@@ -65,27 +64,67 @@ namespace ToTypeScriptD.Core
                     {
                         tsClasses.Add(GetClass(type));
                     });
+                
+                
+
+
+                    if (td.IsEnum)
+                    {
+                        return new EnumWriter(td, indentCount, config, this);
+                    }
+
+                    if (td.IsInterface)
+                    {
+                        return new InterfaceWriter(td, indentCount, castedConfig, this);
+                    }
+
+                    if (td.IsClass)
+                    {
+                        //return new ClassWriter(td, indentCount, castedConfig, this);
+                    }
+
+
+
+                    if (td.IsEnum)
+                    {
+                        return new EnumWriter(td, indentCount, config, this);
+                    }
+
+                    if (td.IsInterface)
+                    {
+                        return new InterfaceWriter(td, indentCount, config, this);
+                    }
+
+                    if (td.IsClass)
+                    {
+                        if (td.BaseType.FullName == "System.MulticastDelegate" ||
+                            td.BaseType.FullName == "System.Delegate")
+                        {
+                            return new DelegateWriter(td, indentCount, config, this);
+                        }
+
+                        return null; //new ClassWriter(td, indentCount, config, this);
+                    }
+
+                    throw new NotImplementedException("Could not get a type to generate for:" + td.FullName);
+
+
+
                 */
 
                 w.WriteLine("}");
             }
         }
+        
+        public static void RenderType(Type rd, ConfigBase config, TextWriter w)
+        {
+            //TODO: not implemented
 
-        public static void RenderDotNetType(Type type, ConfigBase config, TextWriter w)
-        {
-            RenderType(type, new DotNetTypeWriterTypeSelector(), config, w);
-        }
-        public static void RenderWinMdType(Type type, ConfigBase config, TextWriter w)
-        {
-            RenderType(type, new WinMDTypeWriterTypeSelector(), config, w);
-        }
+            throw new NotImplementedException("Not ready yet");
 
-        public static void RenderType(Type type, ITypeWriterTypeSelector selector, ConfigBase config, TextWriter w)
-        {
-            //TODO: really hacky
-            var sb = new StringBuilder();
-            selector.PickTypeWriter(type, 0, config).Write(sb);
-            w.Write(sb.ToString());
+            //var sb = new StringBuilder();
+            //selector.PickTypeWriter(type, 0, config).Write(sb);
+            //w.Write(sb.ToString());
         }
 
         

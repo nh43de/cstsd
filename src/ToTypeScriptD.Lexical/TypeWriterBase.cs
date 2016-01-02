@@ -190,6 +190,23 @@ namespace ToTypeScriptD.Lexical.WinMD
             return tsProperties;
         }
 
+        public static TSEnum GetEnum(Type TypeDefinition)
+        {
+            var tsEnum = new TSEnum
+            {
+                Name = TypeDefinition.ToTypeScriptItemName()
+            };
+
+            TypeDefinition.GetFields().OrderBy(ob => ob.Name).For((item, i, isLast) => //.OrderBy(ob => ob.Name)
+            {
+                if (item.Name == "value__") return;
+
+                tsEnum.Enums.Add(item.Name);
+            });
+
+            return tsEnum;
+        }
+
         private List<TSField> GetFields()
         {
             var fields = new List<TSField>();
