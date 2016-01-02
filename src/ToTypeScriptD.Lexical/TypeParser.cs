@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ToTypeScriptD.Core.Extensions;
 using ToTypeScriptD.Core.TypeScript;
+using ToTypeScriptD.Core.TypeScript.Abstract;
 using ToTypeScriptD.Lexical.DotNet;
 using ToTypeScriptD.Lexical.Extensions;
 using ToTypeScriptD.Lexical.WinMD;
@@ -26,33 +27,38 @@ namespace ToTypeScriptD.Lexical
             
             foreach (var td in types.Where(t => t.IsNested == false).OrderBy(t => t.Name))
             {
-
-                if (td.IsEnum)
-                {
-                    tsModule.TypeDeclarations.Add(GetEnum(td));
-                }
-                else if (td.IsInterface)
-                {
-                    tsModule.TypeDeclarations.Add(GetInterface(td));
-                }
-                else if (td.IsClass)
-                {
-                    if (td.BaseType.FullName == "System.MulticastDelegate" ||
-                        td.BaseType.FullName == "System.Delegate")
-                    {
-                        //TODO: not implemented
-                        //return new DelegateWriter(td, indentCount, config, this);
-                    }
-                    else
-                    {
-                        tsModule.TypeDeclarations.Add(GetClass(td));
-                    }
-                }
+                tsModule.TypeDeclarations.Add(GetPrimaryDeclaration(td));
             }
 
             return tsModule;
         }
 
+        public static PrimaryTypeScriptType GetPrimaryDeclaration(Type td)
+        {
+            if (td.IsEnum)
+            {
+                return GetEnum(td);
+            }
+            else if (td.IsInterface)
+            {
+                return GetInterface(td);
+            }
+            else if (td.IsClass)
+            {
+                if (td.BaseType.FullName == "System.MulticastDelegate" ||
+                    td.BaseType.FullName == "System.Delegate")
+                {
+                    //TODO: not implemented
+                    //return new DelegateWriter(td, indentCount, config, this);
+                }
+                else
+                {
+                    return GetClass(td);
+                }
+            }
+
+            return null;
+        }
 
         public static TSInterface GetInterface(Type td)
         {
@@ -79,7 +85,8 @@ namespace ToTypeScriptD.Lexical
                 Methods = GetMethods(td),
                 Fields = GetFields(td),
                 Properties = GetProperties(td),
-                Events = GetEvents(td)
+                Events = GetEvents(td),
+                NestedClasses = GetNestedTypes(td)
             };
             return tsClass;
         }
@@ -101,7 +108,14 @@ namespace ToTypeScriptD.Lexical
         }
 
 
-
+        public static List<PrimaryTypeScriptType> GetNestedTypes(Type td)
+        {
+            return
+                td.GetNestedTypes()
+                    .Where(type => type.IsNestedPublic)
+                    .Select(GetPrimaryDeclaration)
+                    .ToList();
+        } 
 
         public static List<TSType> GetGenericConstraints(Type td)
         {
