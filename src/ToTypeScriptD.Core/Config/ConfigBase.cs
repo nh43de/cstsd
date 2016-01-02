@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace ToTypeScriptD.Core.Config
 {
@@ -9,8 +10,20 @@ namespace ToTypeScriptD.Core.Config
         
         public bool IncludeSpecialTypes { get; set; }
         public string RegexFilter { get; set; } = "";
-        public IndentationFormatting IndentationType { get; set; } = IndentationFormatting.SpaceX4;        
-        
+        public IndentationFormatting IndentationType { get; set; } = IndentationFormatting.SpaceX4;
+
+        public string NewLine { get; set; } = "\r\n";
+
+        public string NewLines(int count)
+        {
+            var rtn = "";
+            while (count > 0)
+            {
+                rtn += NewLine;
+                count--;
+            }
+            return rtn;
+        }
 
         public string Indent
         {

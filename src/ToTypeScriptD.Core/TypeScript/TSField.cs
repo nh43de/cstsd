@@ -1,3 +1,5 @@
+using System;
+
 namespace ToTypeScriptD.Core.TypeScript
 {
     public class TSField
@@ -7,8 +9,7 @@ namespace ToTypeScriptD.Core.TypeScript
         public bool IsStatic { get; set; } = false;
         public override string ToString()
         {
-            var staticStr = IsStatic ? "static " : "";
-            return $"{staticStr}{Name} : {Type}";
+            throw new NotImplementedException();
         }
     }
 }

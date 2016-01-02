@@ -39,6 +39,8 @@ namespace ToTypeScriptD.Core
 
         public static void FromTypes(ICollection<Type> types, TextWriter w, ConfigBase config)
         {
+            var tsWriter = new TSWriter(config, w);
+
             var namespaces = types.Select(t => t.Namespace).Distinct();
 
             foreach (var tsModule in namespaces.Select(ns => TypeScanner.GetModule(ns,
@@ -46,7 +48,7 @@ namespace ToTypeScriptD.Core
                     .OrderBy(t => t.Name)
                     .ToArray())))
             {
-                w.Write(tsModule + "\r\n\r\n");
+                w.Write(tsWriter.Write(tsModule) + "\r\n\r\n");
             }
         }
 

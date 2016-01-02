@@ -13,12 +13,7 @@ namespace ToTypeScriptD.Core.TypeScript
 
         public override string ToString()
         {
-            var enumStr = string.Join(",\r\n", Enums);
-
-            return $"enum {Name}" + Environment.NewLine +
-                   @"{" + Environment.NewLine +
-                   $"{enumStr}" + Environment.NewLine +
-                   @"}";
+            throw new NotImplementedException();
         }
     }
 }

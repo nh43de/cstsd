@@ -137,7 +137,7 @@ namespace ToTypeScriptD.Lexical.WinMD
                 return name.ToLower();
             }
 
-            return Char.ToLowerInvariant(name[0]) + name.Substring(1);
+            return char.ToLowerInvariant(name[0]) + name.Substring(1);
         }
         public static string StripOutParamSymbol(this string value)
         {

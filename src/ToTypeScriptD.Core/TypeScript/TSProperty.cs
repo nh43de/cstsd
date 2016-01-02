@@ -8,5 +8,9 @@ namespace ToTypeScriptD.Core.TypeScript
 {
     public class TSProperty : TSField
     {
+        public override string ToString()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

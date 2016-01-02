@@ -51,10 +51,10 @@
     <Compile Include="TypeScript\TSEnum.cs" />
     <Compile Include="TypeScript\TSEvent.cs" />
     <Compile Include="TypeScript\TSField.cs" />
-    <Compile Include="TypeScript\TSFormattingConfig.cs" />
     <Compile Include="TypeScript\TSFormattingExtensions.cs" />
     <Compile Include="TypeScript\TSFuncParameter.cs" />
     <Compile Include="TypeScript\TSGenericParameter.cs" />
+    <Compile Include="TypeScript\TSGenericType.cs" />
     <Compile Include="TypeScript\TSInterface.cs" />
     <Compile Include="TypeScript\TSMethod.cs" />
     <Compile Include="TypeScript\TSModule.cs" />

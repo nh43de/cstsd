@@ -15,16 +15,7 @@ namespace ToTypeScriptD.Core.TypeScript
 
         public override string ToString()
         {
-            var funParams = string.Join(", ", Parameters.Select(p => p.ToString()));
-            var returnTypeStr = ReturnType.ToString();
-            var returnType = string.IsNullOrWhiteSpace(returnTypeStr) ? "void" : returnTypeStr;
-            var exportStr = IsExport ? "export " : "";
-            var staticStr = IsStatic ? "static " : "";
-
-            return $"{exportStr}{staticStr}{Name}({funParams}) : {returnType}" + Environment.NewLine +
-                   @"{" + Environment.NewLine +
-                   $@"{Body.Indent(TSFormattingConfig.IndentSpaces)}" + Environment.NewLine +
-                   @"}";
+            throw new NotImplementedException();
         }
     }
 }

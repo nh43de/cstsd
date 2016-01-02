@@ -15,14 +15,8 @@ namespace ToTypeScriptD.Core.TypeScript
         
         public override string ToString()
         {
-            var interfaces = string.Join("\r\n\r\n", TypeDeclarations.Select(i => i.ToString()));
-            if (!string.IsNullOrWhiteSpace(interfaces))
-                interfaces = interfaces.Indent(TSFormattingConfig.IndentSpaces) + Environment.NewLine;
-            
-            return $@"module {Namespace}" + Environment.NewLine +
-                   @"{" + Environment.NewLine +
-                   interfaces +
-                   @"}";
+            throw new NotImplementedException();
+
         }
     }
 }
