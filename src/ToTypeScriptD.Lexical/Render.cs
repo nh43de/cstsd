@@ -42,7 +42,7 @@ namespace ToTypeScriptD.Core
                     .OrderBy(t => t.Name)
                     .ToArray())))
             {
-                w.Write(tsModule.ToString());
+                w.Write(tsModule.ToString() + "\r\n\r\n");
             }
         }
 
