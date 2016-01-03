@@ -89,6 +89,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\cstsd.Lexical.Core\cstsd.Lexical.Core.csproj">
+      <Project>{87056633-5442-4FCB-8459-1F0884A1DA1E}</Project>
+      <Name>cstsd.Lexical.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ToTypeScriptD.Core\cstsd.Core.csproj">
       <Project>{fea71855-6f65-45cb-97c4-51f1891904f6}</Project>
       <Name>cstsd.Core</Name>

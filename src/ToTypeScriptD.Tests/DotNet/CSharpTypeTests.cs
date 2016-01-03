@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using ApprovalTests;
 using ToTypeScriptD.Core;
-using ToTypeScriptD.Lexical.DotNet;
 using ToTypeScriptD.Tests.Helpers;
 using Xunit;
 

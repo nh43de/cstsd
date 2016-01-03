@@ -10,7 +10,7 @@ using ToTypeScriptD.Lexical.TypeScript.Abstract;
 
 namespace ToTypeScriptD.Lexical
 {
-    public class TSWriter
+    public class TSWriter : ITSWriter
     {
         private readonly TsdConfig _config;
         private readonly TextWriter _w;

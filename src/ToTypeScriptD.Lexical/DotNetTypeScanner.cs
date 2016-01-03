@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using ToTypeScriptD.Core;
-using ToTypeScriptD.Lexical.DotNet;
 using ToTypeScriptD.Lexical.Extensions;
 using ToTypeScriptD.Lexical.TypeScript;
 using ToTypeScriptD.Lexical.TypeScript.Abstract;

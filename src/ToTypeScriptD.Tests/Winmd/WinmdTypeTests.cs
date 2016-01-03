@@ -3,8 +3,6 @@ using System;
 using System.IO;
 using ToTypeScriptD.Core;
 using ToTypeScriptD.Lexical;
-using ToTypeScriptD.Lexical.DotNet;
-using ToTypeScriptD.Lexical.Extensions;
 using ToTypeScriptD.Lexical.WinMD;
 using ToTypeScriptD.Tests.Helpers;
 using Xunit;
