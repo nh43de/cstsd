@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using ToTypeScriptD.Core.TypeScript.Abstract;
+using ToTypeScriptD.Lexical.TypeScript.Abstract;
 
-namespace ToTypeScriptD.Core.TypeScript
+namespace ToTypeScriptD.Lexical.TypeScript
 {
     public class TSModule
     {

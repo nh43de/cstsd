@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using ToTypeScriptD.Core.TypeScript;
+using ToTypeScriptD.Lexical.TypeScript;
 
 namespace ToTypeScriptD.Lexical
 {

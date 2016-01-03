@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
-namespace ToTypeScriptD.Core.TypeScript
+namespace ToTypeScriptD.Lexical.TypeScript
 {
     public class TSMethod
     {

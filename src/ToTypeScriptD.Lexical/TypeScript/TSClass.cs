@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using ToTypeScriptD.Core.TypeScript.Abstract;
+using ToTypeScriptD.Lexical.TypeScript.Abstract;
 
-namespace ToTypeScriptD.Core.TypeScript
+namespace ToTypeScriptD.Lexical.TypeScript
 {
     public class TSClass : TSInterface
     {

@@ -1,12 +1,12 @@
 using System;
 
-namespace ToTypeScriptD.Core.TypeScript
+namespace ToTypeScriptD.Lexical.TypeScript
 {
-    public class TSField
+    public class TSEvent
     {
         public string Name { get; set; }
-        public TSType Type { get; set; }
-        public bool IsStatic { get; set; } = false;
+        public TSType EventHandlerType { get; set; }
+
         public override string ToString()
         {
             throw new NotImplementedException();

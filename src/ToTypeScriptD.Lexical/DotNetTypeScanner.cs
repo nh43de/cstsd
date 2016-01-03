@@ -6,10 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using ToTypeScriptD.Core.Config;
 using ToTypeScriptD.Core.Extensions;
-using ToTypeScriptD.Core.TypeScript;
-using ToTypeScriptD.Core.TypeScript.Abstract;
 using ToTypeScriptD.Lexical.DotNet;
 using ToTypeScriptD.Lexical.Extensions;
+using ToTypeScriptD.Lexical.TypeScript;
+using ToTypeScriptD.Lexical.TypeScript.Abstract;
 using ToTypeScriptD.Lexical.WinMD;
 
 namespace ToTypeScriptD.Lexical

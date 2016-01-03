@@ -5,8 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ToTypeScriptD.Core.Config;
-using ToTypeScriptD.Core.TypeScript;
-using ToTypeScriptD.Core.TypeScript.Abstract;
+using ToTypeScriptD.Lexical.TypeScript;
+using ToTypeScriptD.Lexical.TypeScript.Abstract;
 
 namespace ToTypeScriptD.Lexical
 {
