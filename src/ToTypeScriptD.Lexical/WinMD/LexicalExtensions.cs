@@ -1,33 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text;
+using ToTypeScriptD.Core;
 using ToTypeScriptD.Lexical.Extensions;
 
 namespace ToTypeScriptD.Lexical.WinMD
 {
-    public static class WinMDExtensions
+    public static class LexicalExtensions
     {
         static Dictionary<string, string> typeMap = new Dictionary<string, string>{
                 { "System.String",               "string"},
-                { "System.Type",                 "string /*System.Type?*/"},
-                { "System.Int16",                "number"},
+                { "System.Type",                 "string /* System.Type? */"},
+                { "System.Int16",                "number /* Int16 */"},
                 { "System.Int32",                "number"},
                 { "System.Int64",                "number"},
-                { "System.UInt16",               "number"},
+                { "System.UInt16",               "number /* UInt16 */"},
                 { "System.UInt32",               "number"},
                 { "System.UInt64",               "number"},
                 { "System.Object",               "any"},
                 { "Windows.Foundation.DateTime", "Date"},
                 { "System.Void",                 "void"},
                 { "System.Boolean",              "boolean"},
-                { "System.IntPtr",               "number"},
-                { "System.Byte",                 "number"}, // TODO: Confirm if this is the correct representation?
+                { "System.IntPtr",               "number /* IntPtr */"},
+                { "System.Byte",                 "any /* byte */"},
                 { "System.Single",               "number"},
                 { "System.Double",               "number"},
-                { "System.Char",                 "number"}, // TODO: should this be a string or number?
-                { "System.Guid",                 "string"},
-                { "System.Byte[]",               "any"},
+                { "System.Char",                 "any /* char */"}, 
+                { "System.Guid",                 "any /* guid */"},
+                { "System.Byte[]",               "any /* byte[] */"},
                 { "System.Char[]",               "string"},
+                { "System.DateTime",             "Date"}
         };
         static Dictionary<string, string> genericTypeMap = null;
 
@@ -126,6 +130,98 @@ namespace ToTypeScriptD.Lexical.WinMD
 
             // remove the generic bit
             return fromName;
+        }
+
+
+        static Dictionary<string, string> _specialEnumNames = new Dictionary<string, string>
+        {
+            {"GB2312", "gb2312"},
+            {"PC437", "pc437"},
+            {"NKo", "nko"},
+        };
+
+        // Copied and modified from Json.Net
+        // https://github.com/JamesNK/Newtonsoft.Json/blob/master/Src/Newtonsoft.Json/Utilities/StringUtils.cs
+        public static string ToCamelCase(this string s, bool camelCaseConfig)
+        {
+            if (!camelCaseConfig)
+                return s;
+
+            if (_specialEnumNames.ContainsKey(s))
+            {
+                return _specialEnumNames[s];
+            }
+
+            if (String.IsNullOrEmpty(s))
+                return s;
+
+            if (!Char.IsUpper(s[0]))
+                return s;
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < s.Length; i++)
+            {
+                bool hasNext = (i + 1 < s.Length);
+                if ((i == 0 || !hasNext) || Char.IsUpper(s[i + 1]))
+                {
+                    char lowerCase;
+#if !(NETFX_CORE || PORTABLE)
+                    lowerCase = Char.ToLower(s[i], CultureInfo.InvariantCulture);
+#else
+                    lowerCase = char.ToLower(s[i]);
+#endif
+
+                    sb.Append(lowerCase);
+                }
+                else
+                {
+                    sb.Append(s.Substring(i));
+                    break;
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        public static string ToTypeScript(this Type type, TsdConfig config = null)
+        {
+            if (config == null)
+                config = new TsdConfig();
+
+            throw new NotImplementedException();
+        }
+
+        // TODO: look to move this to the WinMDExtensions.cs
+        public static string ToTypeScriptItemNameWinMD(this Type typeReference)
+        {
+            // Nested classes don't report their namespace. So we have to walk up the 
+            // DeclaringType tree to find the root most type to grab it's namespace.
+            var parentMostType = typeReference;
+            while (parentMostType.DeclaringType != null)
+            {
+                parentMostType = parentMostType.DeclaringType;
+            }
+
+            var mainTypeName = typeReference.FullName;
+
+            // trim namespace off of the front.
+            mainTypeName = mainTypeName.Substring(parentMostType.Namespace.Length + 1);
+
+            // replace the nested class slash with an underscore
+            mainTypeName = mainTypeName.Replace("/", "_").Replace("+", "_").StripGenericTick();
+
+            mainTypeName = mainTypeName.StripGenericTick();
+            return mainTypeName;
+        }
+
+
+        public static string StripGenericTick(this string value)
+        {
+            4.Times().Each(x =>
+            {
+                value = value.Replace("`" + x, "");
+            });
+            return value;
         }
 
         public static string ToTypeScriptName(this string name)

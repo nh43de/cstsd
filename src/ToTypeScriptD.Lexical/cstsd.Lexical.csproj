@@ -70,7 +70,7 @@
     <Compile Include="TypeScript\TSType.cs" />
     <Compile Include="WinMD\DelegateWriter.cs" />
     <Compile Include="PromisesStuff.cs" />
-    <Compile Include="WinMD\WinMDExtensions.cs" />
+    <Compile Include="WinMD\LexicalExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToTypeScriptD.Lexical.Extensions;
+using ToTypeScriptD.Lexical.WinMD;
 
 namespace ToTypeScriptD.Lexical.DotNet
 {
@@ -27,7 +28,7 @@ namespace ToTypeScriptD.Lexical.DotNet
                 { "System.Double",               "number"},
                 { "System.Char",                 "number"}, // TODO: should this be a string or number?
                 { "System.Guid",                 "string"},
-                { "System.Byte[]",               "any"},
+                { "System.Byte[]",               "string"},
         };
         static Dictionary<string, string> genericTypeMap = null;
 
