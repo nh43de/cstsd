@@ -13,6 +13,8 @@ using ToTypeScriptD.Lexical.WinMD;
 
 namespace ToTypeScriptD.Lexical
 {
+    //TODO: this needs to be moved to a non-static class and should inherit from a ITypeScanner interface.
+
     /// <summary>
     /// Returns TS generation AST objects (TS* classes).
     /// </summary>
@@ -269,11 +271,23 @@ namespace ToTypeScriptD.Lexical
 
                 var propMethod = prop.GetMethod ?? prop.SetMethod;
 
+                Type propType;
+
+                try
+                {
+                    propType = prop.PropertyType.UnderlyingSystemType;
+                }
+                catch (Exception ex)
+                {
+                        
+                    throw;
+                }
+
                 var tsProperty = new TSProperty
                 {
                     IsStatic = propMethod.IsStatic,
                     Name = propName,
-                    Type = new TSType(prop.PropertyType.UnderlyingSystemType.ToTypeScriptTypeName(), prop.PropertyType.UnderlyingSystemType.Namespace)
+                    Type = new TSType(propType.ToTypeScriptTypeName(), propType.Namespace)
                 };
 
                 tsProperties.Add(tsProperty);

@@ -28,7 +28,7 @@ namespace cstsd
                 parseSuccess = true;
                 outputPath = "output.d.ts";
 
-                assemblyPaths = new string[] {"cl.dll"};
+                assemblyPaths = new string[] {"ecc.dll"};
 
                 config = new TsdConfig
                 {
@@ -85,9 +85,14 @@ namespace cstsd
                 {
                     skipPrintingHelp = true;
                     Console.Error.WriteLine("Error: " + ex.Message);
+                    Console.Read();
                 }
                 else
                 {
+                    Console.Error.WriteLine("Error: " + ex.Message);
+
+                    Console.Read();
+
                     throw;
                 }
             }

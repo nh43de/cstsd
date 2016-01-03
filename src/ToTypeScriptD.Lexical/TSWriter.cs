@@ -52,7 +52,7 @@ namespace ToTypeScriptD.Lexical
 
         public string Write(TSEnum tsEnum)
         {
-            var enumStr = string.Join(","+_config.NewLine, tsEnum.Enums);
+            var enumStr = string.Join(","+_config.NewLine, tsEnum.Enums).Indent(_config.Indent);
 
             return $"enum {tsEnum.Name}" + _config.NewLine +
                    @"{" + _config.NewLine +

@@ -35,13 +35,28 @@ namespace ToTypeScriptD.Lexical
 
         private static Type[] GetAssemblyTypes(string assemblyPath, bool useAttributeFilters)
         {
-            var assembly = Assembly.LoadFile(new System.IO.FileInfo(assemblyPath).FullName);
+            var assembly = Assembly.LoadFrom(new System.IO.FileInfo(assemblyPath).FullName);
 
-            return assembly
-                .ManifestModule
-                .GetTypes()
-                .Where(t => useAttributeFilters == false || t.GetCustomAttribute(typeof(TypeScriptExportAttribute)) != null)
-                .ToArray();
+            try
+            {
+                return assembly
+                    .ManifestModule
+                    .GetTypes()
+                    .Where(
+                        t =>
+                            useAttributeFilters == false ||
+                            t.GetCustomAttribute(typeof (TypeScriptExportAttribute)) != null)
+                    .ToArray();
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+                return ex.Types.Where(t => t != null).ToArray();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
         }
 
         public static void FromTypes(ICollection<Type> types, TextWriter w, TsdConfig config)

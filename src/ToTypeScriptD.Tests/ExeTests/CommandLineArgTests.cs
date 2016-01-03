@@ -97,7 +97,7 @@ namespace ToTypeScriptD.Tests.ExeTests
         [Fact]
         public void ExeTest1()
         {
-            var resultDup = Execute("-a -c -o output.d.ts cl.dll");
+            var resultDup = Execute("-a -c -o testecc.d.ts ecc.dll");
 
             resultDup.Verify();
         }
