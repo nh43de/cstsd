@@ -21,7 +21,7 @@ namespace ToTypeScriptD.Lexical
             _w = w;
         }
 
-        public string Write(TSModule tsModule)
+        public virtual string Write(TSModule tsModule)
         {
             var interfaces = string.Join(_config.NewLines(2), tsModule.TypeDeclarations.Select(Write));
             if (!string.IsNullOrWhiteSpace(interfaces))
@@ -33,7 +33,7 @@ namespace ToTypeScriptD.Lexical
                    @"}";
         }
 
-        public string Write(TSModuleTypeDeclaration tsModuleTypeDeclaration)
+        public virtual string Write(TSModuleTypeDeclaration tsModuleTypeDeclaration)
         {
             var @class = tsModuleTypeDeclaration as TSClass;
             if (@class != null)
@@ -50,7 +50,7 @@ namespace ToTypeScriptD.Lexical
             throw new NotImplementedException();
         }
 
-        public string Write(TSEnum tsEnum)
+        public virtual string Write(TSEnum tsEnum)
         {
             var enumStr = string.Join(","+_config.NewLine, tsEnum.Enums).Indent(_config.Indent);
 
@@ -61,7 +61,7 @@ namespace ToTypeScriptD.Lexical
         }
 
 
-        public string Write(TSGenericParameter tsGenericParameter)
+        public virtual string Write(TSGenericParameter tsGenericParameter)
         {
             return tsGenericParameter.ParameterConstraints.Any()
                 ? $"{tsGenericParameter.Name} extends {string.Join(", ", tsGenericParameter.ParameterConstraints.Select(Write))}"
@@ -69,13 +69,13 @@ namespace ToTypeScriptD.Lexical
         }
 
 
-        public string Write(TSField tsField)
+        public virtual string Write(TSField tsField)
         {
             var staticStr = tsField.IsStatic ? "static " : "";
             return $"{staticStr}{tsField.Name} : {Write(tsField.Type)}";
         }
 
-        public string Write(TSMethod tsMethod)
+        public virtual string Write(TSMethod tsMethod)
         {
             var funParams = string.Join(", ", tsMethod.Parameters.Select(Write));
             var returnTypeStr = Write(tsMethod.ReturnType);
@@ -89,19 +89,19 @@ namespace ToTypeScriptD.Lexical
                    @"}";
         }
 
-        public string Write(TSGenericType tsGenericType)
+        public virtual string Write(TSGenericType tsGenericType)
         {
             return tsGenericType.GenericParameters.Any()
                 ? $"{tsGenericType.Name}<{string.Join(", ", tsGenericType.GenericParameters.Select(Write))}>"
                 : tsGenericType.Name;
         }
 
-        public string Write(TSType tsType)
+        public virtual string Write(TSType tsType)
         {
             return tsType.Name;
         }
 
-        public string Write(TSInterface tsInterface)
+        public virtual string Write(TSInterface tsInterface)
         {
             var exportStr = tsInterface.IsExport ? "export " : "";
             var extends = tsInterface.BaseTypes.Any() ? " extends " + string.Join(", ", tsInterface.BaseTypes.Select(Write)) : "";
@@ -121,13 +121,13 @@ namespace ToTypeScriptD.Lexical
         }
 
 
-        public string Write(TSEvent tsEvent)
+        public virtual string Write(TSEvent tsEvent)
         {
             //TODO: not exactly finished
             return $"<EVENT {tsEvent.Name}>";
         }
 
-        public string Write(TSClass tsClass)
+        public virtual string Write(TSClass tsClass)
         {
             var exportStr = tsClass.IsExport ? "export " : "";
             var extends = tsClass.BaseTypes.Any() ? " extends " + string.Join(", ", tsClass.BaseTypes.Select(Write)) : "";
