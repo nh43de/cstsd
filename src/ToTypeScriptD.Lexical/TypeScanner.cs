@@ -13,7 +13,7 @@ using ToTypeScriptD.Lexical.WinMD;
 
 namespace ToTypeScriptD.Lexical
 {
-    //TODO: this needs to be moved to a non-static class and should inherit from a ITypeScanner interface.
+    //TODO: this needs to be a non-static class and should inherit from a ITypeScanner interface.
 
     /// <summary>
     /// Returns TS generation AST objects (TS* classes).
@@ -93,7 +93,7 @@ namespace ToTypeScriptD.Lexical
             {
                 Name = td.ToTypeScriptItemNameWinMD(),
                 GenericParameters = GetGenericParameters(td),
-                BaseTypes = GetExportedInterfaces(td),
+                BaseTypes = GetInheritedTypesAndInterfaces(td),
                 Methods = GetMethods(td),
                 Fields = GetFields(td),
                 Properties = GetProperties(td),
@@ -168,6 +168,30 @@ namespace ToTypeScriptD.Lexical
             else 
                 return new TSType(td.ToTypeScriptTypeName(), td.Namespace);
         }
+
+
+        public static List<TSType> GetInheritedTypesAndInterfaces(Type td)
+        {
+            var rtn = GetExportedInterfaces(td);
+
+            if(td.BaseType != null)
+                rtn.Add(GetBaseType(td));
+
+            return rtn;
+        } 
+
+        public static TSType GetBaseType(Type td)
+        {
+            TSType type = null;
+
+            //WriteExportedInterfaces(sb, inheriterString);
+            if (td.BaseType != null)
+            {
+                type = (GetType(td.BaseType));
+            }
+
+            return type;
+        } 
 
 
         public static List<TSType> GetExportedInterfaces(Type td)

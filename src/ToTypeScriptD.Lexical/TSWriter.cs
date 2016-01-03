@@ -107,10 +107,10 @@ namespace ToTypeScriptD.Lexical
             var extends = tsInterface.BaseTypes.Any() ? " extends " + string.Join(", ", tsInterface.BaseTypes.Select(Write)) : "";
             var generics = tsInterface.GenericParameters.Any() ? $" <{string.Join(", ", tsInterface.GenericParameters.Select(Write))}>" : "";
             
-            var methods = GetMethods(tsInterface);
-            var fields = GetFields(tsInterface);
-            var properties = GetProperties(tsInterface);
-            var events = GetEvents(tsInterface);
+            var methods = GetMethodsString(tsInterface);
+            var fields = GetFieldsString(tsInterface);
+            var properties = GetPropertiesString(tsInterface);
+            var events = GetEventsString(tsInterface);
 
             var body = JoinBodyText(fields, properties, events, methods);
 
@@ -133,11 +133,11 @@ namespace ToTypeScriptD.Lexical
             var extends = tsClass.BaseTypes.Any() ? " extends " + string.Join(", ", tsClass.BaseTypes.Select(Write)) : "";
             var generics = tsClass.GenericParameters.Any() ? $" <{string.Join(", ", tsClass.GenericParameters.Select(Write))}>" : "";
 
-            var methods = GetMethods(tsClass);
-            var fields = GetFields(tsClass);
-            var properties = GetProperties(tsClass);
-            var events = GetEvents(tsClass);
-            var nestedClasses = GetNestedClasses(tsClass);
+            var methods = GetMethodsString(tsClass);
+            var fields = GetFieldsString(tsClass);
+            var properties = GetPropertiesString(tsClass);
+            var events = GetEventsString(tsClass);
+            var nestedClasses = GetNestedClassesString(tsClass);
 
             var body = JoinBodyText(fields, properties, events, methods);
             
@@ -157,7 +157,7 @@ namespace ToTypeScriptD.Lexical
             return body;
         }
 
-        private string GetNestedClasses(TSClass tsClass)
+        private string GetNestedClassesString(TSClass tsClass)
         {
             var nestedClasses = string.Join(_config.NewLines(2), tsClass.NestedClasses.Select(Write));
             if (!string.IsNullOrWhiteSpace(nestedClasses))
@@ -166,7 +166,7 @@ namespace ToTypeScriptD.Lexical
         }
 
 
-        private string GetEvents(TSInterface tsInterface)
+        private string GetEventsString(TSInterface tsInterface)
         {
             var events = string.Join(_config.NewLine, tsInterface.Events.Select(p => Write(p) + ";"));
             if (!string.IsNullOrWhiteSpace(events))
@@ -174,7 +174,7 @@ namespace ToTypeScriptD.Lexical
             return events;
         }
 
-        private string GetProperties(TSInterface tsInterface)
+        private string GetPropertiesString(TSInterface tsInterface)
         {
             var properties = string.Join(_config.NewLine, tsInterface.Properties.Select(p => Write(p) + ";"));
             if (!string.IsNullOrWhiteSpace(properties))
@@ -182,7 +182,7 @@ namespace ToTypeScriptD.Lexical
             return properties;
         }
 
-        private string GetFields(TSInterface tsInterface)
+        private string GetFieldsString(TSInterface tsInterface)
         {
             var fields = string.Join(_config.NewLine, tsInterface.Fields.Select(f => Write(f) + ";"));
             if (!string.IsNullOrWhiteSpace(fields))
@@ -190,7 +190,7 @@ namespace ToTypeScriptD.Lexical
             return fields;
         }
 
-        private string GetMethods(TSInterface tsInterface)
+        private string GetMethodsString(TSInterface tsInterface)
         {
             var methods = string.Join(_config.NewLines(2), tsInterface.Methods.Select(Write));
             if (!string.IsNullOrWhiteSpace(methods))

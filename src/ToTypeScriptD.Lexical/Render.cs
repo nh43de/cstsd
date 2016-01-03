@@ -59,17 +59,22 @@ namespace ToTypeScriptD.Lexical
 
         }
 
+        //TODO: option to include referenced types that are in external assemblies (or how to handle assembly not founds)
         public static void FromTypes(ICollection<Type> types, TextWriter w, TsdConfig config)
         {
             var tsWriter = new TSWriter(config, w);
 
             var namespaces = types.Select(t => t.Namespace).Distinct();
 
-            foreach (var tsModule in namespaces.Select(ns => TypeScanner.GetModule(ns,
-                types.Where(t => t.Namespace == ns && t.IsNested == false)
-                    .OrderBy(t => t.Name)
-                    .ToArray())))
+            
+
+            foreach (var ns in namespaces)
             {
+                var tsModule = TypeScanner.GetModule(ns,
+                    types.Where(t => t.Namespace == ns && t.IsNested == false)
+                        .OrderBy(t => t.Name)
+                        .ToArray());
+
                 w.Write(tsWriter.Write(tsModule) + config.NewLines(2));
             }
         }
