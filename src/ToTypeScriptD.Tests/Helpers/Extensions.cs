@@ -1,9 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
-using ToTypeScriptD.Core;
-
-namespace ToTypeScriptD.Tests
+﻿namespace ToTypeScriptD.Tests.Helpers
 {
     public static class Extensions
     {

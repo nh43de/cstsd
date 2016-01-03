@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CommandLine;
 using CommandLine.Text;
 using ToTypeScriptD.Core.Config;
 
-namespace ToTypeScriptD
+namespace cstsd
 {
     public class Options
     {

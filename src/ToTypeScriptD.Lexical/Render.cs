@@ -7,12 +7,8 @@ using System.Text;
 using ToTypeScriptD.Core.Attributes;
 using ToTypeScriptD.Core.Config;
 using ToTypeScriptD.Core.Extensions;
-using ToTypeScriptD.Lexical;
-using ToTypeScriptD.Lexical.DotNet;
-using ToTypeScriptD.Lexical.Extensions;
-using ToTypeScriptD.Lexical.WinMD;
 
-namespace ToTypeScriptD.Core
+namespace ToTypeScriptD.Lexical
 {
     public class Render
     {
@@ -59,7 +55,7 @@ namespace ToTypeScriptD.Core
                     .OrderBy(t => t.Name)
                     .ToArray())))
             {
-                w.Write(tsWriter.Write(tsModule) + "\r\n\r\n");
+                w.Write(tsWriter.Write(tsModule) + config.NewLines(2));
             }
         }
 

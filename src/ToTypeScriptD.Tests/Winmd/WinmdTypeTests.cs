@@ -4,9 +4,11 @@ using System.IO;
 using ToTypeScriptD.Core;
 using ToTypeScriptD.Core.Config;
 using ToTypeScriptD.Core.Extensions;
+using ToTypeScriptD.Lexical;
 using ToTypeScriptD.Lexical.DotNet;
 using ToTypeScriptD.Lexical.Extensions;
 using ToTypeScriptD.Lexical.WinMD;
+using ToTypeScriptD.Tests.Helpers;
 using Xunit;
 
 namespace ToTypeScriptD.Tests.Winmd

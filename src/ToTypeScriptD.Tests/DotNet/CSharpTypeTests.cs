@@ -2,6 +2,7 @@
 using ApprovalTests;
 using ToTypeScriptD.Core;
 using ToTypeScriptD.Lexical.DotNet;
+using ToTypeScriptD.Tests.Helpers;
 using Xunit;
 
 namespace ToTypeScriptD.Tests.DotNet

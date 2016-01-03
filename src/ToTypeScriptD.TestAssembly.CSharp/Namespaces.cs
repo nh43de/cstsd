@@ -1,5 +1,5 @@
 ﻿
-namespace ToTypeScriptD.TestAssembly.CSharp.NamespaceSample
+namespace ToTypeScriptD.TestAssembly.CSharp
 {
     public class TestClass
     {

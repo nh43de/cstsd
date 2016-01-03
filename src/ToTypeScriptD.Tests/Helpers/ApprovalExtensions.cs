@@ -1,10 +1,8 @@
 ﻿using System.IO;
-using ToTypeScriptD.Core;
 using ToTypeScriptD.Core.Config;
-using ToTypeScriptD.Lexical.DotNet;
-using ToTypeScriptD.Lexical.WinMD;
+using ToTypeScriptD.Lexical;
 
-namespace ToTypeScriptD.Tests
+namespace ToTypeScriptD.Tests.Helpers
 {
     public static class ApprovalsExtensions
     {

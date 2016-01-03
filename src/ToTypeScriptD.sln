@@ -3,14 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToTypeScriptD", "ToTypeScriptD\ToTypeScriptD.csproj", "{128A58CF-D911-4C50-B20F-3AFA6D75CAE8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cstsd", "ToTypeScriptD\cstsd.csproj", "{128A58CF-D911-4C50-B20F-3AFA6D75CAE8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToTypeScriptD.Tests", "ToTypeScriptD.Tests\ToTypeScriptD.Tests.csproj", "{7539E4F5-4829-4D53-90B3-6FBA87878F38}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cstsd.Tests", "ToTypeScriptD.Tests\cstsd.Tests.csproj", "{7539E4F5-4829-4D53-90B3-6FBA87878F38}"
 	ProjectSection(ProjectDependencies) = postProject
 		{128A58CF-D911-4C50-B20F-3AFA6D75CAE8} = {128A58CF-D911-4C50-B20F-3AFA6D75CAE8}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToTypeScriptD.Core", "ToTypeScriptD.Core\ToTypeScriptD.Core.csproj", "{FEA71855-6F65-45CB-97C4-51F1891904F6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cstsd.Core", "ToTypeScriptD.Core\cstsd.Core.csproj", "{FEA71855-6F65-45CB-97C4-51F1891904F6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToTypeScriptD.TestAssembly.CSharp", "ToTypeScriptD.TestAssembly.CSharp\ToTypeScriptD.TestAssembly.CSharp.csproj", "{C7F85246-C5D8-44B0-A125-E526E24F900B}"
 EndProject
@@ -29,12 +29,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{A17DA2E2
 		..\CONTRIBUTING.md = ..\CONTRIBUTING.md
 		..\default.ps1 = ..\default.ps1
 		metroPS.ps1 = metroPS.ps1
-		..\notes.md = ..\notes.md
 		..\readme.md = ..\readme.md
 		chocolatey\ToTypeScriptD.nuspec = chocolatey\ToTypeScriptD.nuspec
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToTypeScriptD.Lexical", "ToTypeScriptD.Lexical\ToTypeScriptD.Lexical.csproj", "{50FD28EA-65E4-479E-9193-20B758E10930}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cstsd.Lexical", "ToTypeScriptD.Lexical\cstsd.Lexical.csproj", "{50FD28EA-65E4-479E-9193-20B758E10930}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

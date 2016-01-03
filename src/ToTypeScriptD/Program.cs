@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using ToTypeScriptD.Core;
 using ToTypeScriptD.Core.Config;
-using ToTypeScriptD.Lexical.DotNet;
-using ToTypeScriptD.Lexical.WinMD;
+using ToTypeScriptD.Lexical;
 
-namespace ToTypeScriptD
+namespace cstsd
 {
     class Program
     {
