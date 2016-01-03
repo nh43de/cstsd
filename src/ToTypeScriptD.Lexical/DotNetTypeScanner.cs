@@ -13,8 +13,6 @@ using ToTypeScriptD.Lexical.WinMD;
 
 namespace ToTypeScriptD.Lexical
 {
-    //TODO: this needs to be a non-static class and should inherit from a ITypeScanner interface.
-
     /// <summary>
     /// Returns TS generation AST objects (TS* classes).
     /// </summary>
@@ -78,7 +76,7 @@ namespace ToTypeScriptD.Lexical
                 if (td.BaseType.FullName == "System.MulticastDelegate" ||
                     td.BaseType.FullName == "System.Delegate")
                 {
-                    //TODO: not implemented
+                    //TODO: Delegate writer not implemented
                     //return new DelegateWriter(td, indentCount, config, this);
                 }
                 else
@@ -178,8 +176,6 @@ namespace ToTypeScriptD.Lexical
 
         public virtual TSType GetType(Type td)
         {
-            // TODO: possible generate a new interface type that extends all of the constraints?
-
             if (td.IsGenericType)
                 return new TSGenericType(td.ToTypeScriptTypeName(), td.Namespace)
                 { 
@@ -288,7 +284,6 @@ namespace ToTypeScriptD.Lexical
                     //TODO: implement outtypes - returns an interface containing the out parameters
                     //if (outTypes.Any())
                     //{
-                    //    //TODO: hook in outwriter
                     //    var outWriter = new OutParameterReturnTypeWriter(Config, IndentCount, td, methodName, method.ReturnType, outTypes);
 
                     //    //extendedTypes.Add(outWriter);

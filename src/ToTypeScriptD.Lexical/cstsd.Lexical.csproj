@@ -45,9 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DotNet\DotNetExtensions.cs" />
     <Compile Include="Extensions\Extensions.cs" />
-    <Compile Include="Mappings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Render.cs" />
     <Compile Include="TSWriter.cs" />
@@ -68,15 +66,15 @@
     <Compile Include="TypeScript\TSModule.cs" />
     <Compile Include="TypeScript\TSProperty.cs" />
     <Compile Include="TypeScript\TSType.cs" />
-    <Compile Include="WinMD\DelegateWriter.cs" />
-    <Compile Include="PromisesStuff.cs" />
-    <Compile Include="WinMD\LexicalExtensions.cs" />
+    <Compile Include="_notimplemented\DelegateWriter.cs" />
+    <Compile Include="_notimplemented\PromisesStuff.cs" />
+    <Compile Include="Extensions\LexicalExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="WinMD\ToTypeScriptDSpecialTypes.d.ts" />
+    <Content Include="_notimplemented\ToTypeScriptDSpecialTypes.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToTypeScriptD.Core\cstsd.Core.csproj">
@@ -85,7 +83,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="WinMD\TestTS.ts" />
+    <TypeScriptCompile Include="_notimplemented\TestTS.ts" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
