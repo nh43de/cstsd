@@ -38,6 +38,7 @@ namespace ToTypeScriptD.Lexical.WinMD
                 { "System.Byte",                 "any /* byte */"},
                 { "System.Single",               "number"},
                 { "System.Double",               "number"},
+                { "System.Decimal",              "number"},
                 { "System.Char",                 "any /* char */"}, 
                 { "System.Guid",                 "any /* guid */"},
                 { "System.Byte[]",               "any /* byte[] */"},
