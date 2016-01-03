@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using ToTypeScriptD.Core.Config;
+using ToTypeScriptD.Core;
 using ToTypeScriptD.Lexical;
 
 namespace ToTypeScriptD.Tests.Helpers

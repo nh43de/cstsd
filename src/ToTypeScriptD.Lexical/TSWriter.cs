@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ToTypeScriptD.Core.Config;
+using ToTypeScriptD.Core;
 using ToTypeScriptD.Lexical.TypeScript;
 using ToTypeScriptD.Lexical.TypeScript.Abstract;
 

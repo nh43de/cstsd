@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace ToTypeScriptD.Core.Config
+﻿namespace ToTypeScriptD.Core
 {
 
     public class TsdConfig

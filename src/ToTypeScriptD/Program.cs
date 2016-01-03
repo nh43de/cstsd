@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using ToTypeScriptD.Core.Config;
+using ToTypeScriptD.Core;
 using ToTypeScriptD.Lexical;
 
 namespace cstsd

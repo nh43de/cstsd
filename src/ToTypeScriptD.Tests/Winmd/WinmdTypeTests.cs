@@ -2,8 +2,6 @@
 using System;
 using System.IO;
 using ToTypeScriptD.Core;
-using ToTypeScriptD.Core.Config;
-using ToTypeScriptD.Core.Extensions;
 using ToTypeScriptD.Lexical;
 using ToTypeScriptD.Lexical.DotNet;
 using ToTypeScriptD.Lexical.Extensions;

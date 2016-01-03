@@ -4,9 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using ToTypeScriptD.Core.Attributes;
-using ToTypeScriptD.Core.Config;
-using ToTypeScriptD.Core.Extensions;
+using ToTypeScriptD.Core;
+using ToTypeScriptD.Lexical.Extensions;
 
 namespace ToTypeScriptD.Lexical
 {

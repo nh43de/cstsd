@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using CommandLine;
 using CommandLine.Text;
-using ToTypeScriptD.Core.Config;
+using ToTypeScriptD.Core;
 
 namespace cstsd
 {

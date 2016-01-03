@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToTypeScriptD.Core.Extensions;
 using ToTypeScriptD.Lexical.Extensions;
 
 namespace ToTypeScriptD.Lexical.WinMD
 {
     public static class WinMDExtensions
     {
-
         static Dictionary<string, string> typeMap = new Dictionary<string, string>{
                 { "System.String",               "string"},
                 { "System.Type",                 "string /*System.Type?*/"},

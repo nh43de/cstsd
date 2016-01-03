@@ -35,10 +35,9 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes\TypeScriptExportAttribute.cs" />
-    <Compile Include="Config\TsdConfig.cs" />
-    <Compile Include="Config\IndentationFormatting.cs" />
-    <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="TypeScriptExportAttribute.cs" />
+    <Compile Include="TsdConfig.cs" />
+    <Compile Include="IndentationFormatting.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>

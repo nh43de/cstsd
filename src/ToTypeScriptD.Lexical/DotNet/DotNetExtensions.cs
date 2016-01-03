@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToTypeScriptD.Core.Extensions;
 using ToTypeScriptD.Lexical.Extensions;
 
 namespace ToTypeScriptD.Lexical.DotNet
