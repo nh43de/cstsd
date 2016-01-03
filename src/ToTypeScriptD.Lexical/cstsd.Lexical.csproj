@@ -51,7 +51,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Render.cs" />
     <Compile Include="TSWriter.cs" />
-    <Compile Include="TypeScanner.cs" />
+    <Compile Include="DotNetTypeScanner.cs" />
+    <Compile Include="ITypeScanner.cs" />
     <Compile Include="WinMD\DelegateWriter.cs" />
     <Compile Include="PromisesStuff.cs" />
     <Compile Include="WinMD\WinMDExtensions.cs" />

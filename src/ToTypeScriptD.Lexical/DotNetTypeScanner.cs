@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using ToTypeScriptD.Core.Config;
 using ToTypeScriptD.Core.Extensions;
 using ToTypeScriptD.Core.TypeScript;
 using ToTypeScriptD.Core.TypeScript.Abstract;
@@ -18,16 +19,36 @@ namespace ToTypeScriptD.Lexical
     /// <summary>
     /// Returns TS generation AST objects (TS* classes).
     /// </summary>
-    public static class TypeScanner
+    public class DotNetTypeScanner : ITypeScanner<Type>
     {
-        public static TSAssembly GetTSAssembly(ICollection<Type> types)
+        private readonly TsdConfig _config;
+
+        public DotNetTypeScanner(TsdConfig config)
         {
-            //TODO: implement gettsassembly
-            throw new NotImplementedException();
+            _config = config;
+        }
+
+        //TODO: need types external to assembly - and multiple files output? options?
+        public virtual TSAssembly GetTSAssembly(ICollection<Type> types, string assemblyName)
+        {
+            var tsAssembly = new TSAssembly(assemblyName);
+
+            foreach (var ns in types.Select(t => t.Namespace).Distinct())
+            {
+                 tsAssembly.Modules.Add(
+                     GetModule(ns,
+                        types.Where(t => t.Namespace == ns && t.IsNested == false)
+                            .OrderBy(t => t.Name)
+                            .ToArray()
+                    )
+                 );
+            }
+
+            return tsAssembly;
         }
 
 
-        public static TSModule GetModule(string namespaceStr, ICollection<Type> types)
+        public virtual TSModule GetModule(string namespaceStr, ICollection<Type> types)
         {
             var tsModule = new TSModule
             {
@@ -43,7 +64,7 @@ namespace ToTypeScriptD.Lexical
         }
 
 
-        public static TSModuleTypeDeclaration GetModuleDeclaration(Type td)
+        public virtual TSModuleTypeDeclaration GetModuleDeclaration(Type td)
         {
             if (td.IsEnum)
             {
@@ -71,7 +92,7 @@ namespace ToTypeScriptD.Lexical
         }
 
 
-        public static TSInterface GetInterface(Type td)
+        public virtual TSInterface GetInterface(Type td)
         {
             var tsInterface = new TSInterface
             {
@@ -87,7 +108,7 @@ namespace ToTypeScriptD.Lexical
         }
 
 
-        public static TSClass GetClass(Type td)
+        public virtual TSClass GetClass(Type td)
         {
             var tsClass = new TSClass
             {
@@ -104,7 +125,7 @@ namespace ToTypeScriptD.Lexical
         }
 
 
-        public static TSEnum GetEnum(Type td)
+        public virtual TSEnum GetEnum(Type td)
         {
             var tsEnum = new TSEnum
             {
@@ -122,7 +143,7 @@ namespace ToTypeScriptD.Lexical
         }
         
 
-        public static List<TSModuleTypeDeclaration> GetNestedTypes(Type td)
+        public virtual List<TSModuleTypeDeclaration> GetNestedTypes(Type td)
         {
             return
                 td.GetNestedTypes()
@@ -132,7 +153,7 @@ namespace ToTypeScriptD.Lexical
         } 
 
 
-        public static List<TSGenericParameter> GetGenericParameters(Type td)
+        public virtual List<TSGenericParameter> GetGenericParameters(Type td)
         {
             var tsTypes = new List<TSGenericParameter>();
 
@@ -156,7 +177,7 @@ namespace ToTypeScriptD.Lexical
             return tsTypes;
         }
 
-        public static TSType GetType(Type td)
+        public virtual TSType GetType(Type td)
         {
             // TODO: possible generate a new interface type that extends all of the constraints?
 
@@ -170,7 +191,7 @@ namespace ToTypeScriptD.Lexical
         }
 
 
-        public static List<TSType> GetInheritedTypesAndInterfaces(Type td)
+        public virtual List<TSType> GetInheritedTypesAndInterfaces(Type td)
         {
             var rtn = GetExportedInterfaces(td);
 
@@ -180,7 +201,7 @@ namespace ToTypeScriptD.Lexical
             return rtn;
         } 
 
-        public static TSType GetBaseType(Type td)
+        public virtual TSType GetBaseType(Type td)
         {
             TSType type = null;
 
@@ -194,7 +215,7 @@ namespace ToTypeScriptD.Lexical
         } 
 
 
-        public static List<TSType> GetExportedInterfaces(Type td)
+        public virtual List<TSType> GetExportedInterfaces(Type td)
         {
             var types = new List<TSType>();
 
@@ -215,7 +236,7 @@ namespace ToTypeScriptD.Lexical
         }
         
 
-        public static List<TSMethod> GetMethods(Type td)
+        public virtual List<TSMethod> GetMethods(Type td)
         {
             var tsMethods = new List<TSMethod>();
             var methods =
@@ -284,7 +305,7 @@ namespace ToTypeScriptD.Lexical
         }
 
 
-        public static List<TSProperty> GetProperties(Type td)
+        public virtual List<TSProperty> GetProperties(Type td)
         {
             var tsProperties = new List<TSProperty>();
 
@@ -321,7 +342,7 @@ namespace ToTypeScriptD.Lexical
         }
 
         
-        public static List<TSField> GetFields(Type td)
+        public virtual List<TSField> GetFields(Type td)
         {
             var fields = new List<TSField>();
 
@@ -342,7 +363,7 @@ namespace ToTypeScriptD.Lexical
             return fields;
         }
         
-        public static List<TSEvent> GetEvents(Type td)
+        public virtual List<TSEvent> GetEvents(Type td)
         {
             var events = new List<TSEvent>();
 

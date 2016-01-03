@@ -66,11 +66,11 @@ namespace ToTypeScriptD.Lexical
 
             var namespaces = types.Select(t => t.Namespace).Distinct();
 
-            
+            var typeScanner = new DotNetTypeScanner(config);
 
             foreach (var ns in namespaces)
             {
-                var tsModule = TypeScanner.GetModule(ns,
+                var tsModule = typeScanner.GetModule(ns,
                     types.Where(t => t.Namespace == ns && t.IsNested == false)
                         .OrderBy(t => t.Name)
                         .ToArray());
