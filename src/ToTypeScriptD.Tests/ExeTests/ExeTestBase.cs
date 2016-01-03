@@ -9,7 +9,7 @@ namespace ToTypeScriptD.Tests.ExeTests
 {
     public class ExeTestBase
     {
-        string TypeScriptDExePath = @"../../../bin/ToTypeScriptD.exe";
+        string TypeScriptDExePath = @"../../../bin/cstsd.exe";
 
         public ExeProcessResult Execute(string args)
         {

@@ -39,24 +39,28 @@ namespace cstsd
             }
             else
             {
-                parseSuccess = CommandLine.Parser.Default.ParseArgumentsStrict(args, options, (verb, subOptions) =>
+                parseSuccess = CommandLine.Parser.Default.ParseArgumentsStrict(args, options, () =>
                 {
-                    //verbInvoked = (verb ?? "").ToLowerInvariant();
-                    outputPath = options.OutputFilePath;
-                    assemblyPaths = options.Files;
-                    
-                    config = new TsdConfig
-                    {
-                        CamelBackCase = options.CamelBackCase,
-                        IncludeSpecialTypes = options.IncludeSpecialTypeDefinitions,
-                        IndentationType = options.IndentationType,
-                        RegexFilter = options.RegexFilter,
-                        RequireTypeScriptExportAttribute = !options.IncludeAllTypes
-                    };
+                    Console.WriteLine("Parsing failed");
                 });
 
+                Console.WriteLine("Done1");
+
+                //verbInvoked = (verb ?? "").ToLowerInvariant();
+                outputPath = options.OutputFilePath;
+                assemblyPaths = options.Files;
+
+                config = new TsdConfig
+                {
+                    CamelBackCase = options.CamelBackCase,
+                    IncludeSpecialTypes = options.IncludeSpecialTypeDefinitions,
+                    IndentationType = options.IndentationType,
+                    RegexFilter = options.RegexFilter,
+                    RequireTypeScriptExportAttribute = !options.IncludeAllTypes
+                };
             }
 
+            Console.WriteLine(parseSuccess);
 
             if (!parseSuccess) return;
             bool skipPrintingHelp = true;

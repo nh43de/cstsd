@@ -54,7 +54,7 @@ namespace ToTypeScriptD.Tests.Winmd
             var config = new TsdConfig();
             var w = new StringWriter();
             Render.FromAssembly(file, config, w);
-            Approvals.Verify(w.GetStringBuilder().ToString());
+            Approvals.Verify(w.ToString());
         }
 
         [Fact]
@@ -85,7 +85,7 @@ namespace ToTypeScriptD.Tests.Winmd
             var config = new TsdConfig();
             var s = new StringWriter();
             Render.FromAssembly(file, config, s);
-            Approvals.Verify(s.GetStringBuilder().ToString());
+            Approvals.Verify(s.ToString());
         }
 
         //[Fact]

@@ -48,7 +48,7 @@ namespace ToTypeScriptD.Tests.Helpers
             }
             var w = new StringWriter();
             Render.FromAssembly(path, config, w);
-            ApprovalTests.Approvals.Verify(w.GetStringBuilder().ToString().StripHeaderGarbageromOutput());
+            ApprovalTests.Approvals.Verify(w.ToString().StripHeaderGarbageromOutput());
         }
     }
 }

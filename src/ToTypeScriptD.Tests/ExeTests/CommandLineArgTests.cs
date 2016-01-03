@@ -95,6 +95,15 @@ namespace ToTypeScriptD.Tests.ExeTests
         }
 
         [Fact]
+        public void ExeTest1()
+        {
+            var resultDup = Execute("-a -c -o output.d.ts cl.dll");
+
+            resultDup.Verify();
+        }
+
+
+        [Fact]
         public void ExeShouldGiveHelpfulErrorWhenFilesNotFoundInUnknownDirectory()
         {
             var resultDup = Execute(@"winmd C:\TypeScriptD\TypeScriptD\TypeScriptD\Foo.dll C:\TypeScriptD\TypeScriptD\TypeScriptD\Foo.dll");

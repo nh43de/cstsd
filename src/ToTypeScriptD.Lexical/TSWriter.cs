@@ -72,7 +72,7 @@ namespace ToTypeScriptD.Lexical
         public string Write(TSField tsField)
         {
             var staticStr = tsField.IsStatic ? "static " : "";
-            return $"{staticStr}{tsField.Name} : {tsField.Type}";
+            return $"{staticStr}{tsField.Name} : {Write(tsField.Type)}";
         }
 
         public string Write(TSMethod tsMethod)
@@ -106,33 +106,24 @@ namespace ToTypeScriptD.Lexical
             var exportStr = tsInterface.IsExport ? "export " : "";
             var extends = tsInterface.BaseTypes.Any() ? " extends " + string.Join(", ", tsInterface.BaseTypes.Select(Write)) : "";
             var generics = tsInterface.GenericParameters.Any() ? $" <{string.Join(", ", tsInterface.GenericParameters.Select(Write))}>" : "";
+            
+            var methods = GetMethods(tsInterface);
+            var fields = GetFields(tsInterface);
+            var properties = GetProperties(tsInterface);
+            var events = GetEvents(tsInterface);
 
-
-            var methods = string.Join(_config.NewLines(2), tsInterface.Methods.Select(Write));
-            if (!string.IsNullOrWhiteSpace(methods))
-                methods = methods.Indent(_config.Indent) + _config.NewLine;
-
-            var fields = string.Join(_config.NewLine, tsInterface.Fields.Select(f => Write(f) + ";"));
-            if (!string.IsNullOrWhiteSpace(fields))
-                fields = fields.Indent(_config.Indent) + _config.NewLine;
-
-            var properties = string.Join(_config.NewLine, tsInterface.Properties.Select(p => Write(p) + ";"));
-            if (!string.IsNullOrWhiteSpace(properties))
-                properties = properties.Indent(_config.Indent) + _config.NewLine;
-
-            var events = string.Join(_config.NewLine, tsInterface.Events.Select(p => Write(p) + ";"));
-            if (!string.IsNullOrWhiteSpace(events))
-                events = events.Indent(_config.Indent) + _config.NewLine;
-
+            var body = JoinBodyText(fields, properties, events, methods);
 
             return $"{exportStr}interface {tsInterface.Name}{generics}{extends}" + _config.NewLine +
                    @"{" + _config.NewLine +
-                   string.Join(_config.NewLine, new[] { fields, properties, events, methods }.Where(s => !string.IsNullOrWhiteSpace(s))) +
+                   body +
                    @"}";
         }
 
+
         public string Write(TSEvent tsEvent)
         {
+            //TODO: not exactly finished
             return $"<EVENT {tsEvent.Name}>";
         }
 
@@ -142,38 +133,69 @@ namespace ToTypeScriptD.Lexical
             var extends = tsClass.BaseTypes.Any() ? " extends " + string.Join(", ", tsClass.BaseTypes.Select(Write)) : "";
             var generics = tsClass.GenericParameters.Any() ? $" <{string.Join(", ", tsClass.GenericParameters.Select(Write))}>" : "";
 
-            var methods = string.Join(_config.NewLines(2), tsClass.Methods.Select(m => m + ""));
-            if (!string.IsNullOrWhiteSpace(methods))
-                methods = methods.Indent(_config.Indent) + _config.NewLine;
+            var methods = GetMethods(tsClass);
+            var fields = GetFields(tsClass);
+            var properties = GetProperties(tsClass);
+            var events = GetEvents(tsClass);
+            var nestedClasses = GetNestedClasses(tsClass);
 
-            var fields = string.Join(_config.NewLine, tsClass.Fields.Select(f => f + ";"));
-            if (!string.IsNullOrWhiteSpace(fields))
-                fields = fields.Indent(_config.Indent) + _config.NewLine;
-
-            var properties = string.Join(_config.NewLine, tsClass.Properties.Select(p => p + ";"));
-            if (!string.IsNullOrWhiteSpace(properties))
-                properties = properties.Indent(_config.Indent) + _config.NewLine;
-
-            var events = string.Join(_config.NewLine, tsClass.Events.Select(p => p + ";"));
-            if (!string.IsNullOrWhiteSpace(events))
-                events = events.Indent(_config.Indent) + _config.NewLine;
-
-
-
-            var body = string.Join(_config.NewLine,
-                new[] { fields, properties, events, methods }
-                    .Where(s => !string.IsNullOrWhiteSpace(s)));
-
-            var nestedClasses = string.Join(_config.NewLines(2), tsClass.NestedClasses.Select(n => n + ""));
-            if (!string.IsNullOrWhiteSpace(nestedClasses))
-                nestedClasses = _config.NewLines(2) + nestedClasses;
-
+            var body = JoinBodyText(fields, properties, events, methods);
+            
             //TODO: config for brackets on same line as declaration
             return $"{exportStr}class {tsClass.Name}{generics}{extends}" + _config.NewLine +
                    @"{" + _config.NewLine +
                    body +
                    @"}" +
                    nestedClasses;
+        }
+
+
+        private string JoinBodyText(params string[] bodytexts)
+        {
+            var body = string.Join(_config.NewLines(2),
+               bodytexts.Where(s => !string.IsNullOrWhiteSpace(s)));
+            return body;
+        }
+
+        private string GetNestedClasses(TSClass tsClass)
+        {
+            var nestedClasses = string.Join(_config.NewLines(2), tsClass.NestedClasses.Select(Write));
+            if (!string.IsNullOrWhiteSpace(nestedClasses))
+                nestedClasses = _config.NewLines(2) + nestedClasses;
+            return nestedClasses;
+        }
+
+
+        private string GetEvents(TSInterface tsInterface)
+        {
+            var events = string.Join(_config.NewLine, tsInterface.Events.Select(p => Write(p) + ";"));
+            if (!string.IsNullOrWhiteSpace(events))
+                events = events.Indent(_config.Indent) + _config.NewLine;
+            return events;
+        }
+
+        private string GetProperties(TSInterface tsInterface)
+        {
+            var properties = string.Join(_config.NewLine, tsInterface.Properties.Select(p => Write(p) + ";"));
+            if (!string.IsNullOrWhiteSpace(properties))
+                properties = properties.Indent(_config.Indent) + _config.NewLine;
+            return properties;
+        }
+
+        private string GetFields(TSInterface tsInterface)
+        {
+            var fields = string.Join(_config.NewLine, tsInterface.Fields.Select(f => Write(f) + ";"));
+            if (!string.IsNullOrWhiteSpace(fields))
+                fields = fields.Indent(_config.Indent) + _config.NewLine;
+            return fields;
+        }
+
+        private string GetMethods(TSInterface tsInterface)
+        {
+            var methods = string.Join(_config.NewLines(2), tsInterface.Methods.Select(Write));
+            if (!string.IsNullOrWhiteSpace(methods))
+                methods = methods.Indent(_config.Indent) + _config.NewLine;
+            return methods;
         }
     }
 }

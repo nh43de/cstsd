@@ -27,9 +27,9 @@ namespace cstsd
         public IndentationFormatting IndentationType { get; set; } = IndentationFormatting.SpaceX4;
 
         [Option('o', "Output to File", HelpText = "Output results to file.")]
-        public string OutputFilePath { get; set; }
+        public string OutputFilePath { get; set; } = null;
 
-        
+        //TODO: not implemented
         private string _regexFilter;
         [Option('r', "regexFilter", HelpText = "A .net regular expression that can be used to filter the FullName of types exported. Picture this taking the FullName of the TypeScript type and running it through the .Net Regex.IsMatch(name, pattern)")]
         public string RegexFilter
@@ -80,7 +80,7 @@ namespace cstsd
             //    optionsObject = new WinmdSubOptions();
             //}
 
-            help.AddDashesToOption = false;
+            help.AddDashesToOption = true;
             help.AddOptions(this);
 
             return help;
