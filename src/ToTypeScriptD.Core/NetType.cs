@@ -14,7 +14,7 @@ namespace ToTypeScriptD.Core
 
         public override string ToString()
         {
-            throw new NotImplementedException();
+            return Name;
         }
     }
 

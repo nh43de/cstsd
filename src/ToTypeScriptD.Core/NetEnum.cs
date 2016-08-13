@@ -7,9 +7,5 @@ namespace ToTypeScriptD.Core
     {
         public HashSet<string> Enums { get; set; } = new HashSet<string>();
 
-        public override string ToString()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

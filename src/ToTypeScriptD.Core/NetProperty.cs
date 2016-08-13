@@ -7,10 +7,6 @@ namespace ToTypeScriptD.Core
         public NetMethod GetterMethod { get; set; }
 
         public NetMethod SetterMethod { get; set; }
-        
-        public override string ToString()
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

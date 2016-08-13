@@ -9,5 +9,10 @@ namespace ToTypeScriptD.Core
 
         
         public ICollection<NetNamespace> Namespaces { get; set; } = new List<NetNamespace>();
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

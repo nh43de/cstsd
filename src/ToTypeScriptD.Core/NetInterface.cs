@@ -23,10 +23,5 @@ namespace ToTypeScriptD.Core
         public ICollection<NetProperty> Properties { get; set; } = new List<NetProperty>();
         public ICollection<NetEvent> Events { get; set; } = new List<NetEvent>();
         
-
-        public override string ToString()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
