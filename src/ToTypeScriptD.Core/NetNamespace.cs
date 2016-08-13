@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace ToTypeScriptD.Core
 {
-    public class NetModule
+    public class NetNamespace
     {
         public string Namespace { get; set; }
-        public ICollection<TSModuleTypeDeclaration> TypeDeclarations { get; set; } = new List<TSModuleTypeDeclaration>();
+        public ICollection<NetType> TypeDeclarations { get; set; } = new List<NetType>();
         
         public override string ToString()
         {

@@ -4,6 +4,6 @@ namespace ToTypeScriptD.Core
 {
     public interface ITypeScanner<TType>
     {
-        NetAssembly GetTsAssembly(ICollection<TType> types, string assemblyName);
+        NetAssembly GetNetAssembly(ICollection<TType> types, string assemblyName);
     }
 }

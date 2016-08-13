@@ -7,7 +7,7 @@ using ToTypeScriptD.Core.Extensions;
 namespace ToTypeScriptD.Core
 {
     /// <summary>
-    /// Returns TS generation AST objects (TS* classes).
+    /// Returns generation AST objects.
     /// </summary>
     public class CsTypeScanner : ITypeScanner<Type>
     {
@@ -38,7 +38,7 @@ namespace ToTypeScriptD.Core
 
 
         //TODO: need types external to assembly - and multiple files output? options?
-        public virtual NetAssembly GetTsAssembly(ICollection<Type> types, string assemblyName)
+        public virtual NetAssembly GetNetAssembly(ICollection<Type> types, string assemblyName)
         {
             var tsAssembly = new NetAssembly(assemblyName);
 
@@ -57,56 +57,27 @@ namespace ToTypeScriptD.Core
         }
 
 
-        public virtual NetModule GetModule(string namespaceStr, ICollection<Type> types)
+        public virtual NetNamespace GetModule(string namespaceStr, ICollection<Type> types)
         {
-            var tsModule = new NetModule
+            var tsModule = new NetNamespace
             {
                 Namespace = namespaceStr
             };
             
             foreach (var td in types.Where(t => t.IsNested == false).OrderBy(t => t.Name))
             {
-                tsModule.TypeDeclarations.Add(GetModuleDeclaration(td));
+                tsModule.TypeDeclarations.Add(RegisterNetType(td));
             }
 
             return tsModule;
         }
-
-
-        public virtual TSModuleTypeDeclaration GetModuleDeclaration(Type td)
-        {
-            if (td.IsEnum)
-            {
-                return GetEnum(td);
-            }
-            else if (td.IsInterface)
-            {
-                return GetInterface(td);
-            }
-            else if (td.IsClass)
-            {
-                if (td.BaseType.FullName == "System.MulticastDelegate" ||
-                    td.BaseType.FullName == "System.Delegate")
-                {
-                    //TODO: Delegate writer not implemented
-                    //return new DelegateWriter(td, indentCount, config, this);
-                }
-                else
-                {
-                    return GetClass(td);
-                }
-            }
-
-            return null;
-        }
-
 
         public virtual NetInterface GetInterface(Type td)
         {
             var tsInterface = new NetInterface
             {
                 Name = td.Name,
-                GenericParameters = GetGenericParameters(td),
+                GenericParameters = GetGenericParameters(td).ToArray(),
                 BaseTypes = GetExportedInterfaces(td),
                 Methods = GetMethods(td).ToArray(),
                 Fields = GetFields(td).ToArray(),
@@ -122,13 +93,13 @@ namespace ToTypeScriptD.Core
             var tsClass = new NetClass
             {
                 Name = td.Name,
-                GenericParameters = GetGenericParameters(td),
+                GenericParameters = GetGenericParameters(td).ToArray(),
                 BaseTypes = GetInheritedTypesAndInterfaces(td),
                 Methods = GetMethods(td).ToArray(),
                 Fields = GetFields(td).ToArray(),
                 Properties = GetProperties(td).ToArray(),
                 Events = GetEvents(td).ToArray(),
-                NestedClasses = GetNestedTypes(td) //only difference between getinterface and getclass
+                NestedClasses = GetNestedTypes(td).ToArray()
             };
             return tsClass;
         }
@@ -141,7 +112,7 @@ namespace ToTypeScriptD.Core
                 Name = td.Name
             };
 
-            td.GetFields().OrderBy(ob => ob.Name).For((item, i, isLast) => //.OrderBy(ob => ob.Name)
+            td.GetFields().For((item, i, isLast) =>
             {
                 if (item.Name == "value__") return;
 
@@ -152,49 +123,46 @@ namespace ToTypeScriptD.Core
         }
         
 
-        public virtual List<TSModuleTypeDeclaration> GetNestedTypes(Type td)
+        public virtual IEnumerable<NetType> GetNestedTypes(Type td)
         {
             return
                 td.GetNestedTypes()
-                    .Where(type => type.IsNestedPublic)
-                    .Select(GetModuleDeclaration)
-                    .ToList();
+                    .Select(nt => RegisterNetType(nt));
         } 
 
 
-        public virtual List<NetGenericParameter> GetGenericParameters(Type td)
+        public virtual IEnumerable<NetGenericParameter> GetGenericParameters(Type td)
         {
-            var tsTypes = new List<NetGenericParameter>();
-
             //generic arguments e.g. "T"
-            td.GetGenericArguments().For((genericParameter, i, isLastItem) =>
+            foreach(var genericParameter in td.GetGenericArguments())
             {
-                var genParameter = new NetGenericParameter(genericParameter.Name); //e.g. "T"
+                var genParameter = new NetGenericParameter {
+                    Name = genericParameter.Name
+                }; //e.g. "T"
 
                 //param constraints e.g. "where T : class" or "where T : ICollection<T>"
-                genericParameter.GetGenericParameterConstraints().For((constraint, j, isLastItemJ) =>
+                foreach(var constraint in genericParameter.GetGenericParameterConstraints())
                 {
                     // Not sure how best to deal with multiple generic constraints (yet)
                     // For now place in a comment
                     // TODO: possible generate a new interface type that extends all of the constraints?
                     genParameter.ParameterConstraints.Add(GetType(constraint));
-                });
+                }
                 
-                tsTypes.Add(genParameter);
-            });
-            
-            return tsTypes;
+                yield return genParameter;
+            }
         }
 
         public virtual NetType GetType(Type td)
         {
-            if (td.IsGenericType)
-                return new NetGenericType(td.Name, td.Namespace)
-                { 
-                    GenericParameters = td.GetGenericArguments().Select(a => new NetType(a.Name, a.Namespace)).ToArray()
-                };
-            else 
-                return new NetType(td.Name, td.Namespace);
+            return new NetType
+            {
+                Name = td.Name,
+                Namespace = td.Namespace,
+                GenericParameters = td.GetGenericArguments()
+                                        .Select(ga => RegisterNetType(ga))
+                                        .ToArray()
+            };
         }
 
 
@@ -250,10 +218,10 @@ namespace ToTypeScriptD.Core
         public virtual IEnumerable<NetMethod> GetMethods(Type td)
         {
             return td.GetMethods(
-                    BindingFlags.Instance 
-                    | BindingFlags.Public 
-                    | BindingFlags.DeclaredOnly
-                    | BindingFlags.NonPublic)
+                BindingFlags.Instance
+                | BindingFlags.Public
+                | BindingFlags.DeclaredOnly
+                | BindingFlags.NonPublic)
                 .Where(m => m.IsHideBySig == false)
                 .Select(GetMethod);
         }
@@ -293,7 +261,7 @@ namespace ToTypeScriptD.Core
             {
                 Name = parameter.Name,
                 IsOutParameter = parameter.IsOut,
-                Type = new NetType(parameter.ParameterType.Name, parameter.ParameterType.Namespace)
+                Type = RegisterNetType(parameter.ParameterType)
             });
         }
 
@@ -321,12 +289,15 @@ namespace ToTypeScriptD.Core
         
         public virtual IEnumerable<NetField> GetFields(Type td)
         {
-            return td.GetFields(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic).Where(f => f.IsSpecialName == false).Select(field => new NetField
-            {
-                IsPublic = field.IsPublic,
-                Name = field.Name,
-                Type = RegisterNetType(field.FieldType)
-            });
+            return
+                td.GetFields(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic)
+                    .Where(f => f.IsSpecialName == false)
+                    .Select(field => new NetField
+                    {
+                        IsPublic = field.IsPublic,
+                        Name = field.Name,
+                        Type = RegisterNetType(field.FieldType)
+                    });
         }
 
         public virtual IEnumerable<NetEvent> GetEvents(Type td)

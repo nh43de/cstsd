@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ToTypeScriptD.Core
 {
-    public class NetInterface : TSModuleTypeDeclaration
+    public class NetInterface : NetType
     {
         //TODO: interface/class events
         /*

@@ -45,7 +45,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="TSModuleTypeDeclaration.cs" />
     <Compile Include="NetAssembly.cs" />
     <Compile Include="NetClass.cs" />
     <Compile Include="NetEnum.cs" />
@@ -54,10 +53,9 @@
     <Compile Include="Extensions\TSFormattingExtensions.cs" />
     <Compile Include="NetParameter.cs" />
     <Compile Include="NetGenericParameter.cs" />
-    <Compile Include="NetGenericType.cs" />
     <Compile Include="NetInterface.cs" />
     <Compile Include="NetMethod.cs" />
-    <Compile Include="NetModule.cs" />
+    <Compile Include="NetNamespace.cs" />
     <Compile Include="NetProperty.cs" />
     <Compile Include="NetType.cs" />
   </ItemGroup>

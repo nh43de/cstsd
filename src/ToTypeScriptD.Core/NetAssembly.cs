@@ -12,6 +12,6 @@ namespace ToTypeScriptD.Core
         public string Name { get; set; }
 
         
-        public ICollection<NetModule> Modules { get; set; } = new List<NetModule>();
+        public ICollection<NetNamespace> Modules { get; set; } = new List<NetNamespace>();
     }
 }

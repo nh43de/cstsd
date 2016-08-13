@@ -2,10 +2,9 @@
 
 namespace cstsd.Lexical.Core
 {
-    public interface ITSWriter
+    public interface INetWriter
     {
-        string Write(NetModule netModule);
-        string Write(TSModuleTypeDeclaration tsModuleTypeDeclaration);
+        string Write(NetNamespace netNamespace);
         string Write(NetEnum netEnum);
         string Write(NetGenericParameter netGenericParameter);
         string Write(NetField netField);

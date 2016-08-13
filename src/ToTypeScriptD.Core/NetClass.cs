@@ -5,7 +5,7 @@ namespace ToTypeScriptD.Core
 {
     public class NetClass : NetInterface
     {
-        public ICollection<TSModuleTypeDeclaration> NestedClasses { get; set; } = new List<TSModuleTypeDeclaration>(); 
+        public ICollection<NetType> NestedClasses { get; set; } = new List<NetType>(); 
 
         public override string ToString()
         {

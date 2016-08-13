@@ -7,24 +7,24 @@ using ToTypeScriptD.Core.Extensions;
 
 namespace ToTypeScriptD.Lexical.TypeScript
 {
-    public class TSWriter : ITSWriter
+    public class NetWriter : INetWriter
     {
         private readonly TsWriterConfig _config;
         private readonly TextWriter _w;
 
-        public TSWriter(TsWriterConfig config, TextWriter w)
+        public NetWriter(TsWriterConfig config, TextWriter w)
         {
             _config = config;
             _w = w;
         }
 
-        public virtual string Write(NetModule netModule)
+        public virtual string Write(NetNamespace netNamespace)
         {
-            var interfaces = string.Join(_config.NewLines(2), netModule.TypeDeclarations.Select(Write));
+            var interfaces = string.Join(_config.NewLines(2), netNamespace.TypeDeclarations.Select(Write));
             if (!string.IsNullOrWhiteSpace(interfaces))
                 interfaces = interfaces.Indent(_config.Indent) + _config.NewLine;
 
-            return $@"module {netModule.Namespace}" + _config.NewLine +
+            return $@"module {netNamespace.Namespace}" + _config.NewLine +
                    @"{" + _config.NewLine +
                    interfaces +
                    @"}";
