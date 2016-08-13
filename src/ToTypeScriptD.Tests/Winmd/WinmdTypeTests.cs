@@ -50,7 +50,7 @@ namespace ToTypeScriptD.Tests.Winmd
             var file = base.NativeAssembly.ComponentPath;
             var config = new TsWriterConfig();
             var w = new StringWriter();
-            Render.FromAssembly(file, config, w);
+            RenderTypescript.FromAssembly(file, config, w);
             Approvals.Verify(w.ToString());
         }
 
@@ -81,7 +81,7 @@ namespace ToTypeScriptD.Tests.Winmd
             var file = @"C:\Windows\System32\WinMetadata\Windows.Foundation.winmd";
             var config = new TsWriterConfig();
             var s = new StringWriter();
-            Render.FromAssembly(file, config, s);
+            RenderTypescript.FromAssembly(file, config, s);
             Approvals.Verify(s.ToString());
         }
 
@@ -103,7 +103,7 @@ namespace ToTypeScriptD.Tests.Winmd
             var allFiles = System.IO.Directory.GetFiles(@"C:\Windows\System32\WinMetadata\", "*.winmd");
             var sw = new System.IO.StringWriter();
             var config = new TsWriterConfig();
-            Render.FromAssemblies(allFiles, config, sw);
+            RenderTypescript.FromAssemblies(allFiles, config, sw);
             var result = Environment.NewLine + Environment.NewLine + sw;
             result.Verify();
         }

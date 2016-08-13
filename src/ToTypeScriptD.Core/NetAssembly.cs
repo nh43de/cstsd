@@ -1,17 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Reflection;
 
 namespace ToTypeScriptD.Core
 {
     public class NetAssembly
     {
-        public NetAssembly(string name)
-        {
-            Name = name;
-        }
-
         public string Name { get; set; }
 
         
-        public ICollection<NetNamespace> Modules { get; set; } = new List<NetNamespace>();
+        public ICollection<NetNamespace> Namespaces { get; set; } = new List<NetNamespace>();
     }
 }

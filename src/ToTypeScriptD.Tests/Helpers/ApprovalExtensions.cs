@@ -48,7 +48,7 @@ namespace ToTypeScriptD.Tests.Helpers
                 configOverrideHook(config);
             }
             var w = new StringWriter();
-            Render.FromAssembly(path, config, w);
+            RenderTypescript.FromAssembly(path, config, w);
             ApprovalTests.Approvals.Verify(w.ToString().StripHeaderGarbageromOutput());
         }
     }

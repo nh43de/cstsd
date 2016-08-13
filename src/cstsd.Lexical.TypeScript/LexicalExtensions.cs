@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using ToTypeScriptD.Core.Extensions;
+using ToTypeScriptD.Lexical.TypeScript;
 
 namespace cstsd.Lexical.Core.Extensions
 {
@@ -361,10 +362,10 @@ namespace cstsd.Lexical.Core.Extensions
             return sb.ToString();
         }
 
-        public static string ToTypeScript(this Type type, TsdConfig config = null)
+        public static string ToTypeScript(this Type type, TsWriterConfig config = null)
         {
             if (config == null)
-                config = new TsdConfig();
+                config = new TsWriterConfig();
 
             throw new NotImplementedException();
         }

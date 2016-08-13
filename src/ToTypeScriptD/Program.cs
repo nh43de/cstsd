@@ -64,38 +64,42 @@ namespace cstsd
 
             if (!parseSuccess) return;
             bool skipPrintingHelp = true;
-            try
+
+
+            //try
             {
                 if (string.IsNullOrWhiteSpace(outputPath))
-                    Render.FromAssemblies(assemblyPaths, config, Console.Out);
+                    RenderTypescript.FromAssemblies(assemblyPaths, config, Console.Out);
                 else
                 {
                     Console.WriteLine($"Writing to output file: {outputPath}");
 
                     TextWriter w = new StreamWriter(outputPath, false);
-                    
-                    Render.FromAssemblies(assemblyPaths, config, w);
+
+                    RenderTypescript.FromAssemblies(assemblyPaths, config, w);
                     
                     w.Flush();
                 }
             }
-            catch (Exception ex)
-            {
-                if (ex is System.IO.DirectoryNotFoundException || ex is System.IO.FileNotFoundException)
-                {
-                    skipPrintingHelp = true;
-                    Console.Error.WriteLine("Error: " + ex.Message);
-                    Console.Read();
-                }
-                else
-                {
-                    Console.Error.WriteLine("Error: " + ex.Message);
+            //catch (Exception ex)
+            //{
+            //    if (ex is System.IO.DirectoryNotFoundException || ex is System.IO.FileNotFoundException)
+            //    {
+            //        skipPrintingHelp = true;
+            //        Console.Error.WriteLine("Error: " + ex.Message);
+            //        Console.Read();
+            //    }
+            //    else
+            //    {
+            //        Console.Error.WriteLine("Error: " + ex.Message);
 
-                    Console.Read();
+            //        Console.Read();
 
-                    throw;
-                }
-            }
+            //        throw;
+            //    }
+            //}
+
+            Console.Read();
 
             if (skipPrintingHelp) return;
             Console.WriteLine(options.GetUsage(verbInvoked));

@@ -12,40 +12,89 @@ namespace ToTypeScriptD.Lexical.TypeScript
         private readonly TsWriterConfig _config;
         private readonly TextWriter _w;
 
+        private string _indent => _config.Indent;
+
+
+
         public NetWriter(TsWriterConfig config, TextWriter w)
         {
             _config = config;
             _w = w;
         }
 
+
+
         public virtual string Write(NetNamespace netNamespace)
         {
-            var interfaces = string.Join(_config.NewLines(2), netNamespace.TypeDeclarations.Select(Write));
-            if (!string.IsNullOrWhiteSpace(interfaces))
-                interfaces = interfaces.Indent(_config.Indent) + _config.NewLine;
+            var typeDeclarations = string.Join(_config.NewLines(2), netNamespace.TypeDeclarations.Select(Write));
+
+            if (!string.IsNullOrWhiteSpace(typeDeclarations))
+                typeDeclarations = typeDeclarations.Indent(_indent) + _config.NewLine;
 
             return $@"module {netNamespace.Namespace}" + _config.NewLine +
                    @"{" + _config.NewLine +
-                   interfaces +
+                   typeDeclarations +
                    @"}";
         }
 
-        public virtual string Write(TSModuleTypeDeclaration tsModuleTypeDeclaration)
+        public virtual string Write(NetType netType)
         {
-            var @class = tsModuleTypeDeclaration as NetClass;
+            var @class = netType as NetClass;
             if (@class != null)
                 return Write(@class);
 
-            var @enum = tsModuleTypeDeclaration as NetEnum;
+            var @enum = netType as NetEnum;
             if(@enum != null)
                 return Write(@enum);
 
-            var @interface = tsModuleTypeDeclaration as NetInterface;
+            var @interface = netType as NetInterface;
             if(@interface != null)
                 return Write(@interface);
 
             throw new NotImplementedException();
         }
+
+        public virtual string Write(NetClass netClass)
+        {
+            var exportStr = netClass.IsPublic ? "export " : "";
+            var extends = netClass.BaseTypes.Any() ? " extends " + string.Join(", ", netClass.BaseTypes.Select(Write)) : "";
+            var generics = netClass.GenericParameters.Any() ? $" <{string.Join(", ", netClass.GenericParameters.Select(Write))}>" : "";
+
+            var methods = GetMethodsString(netClass);
+            var fields = GetFieldsString(netClass);
+            var properties = GetPropertiesString(netClass);
+            var events = GetEventsString(netClass);
+            var nestedClasses = GetNestedClassesString(netClass);
+
+            var body = JoinBodyText(fields, properties, events, methods);
+
+            //TODO: config for brackets on same line as declaration
+            return $"{exportStr}class {netClass.Name}{generics}{extends}" + _config.NewLine +
+                   @"{" + _config.NewLine +
+                   body +
+                   @"}" +
+                   nestedClasses;
+        }
+
+        public virtual string Write(NetInterface netInterface)
+        {
+            var exportStr = netInterface.IsPublic ? "export " : "";
+            var extends = netInterface.BaseTypes.Any() ? " extends " + string.Join(", ", netInterface.BaseTypes.Select(Write)) : "";
+            var generics = netInterface.GenericParameters.Any() ? $" <{string.Join(", ", netInterface.GenericParameters.Select(Write))}>" : "";
+
+            var methods = GetMethodsString(netInterface);
+            var fields = GetFieldsString(netInterface);
+            var properties = GetPropertiesString(netInterface);
+            var events = GetEventsString(netInterface);
+
+            var body = JoinBodyText(fields, properties, events, methods);
+
+            return $"{exportStr}interface {netInterface.Name}{generics}{extends}" + _config.NewLine +
+                   @"{" + _config.NewLine +
+                   body +
+                   @"}";
+        }
+
 
         public virtual string Write(NetEnum netEnum)
         {
@@ -56,6 +105,14 @@ namespace ToTypeScriptD.Lexical.TypeScript
                    $"{enumStr}" + _config.NewLine +
                    @"}";
         }
+
+        //TODO: do this
+        //public virtual string Write(NetGenericType netGenericType)
+        //{
+        //    return netGenericType.GenericParameters.Any()
+        //        ? $"{netGenericType.Name}<{string.Join(", ", netGenericType.GenericParameters.Select(Write))}>"
+        //        : netGenericType.Name;
+        //}
 
 
         public virtual string Write(NetGenericParameter netGenericParameter)
@@ -77,7 +134,7 @@ namespace ToTypeScriptD.Lexical.TypeScript
             var funParams = string.Join(", ", netMethod.Parameters.Select(Write));
             var returnTypeStr = Write(netMethod.ReturnType);
             var returnType = string.IsNullOrWhiteSpace(returnTypeStr) ? "void" : returnTypeStr;
-            var exportStr = netMethod.IsExport ? "export " : "";
+            var exportStr = !netMethod.IsPublic ? "private " : "";
             var staticStr = netMethod.IsStatic ? "static " : "";
 
             return $"{exportStr}{staticStr}{netMethod.Name}({funParams}) : {returnType}" + _config.NewLine +
@@ -85,66 +142,14 @@ namespace ToTypeScriptD.Lexical.TypeScript
                    $@"{netMethod.Body.Indent(_config.Indent)}" + _config.NewLine +
                    @"}";
         }
-
-        public virtual string Write(NetGenericType netGenericType)
-        {
-            return netGenericType.GenericParameters.Any()
-                ? $"{netGenericType.Name}<{string.Join(", ", netGenericType.GenericParameters.Select(Write))}>"
-                : netGenericType.Name;
-        }
-
-        public virtual string Write(NetType netType)
-        {
-            return netType.Name;
-        }
-
-        public virtual string Write(NetInterface netInterface)
-        {
-            var exportStr = netInterface.IsExport ? "export " : "";
-            var extends = netInterface.BaseTypes.Any() ? " extends " + string.Join(", ", netInterface.BaseTypes.Select(Write)) : "";
-            var generics = netInterface.GenericParameters.Any() ? $" <{string.Join(", ", netInterface.GenericParameters.Select(Write))}>" : "";
-            
-            var methods = GetMethodsString(netInterface);
-            var fields = GetFieldsString(netInterface);
-            var properties = GetPropertiesString(netInterface);
-            var events = GetEventsString(netInterface);
-
-            var body = JoinBodyText(fields, properties, events, methods);
-
-            return $"{exportStr}interface {netInterface.Name}{generics}{extends}" + _config.NewLine +
-                   @"{" + _config.NewLine +
-                   body +
-                   @"}";
-        }
-
-
+        
         public virtual string Write(NetEvent netEvent)
         {
             //TODO: not exactly finished
             return $"<EVENT {netEvent.Name}>";
         }
 
-        public virtual string Write(NetClass netClass)
-        {
-            var exportStr = netClass.IsExport ? "export " : "";
-            var extends = netClass.BaseTypes.Any() ? " extends " + string.Join(", ", netClass.BaseTypes.Select(Write)) : "";
-            var generics = netClass.GenericParameters.Any() ? $" <{string.Join(", ", netClass.GenericParameters.Select(Write))}>" : "";
 
-            var methods = GetMethodsString(netClass);
-            var fields = GetFieldsString(netClass);
-            var properties = GetPropertiesString(netClass);
-            var events = GetEventsString(netClass);
-            var nestedClasses = GetNestedClassesString(netClass);
-
-            var body = JoinBodyText(fields, properties, events, methods);
-            
-            //TODO: config for brackets on same line as declaration
-            return $"{exportStr}class {netClass.Name}{generics}{extends}" + _config.NewLine +
-                   @"{" + _config.NewLine +
-                   body +
-                   @"}" +
-                   nestedClasses;
-        }
 
 
         private string JoinBodyText(params string[] bodytexts)

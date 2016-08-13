@@ -9,7 +9,6 @@ namespace cstsd.Lexical.Core
         string Write(NetGenericParameter netGenericParameter);
         string Write(NetField netField);
         string Write(NetMethod netMethod);
-        string Write(NetGenericType netGenericType);
         string Write(NetType netType);
         string Write(NetInterface netInterface);
         string Write(NetEvent netEvent);

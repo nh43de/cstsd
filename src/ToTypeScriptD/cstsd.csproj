@@ -64,7 +64,6 @@
     <Compile Include="..\SharedItems\AssemblyInfo.Common.cs">
       <Link>Properties\AssemblyInfo.Common.cs</Link>
     </Compile>
-    <Compile Include="Render.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -74,21 +73,21 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ToTypeScriptD.Core\cstsd.Core.csproj">
-      <Project>{fea71855-6f65-45cb-97c4-51f1891904f6}</Project>
-      <Name>cstsd.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ToTypeScriptD.Lexical\cstsd.Lexical.csproj">
-      <Project>{50fd28ea-65e4-479e-9193-20b758e10930}</Project>
-      <Name>cstsd.Lexical</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\cstsd.Lexical.Core\cstsd.Lexical.Core.csproj">
+      <Project>{87056633-5442-4fcb-8459-1f0884a1da1e}</Project>
+      <Name>cstsd.Lexical.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\cstsd.Lexical.TypeScript\cstsd.TypeScript.csproj">
+      <Project>{d928441c-26cd-41de-97f6-aab1ce14e710}</Project>
+      <Name>cstsd.TypeScript</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

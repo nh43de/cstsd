@@ -93,6 +93,10 @@
       <Project>{87056633-5442-4FCB-8459-1F0884A1DA1E}</Project>
       <Name>cstsd.Lexical.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\cstsd.Lexical.TypeScript\cstsd.TypeScript.csproj">
+      <Project>{d928441c-26cd-41de-97f6-aab1ce14e710}</Project>
+      <Name>cstsd.TypeScript</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ToTypeScriptD.Core\cstsd.Core.csproj">
       <Project>{fea71855-6f65-45cb-97c4-51f1891904f6}</Project>
       <Name>cstsd.Core</Name>
@@ -115,6 +119,9 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Winmd\file1.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ecc.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

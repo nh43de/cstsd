@@ -7,12 +7,16 @@ namespace ToTypeScriptD.Core
     {
         public string Namespace { get; set; }
         public string Name { get; set; }
+        public string FullName { get; set; }
+        public bool IsPublic { get; set; }
 
-        public ICollection<NetType> GenericParameters { get; set; } = new List<NetType>();
+        public ICollection<NetGenericParameter> GenericParameters { get; set; } = new List<NetGenericParameter>();
 
         public override string ToString()
         {
             throw new NotImplementedException();
         }
     }
+
+
 }
