@@ -1,9 +1,11 @@
 using System;
 
-namespace ToTypeScriptD.Lexical.TypeScript
+namespace ToTypeScriptD.Core
 {
-    public class TSFuncParameter : TSField
+    public class NetParameter : NetField
     {
+        public bool IsOutParameter { get; set; }
+
         public override string ToString()
         {
             throw new NotImplementedException();

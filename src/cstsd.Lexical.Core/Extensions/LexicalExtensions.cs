@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using ToTypeScriptD.Core;
-using ToTypeScriptD.Lexical.Extensions;
+using ToTypeScriptD.Core.Extensions;
 
-namespace ToTypeScriptD.Lexical.WinMD
+namespace cstsd.Lexical.Core.Extensions
 {
     public static class LexicalExtensions
     {

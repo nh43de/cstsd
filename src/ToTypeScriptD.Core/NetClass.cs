@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using ToTypeScriptD.Lexical.TypeScript.Abstract;
 
-namespace ToTypeScriptD.Lexical.TypeScript
+namespace ToTypeScriptD.Core
 {
-    public class TSClass : TSInterface
+    public class NetClass : NetInterface
     {
         public ICollection<TSModuleTypeDeclaration> NestedClasses { get; set; } = new List<TSModuleTypeDeclaration>(); 
 

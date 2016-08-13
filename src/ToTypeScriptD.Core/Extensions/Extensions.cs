@@ -4,9 +4,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using ToTypeScriptD.Core;
 
-namespace ToTypeScriptD.Lexical.Extensions
+namespace ToTypeScriptD.Core.Extensions
 {
 
     public static class Extensions

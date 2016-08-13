@@ -40,8 +40,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TSWriter.cs" />
-    <Compile Include="DotNetTypeScanner.cs" />
+    <Compile Include="TypeScript\TsWriterConfig.cs" />
+    <Compile Include="TypeScript\TSWriter.cs" />
     <Compile Include="_notimplemented\DelegateWriter.cs" />
     <Compile Include="_notimplemented\PromisesStuff.cs" />
   </ItemGroup>

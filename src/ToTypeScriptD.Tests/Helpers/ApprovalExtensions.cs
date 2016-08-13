@@ -1,6 +1,7 @@
 ﻿using System.IO;
+using cstsd;
 using ToTypeScriptD.Core;
-using ToTypeScriptD.Lexical;
+using ToTypeScriptD.Lexical.TypeScript;
 
 namespace ToTypeScriptD.Tests.Helpers
 {
@@ -38,9 +39,9 @@ namespace ToTypeScriptD.Tests.Helpers
             ApprovalTests.Approvals.Verify(item);
         }
 
-        public static void DumpDotNetAndVerify(this string path, System.Action<TsdConfig> configOverrideHook = null)
+        public static void DumpDotNetAndVerify(this string path, System.Action<TsWriterConfig> configOverrideHook = null)
         {
-            var config = new TsdConfig();
+            var config = new TsWriterConfig();
 
             if (configOverrideHook != null)
             {

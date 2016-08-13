@@ -5,9 +5,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using ToTypeScriptD.Core;
-using ToTypeScriptD.Lexical.Extensions;
+using ToTypeScriptD.Core.Extensions;
 
-namespace ToTypeScriptD.Lexical
+namespace cstsd
 {
     public class Render
     {

@@ -1,7 +1,10 @@
-﻿namespace ToTypeScriptD.Core
+﻿using ToTypeScriptD.Core;
+
+namespace ToTypeScriptD.Lexical.TypeScript
 {
 
-    public class TsdConfig
+    
+    public class TsWriterConfig
     {
         public virtual bool CamelBackCase { get; set; } = true;
         

@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using ToTypeScriptD.Lexical.TypeScript.Abstract;
 
-namespace ToTypeScriptD.Lexical.TypeScript
+namespace ToTypeScriptD.Core
 {
-    public class TSInterface : TSModuleTypeDeclaration
+    public class NetInterface : TSModuleTypeDeclaration
     {
         //TODO: interface/class events
         /*
@@ -17,12 +16,12 @@ namespace ToTypeScriptD.Lexical.TypeScript
         line = "removeEventListener(eventName: \"{0}\", listener: {1}): void;".FormatWith(eventName, eventListenerType);
         line = "on{0}: (ev: {1}) => void;".FormatWith(eventName, eventListenerType);
         */
-        public ICollection<TSMethod> Methods { get; set; } = new List<TSMethod>();
-        public ICollection<TSField> Fields { get; set; } = new List<TSField>();
-        public ICollection<TSType> BaseTypes { get; set; } = new List<TSType>();
-        public ICollection<TSGenericParameter> GenericParameters { get; set; } = new List<TSGenericParameter>();
-        public ICollection<TSProperty> Properties { get; set; } = new List<TSProperty>();
-        public ICollection<TSEvent> Events { get; set; } = new List<TSEvent>();
+        public ICollection<NetMethod> Methods { get; set; } = new List<NetMethod>();
+        public ICollection<NetField> Fields { get; set; } = new List<NetField>();
+        public ICollection<NetType> BaseTypes { get; set; } = new List<NetType>();
+        public ICollection<NetGenericParameter> GenericParameters { get; set; } = new List<NetGenericParameter>();
+        public ICollection<NetProperty> Properties { get; set; } = new List<NetProperty>();
+        public ICollection<NetEvent> Events { get; set; } = new List<NetEvent>();
         
 
         public override string ToString()

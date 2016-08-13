@@ -1,10 +1,10 @@
 using System;
 
-namespace ToTypeScriptD.Lexical.TypeScript
+namespace ToTypeScriptD.Core
 {
-    public class TSType
+    public class NetType
     {
-        public TSType(string name, string nameSpace)
+        public NetType(string name, string nameSpace)
         {
             Name = name;
         }

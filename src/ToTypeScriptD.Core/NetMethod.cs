@@ -1,16 +1,18 @@
 using System;
 using System.Collections.Generic;
 
-namespace ToTypeScriptD.Lexical.TypeScript
+namespace ToTypeScriptD.Core
 {
-    public class TSMethod
+    public class NetMethod
     {
         public string Name { get; set; }
-        public bool IsExport { get; set; }
+        public bool IsPublic { get; set; }
         public bool IsStatic { get; set; } = false;
-        public TSType ReturnType { get; set; }
+
+        public bool IsConstructor { get; set; } = false;
+        public NetType ReturnType { get; set; }
         public string Body { get; set; } = ""; 
-        public ICollection<TSFuncParameter> Parameters { get; set; } = new List<TSFuncParameter>();
+        public ICollection<NetParameter> Parameters { get; set; } = new List<NetParameter>();
 
         public override string ToString()
         {

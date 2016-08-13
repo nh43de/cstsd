@@ -1,4 +1,4 @@
-﻿namespace ToTypeScriptD.Lexical.TypeScript.Abstract
+﻿namespace ToTypeScriptD.Core
 {
     public class TSModuleTypeDeclaration
     {

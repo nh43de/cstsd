@@ -1,11 +1,11 @@
 using System;
 
-namespace ToTypeScriptD.Lexical.TypeScript
+namespace ToTypeScriptD.Core
 {
-    public class TSEvent
+    public class NetEvent
     {
         public string Name { get; set; }
-        public TSType EventHandlerType { get; set; }
+        public NetType EventHandlerType { get; set; }
 
         public override string ToString()
         {

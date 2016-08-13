@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToTypeScriptD.Lexical.TypeScript.Abstract;
 
-namespace ToTypeScriptD.Lexical.TypeScript
+namespace ToTypeScriptD.Core
 {
-    public class TSEnum : TSModuleTypeDeclaration
+    public class NetEnum : TSModuleTypeDeclaration
     {
         public HashSet<string> Enums { get; set; } = new HashSet<string>();
 

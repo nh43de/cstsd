@@ -1,20 +1,19 @@
-﻿using ToTypeScriptD.Lexical.TypeScript;
-using ToTypeScriptD.Lexical.TypeScript.Abstract;
+﻿using ToTypeScriptD.Core;
 
-namespace ToTypeScriptD.Lexical
+namespace cstsd.Lexical.Core
 {
     public interface ITSWriter
     {
-        string Write(TSModule tsModule);
+        string Write(NetModule netModule);
         string Write(TSModuleTypeDeclaration tsModuleTypeDeclaration);
-        string Write(TSEnum tsEnum);
-        string Write(TSGenericParameter tsGenericParameter);
-        string Write(TSField tsField);
-        string Write(TSMethod tsMethod);
-        string Write(TSGenericType tsGenericType);
-        string Write(TSType tsType);
-        string Write(TSInterface tsInterface);
-        string Write(TSEvent tsEvent);
-        string Write(TSClass tsClass);
+        string Write(NetEnum netEnum);
+        string Write(NetGenericParameter netGenericParameter);
+        string Write(NetField netField);
+        string Write(NetMethod netMethod);
+        string Write(NetGenericType netGenericType);
+        string Write(NetType netType);
+        string Write(NetInterface netInterface);
+        string Write(NetEvent netEvent);
+        string Write(NetClass netClass);
     }
 }

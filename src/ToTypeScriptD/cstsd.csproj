@@ -64,6 +64,7 @@
     <Compile Include="..\SharedItems\AssemblyInfo.Common.cs">
       <Link>Properties\AssemblyInfo.Common.cs</Link>
     </Compile>
+    <Compile Include="Render.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

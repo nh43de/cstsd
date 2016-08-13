@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToTypeScriptD.Lexical.TypeScript.Abstract;
 
-namespace ToTypeScriptD.Lexical.TypeScript
+namespace ToTypeScriptD.Core
 {
-    public class TSModule
+    public class NetModule
     {
         public string Namespace { get; set; }
         public ICollection<TSModuleTypeDeclaration> TypeDeclarations { get; set; } = new List<TSModuleTypeDeclaration>();

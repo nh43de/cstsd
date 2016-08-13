@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using ToTypeScriptD.Core;
-using ToTypeScriptD.Lexical;
+using ToTypeScriptD.Lexical.TypeScript;
 
 namespace cstsd
 {
@@ -13,7 +13,7 @@ namespace cstsd
         //TODO: location of output file
         static void Main(string[] args)
         {
-            TsdConfig config = null;
+            TsWriterConfig config = null;
             IList<string> assemblyPaths = new string[] { };
 
             var options = new Options();
@@ -30,7 +30,7 @@ namespace cstsd
 
                 assemblyPaths = new string[] {"ecc.dll"};
 
-                config = new TsdConfig
+                config = new TsWriterConfig
                 {
                     CamelBackCase = true,
                     IncludeSpecialTypes = true,
@@ -50,7 +50,7 @@ namespace cstsd
                 outputPath = options.OutputFilePath;
                 assemblyPaths = options.Files;
 
-                config = new TsdConfig
+                config = new TsWriterConfig
                 {
                     CamelBackCase = options.CamelBackCase,
                     IncludeSpecialTypes = options.IncludeSpecialTypeDefinitions,
