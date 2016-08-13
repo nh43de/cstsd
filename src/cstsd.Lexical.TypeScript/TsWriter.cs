@@ -5,9 +5,9 @@ using cstsd.Lexical.Core;
 using ToTypeScriptD.Core;
 using ToTypeScriptD.Core.Extensions;
 
-namespace ToTypeScriptD.Lexical.TypeScript
+namespace cstsd.Lexical.TypeScript
 {
-    public class NetWriter : INetWriter
+    public class TsWriter : INetWriter
     {
         private readonly TsWriterConfig _config;
         private readonly TextWriter _w;
@@ -16,7 +16,7 @@ namespace ToTypeScriptD.Lexical.TypeScript
 
 
 
-        public NetWriter(TsWriterConfig config, TextWriter w)
+        public TsWriter(TsWriterConfig config, TextWriter w)
         {
             _config = config;
             _w = w;

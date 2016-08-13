@@ -41,7 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LexicalExtensions.cs" />
-    <Compile Include="NetWriter.cs" />
+    <Compile Include="TsWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderTypescript.cs" />
     <Compile Include="TsWriterConfig.cs" />

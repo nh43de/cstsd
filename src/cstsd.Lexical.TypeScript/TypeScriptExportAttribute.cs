@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace cstsd.Lexical.Core
+namespace cstsd.Lexical.TypeScript
 {
     public struct CodeGen
     {

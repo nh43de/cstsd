@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using cstsd.Lexical.Core;
+using cstsd.Lexical.TypeScript;
 
 namespace ToTypeScriptD.TestAssembly.CSharp
 {

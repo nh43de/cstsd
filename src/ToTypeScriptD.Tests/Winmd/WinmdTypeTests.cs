@@ -2,9 +2,8 @@
 using System;
 using System.IO;
 using cstsd;
-using cstsd.Lexical.Core.Extensions;
+using cstsd.Lexical.TypeScript;
 using ToTypeScriptD.Core;
-using ToTypeScriptD.Lexical.TypeScript;
 using ToTypeScriptD.Tests.Helpers;
 using Xunit;
 

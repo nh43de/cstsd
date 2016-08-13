@@ -1,6 +1,6 @@
-﻿using ToTypeScriptD.Core;
+﻿using cstsd.Lexical.Core;
 
-namespace ToTypeScriptD.Lexical.TypeScript
+namespace cstsd.Lexical.TypeScript
 {
 
     

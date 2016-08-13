@@ -4,9 +4,8 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using ToTypeScriptD.Core.Extensions;
-using ToTypeScriptD.Lexical.TypeScript;
 
-namespace cstsd.Lexical.Core.Extensions
+namespace cstsd.Lexical.TypeScript
 {
     public static class LexicalExtensions
     {

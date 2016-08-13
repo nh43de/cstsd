@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using cstsd;
+using cstsd.Lexical.TypeScript;
 using ToTypeScriptD.Core;
-using ToTypeScriptD.Lexical.TypeScript;
 
 namespace ToTypeScriptD.Tests.Helpers
 {

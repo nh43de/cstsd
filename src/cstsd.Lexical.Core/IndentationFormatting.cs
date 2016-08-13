@@ -1,5 +1,5 @@
 ﻿
-namespace ToTypeScriptD.Core
+namespace cstsd.Lexical.Core
 {
     public enum IndentationFormatting
     {

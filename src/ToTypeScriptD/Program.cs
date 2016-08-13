@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using ToTypeScriptD.Core;
-using ToTypeScriptD.Lexical.TypeScript;
+using cstsd.Lexical.Core;
+using cstsd.Lexical.TypeScript;
 
 namespace cstsd
 {
