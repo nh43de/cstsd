@@ -16,10 +16,10 @@ namespace ToTypeScriptD.Core
         line = "removeEventListener(eventName: \"{0}\", listener: {1}): void;".FormatWith(eventName, eventListenerType);
         line = "on{0}: (ev: {1}) => void;".FormatWith(eventName, eventListenerType);
         */
+
         public ICollection<NetMethod> Methods { get; set; } = new List<NetMethod>();
         public ICollection<NetField> Fields { get; set; } = new List<NetField>();
         public ICollection<NetType> BaseTypes { get; set; } = new List<NetType>();
-        public ICollection<NetGenericParameter> GenericParameters { get; set; } = new List<NetGenericParameter>();
         public ICollection<NetProperty> Properties { get; set; } = new List<NetProperty>();
         public ICollection<NetEvent> Events { get; set; } = new List<NetEvent>();
         

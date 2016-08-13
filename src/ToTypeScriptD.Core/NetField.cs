@@ -1,13 +1,11 @@
 using System;
+using System.Collections.Generic;
 
 namespace ToTypeScriptD.Core
 {
-    public class NetField
+    public class NetField : NetMember
     {
-        public bool IsPublic { get; set; }
-        public string Name { get; set; }
         public NetType Type { get; set; }
-        public bool IsStatic { get; set; }
 
         public override string ToString()
         {

@@ -1,0 +1,12 @@
+using System.Collections.Generic;
+
+namespace ToTypeScriptD.Core
+{
+    public class NetMember
+    {
+        public string Name { get; set; }
+        public bool IsPublic { get; set; }
+        public bool IsStatic { get; set; } = false;
+        public ICollection<string> Attributes { get; set; } = new List<string>();
+    }
+}

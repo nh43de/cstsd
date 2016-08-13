@@ -139,7 +139,7 @@ namespace ToTypeScriptD.Lexical.TypeScript
 
             return $"{exportStr}{staticStr}{netMethod.Name}({funParams}) : {returnType}" + _config.NewLine +
                    @"{" + _config.NewLine +
-                   $@"{netMethod.Body.Indent(_config.Indent)}" + _config.NewLine +
+                   //TODO: body $@"{netMethod.Body.Indent(_config.Indent)}" + _config.NewLine +
                    @"}";
         }
         

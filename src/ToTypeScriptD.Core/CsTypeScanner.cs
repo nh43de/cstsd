@@ -74,22 +74,63 @@ namespace ToTypeScriptD.Core
 
         public Dictionary<string, NetType> RegisteredTypes { get; set; } = new Dictionary<string, NetType>();
 
-        private NetType RegisterNetType(Type type, bool recursive = true)
+        public virtual NetType RegisterType(Type td)
         {
-            if (string.IsNullOrEmpty(type.FullName))
-                throw new Exception($"Namespace '{type.FullName}' is not valid");
+            if (td == null)
+                return null;
 
-            if (RegisteredTypes.ContainsKey(type.FullName))
-                return RegisteredTypes[type.FullName];
+            if (string.IsNullOrEmpty(td.FullName))
+                throw new Exception($"Namespace '{td.FullName}' is not valid");
 
-            var netType = RegisterType(type);
-            //RegisteredTypes.Add(type.FullName, netType);
+            if (RegisteredTypes.ContainsKey(td.FullName))
+                return RegisteredTypes[td.FullName];
+            
+            NetType nType;
 
-            return netType;
+            if (td.IsEnum)
+            {
+                nType = RegisterEnum(td);
+            }
+            else if (td.IsInterface)
+            {
+                nType = RegisterInterface(td);
+            }
+            else if (td.IsClass)
+            {
+                if (td.BaseType != null
+                    && (td.BaseType.FullName == "System.MulticastDelegate"
+                        || td.BaseType.FullName == "System.Delegate"))
+                {
+                    nType = new NetType();
+                    //TODO: Delegate writer not implemented
+                    //return new DelegateWriter(td, indentCount, config, this);
+                }
+                else
+                {
+                    nType = RegisterClass(td);
+                }
+            }
+            else
+            {
+                nType = new NetType();
+
+                RegisteredTypes.Add(td.FullName, nType);
+            }
+
+            nType.Name = td.Name;
+            nType.FullName = td.FullName;
+            nType.Namespace = td.Namespace;
+            nType.IsPublic = td.IsPublic;
+
+
+            nType.Attributes = td.CustomAttributes.Select(a => a.AttributeType.Name).ToArray();
+            nType.GenericParameters = GetGenericParameters(td).ToArray();
+
+            return nType;
         }
 
         #endregion
-        
+
         public virtual NetNamespace GetNamespace(string namespaceStr, ICollection<Type> types)
         {
             var netNamespace = new NetNamespace
@@ -99,7 +140,7 @@ namespace ToTypeScriptD.Core
             
             foreach (var td in types.Where(t => t.IsNested == false).OrderBy(t => t.Name))
             {
-                netNamespace.TypeDeclarations.Add(RegisterNetType(td));
+                netNamespace.TypeDeclarations.Add(RegisterType(td));
             }
 
             return netNamespace;
@@ -110,15 +151,10 @@ namespace ToTypeScriptD.Core
             if (td == null)
                 return null;
 
-            var tsClass = new NetClass
-            {
-                Name = td.Name,
-                IsPublic = td.IsPublic
-            };
+            var tsClass = new NetClass();
             
             RegisteredTypes.Add(td.FullName, tsClass);
-
-            tsClass.GenericParameters = GetGenericParameters(td).ToArray();
+            
             tsClass.BaseTypes = GetInheritedTypesAndInterfaces(td);
             tsClass.Methods = GetMethods(td).ToArray();
             tsClass.Fields = GetFields(td).ToArray();
@@ -134,15 +170,10 @@ namespace ToTypeScriptD.Core
             if (td == null)
                 return null;
 
-            var tsInterface = new NetInterface
-            {
-                Name = td.Name,
-                IsPublic = td.IsPublic
-            };
-
+            var tsInterface = new NetInterface();
+            
             RegisteredTypes.Add(td.FullName, tsInterface);
 
-            tsInterface.GenericParameters = GetGenericParameters(td).ToArray();
             tsInterface.BaseTypes = GetExportedInterfaces(td);
             tsInterface.Methods = GetMethods(td).ToArray();
             tsInterface.Fields = GetFields(td).ToArray();
@@ -158,11 +189,7 @@ namespace ToTypeScriptD.Core
             if (td == null)
                 return null;
 
-            var tsEnum = new NetEnum
-            {
-                Name = td.Name,
-                IsPublic = td.IsPublic
-            };
+            var tsEnum = new NetEnum();
             
             td.GetFields().For((item, i, isLast) =>
             {
@@ -184,7 +211,7 @@ namespace ToTypeScriptD.Core
 
             return
                 td.GetNestedTypes()
-                    .Select(nt => RegisterNetType(nt));
+                    .Select(nt => RegisterType(nt));
         } 
 
 
@@ -209,7 +236,7 @@ namespace ToTypeScriptD.Core
                     // Not sure how best to deal with multiple generic constraints (yet)
                     // For now place in a comment
                     // TODO: possible generate a new interface type that extends all of the constraints?
-                    genParameter.ParameterConstraints.Add(RegisterNetType(constraint));
+                    genParameter.ParameterConstraints.Add(RegisterType(constraint));
                 }
                 
                 yield return genParameter;
@@ -217,47 +244,15 @@ namespace ToTypeScriptD.Core
         }
 
 
-        public virtual NetType RegisterType(Type td)
+        public IEnumerable<NetType> RegisterTypes(IEnumerable<Type> types)
         {
-            if (td == null)
-                return null;
-
-            if (td.IsEnum)
+            foreach (var type in types)
             {
-                return RegisterEnum(td);
+                yield return RegisterType(type);
             }
-            if (td.IsInterface)
-            {
-                return RegisterInterface(td);
-            }
-            if (td.IsClass)
-            {
-                if (td.BaseType != null 
-                    && (td.BaseType.FullName == "System.MulticastDelegate" 
-                    || td.BaseType.FullName == "System.Delegate"))
-                {
-                    //TODO: Delegate writer not implemented
-                    //return new DelegateWriter(td, indentCount, config, this);
-                }
-                else
-                {
-                    return RegisterClass(td);
-                }
-            }
-
-            var t = new NetType
-            {
-                Name = td.Name,
-                Namespace = td.Namespace,
-                IsPublic = td.IsPublic
-            };
-
-            RegisteredTypes.Add(td.FullName, t);
-
-            t.GenericParameters = GetGenericParameters(td).ToArray();
-
-            return t;
         }
+
+
 
 
         public virtual List<NetType> GetInheritedTypesAndInterfaces(Type td)
@@ -283,7 +278,7 @@ namespace ToTypeScriptD.Core
             //WriteExportedInterfaces(sb, inheriterString);
             if (td.BaseType != null)
             {
-                type = RegisterNetType(td.BaseType);
+                type = RegisterType(td.BaseType);
             }
 
             return type;
@@ -305,7 +300,7 @@ namespace ToTypeScriptD.Core
                 {
                     foreach (var item in interfaceTypes)
                     {
-                        types.Add(RegisterNetType(item));
+                        types.Add(RegisterType(item));
                     }
                 }
             }
@@ -347,13 +342,14 @@ namespace ToTypeScriptD.Core
                 Name = method.Name,
                 IsStatic = method.IsStatic,
                 IsPublic = method.IsPublic,
+                IsConstructor = method.IsConstructor,
                 Parameters = GetParamters(method.GetParameters())?.ToArray()
             };
             
             // constructors don't have return types.
             if (!method.IsConstructor)
             {
-                netMethod.ReturnType = RegisterNetType(method.ReturnType);
+                netMethod.ReturnType = RegisterType(method.ReturnType);
             }
 
             return netMethod;
@@ -373,7 +369,7 @@ namespace ToTypeScriptD.Core
             {
                 Name = parameter.Name,
                 IsOutParameter = parameter.IsOut,
-                Type = RegisterNetType(parameter.ParameterType)
+                Type = RegisterType(parameter.ParameterType)
             });
         }
 
@@ -395,7 +391,7 @@ namespace ToTypeScriptD.Core
                     Name = prop.Name,
                     SetterMethod = GetMethod(prop.GetSetMethod()),
                     GetterMethod = GetMethod(prop.GetGetMethod()),
-                    Type = RegisterNetType(propType)
+                    Type = RegisterType(propType)
                 };
 
                 yield return netProperty;
@@ -414,7 +410,7 @@ namespace ToTypeScriptD.Core
                     {
                         IsPublic = field.IsPublic,
                         Name = field.Name,
-                        Type = RegisterNetType(field.FieldType)
+                        Type = RegisterType(field.FieldType)
                     });
         }
 
@@ -425,7 +421,7 @@ namespace ToTypeScriptD.Core
 
             return td.GetEvents().Select(eventInfo => new NetEvent
             {
-                EventHandlerType = RegisterNetType(eventInfo.EventHandlerType),
+                EventHandlerType = RegisterType(eventInfo.EventHandlerType),
                 Name = eventInfo.Name
             });
         }
