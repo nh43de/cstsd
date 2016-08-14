@@ -30,27 +30,48 @@ namespace cstsd.Lexical.TypeScript
             
             var netAssembly = css.RegisterAssembly(assemblyPath);
 
-
+            var ww = new TsWriter(config, w, netAssembly.Namespaces);
             
+
+            var controllers = new List<NetClass>();
+            var objects = new List<NetClass>();
+            foreach (var netNamespace in netAssembly.Namespaces)
+            {
+                foreach (var typeDeclaration in netNamespace.TypeDeclarations)
+                {
+                    var @class = typeDeclaration as NetClass;
+                    if (@class != null)
+                    {
+                        if (@class.Attributes.Contains("TypeScriptController"))
+                        {
+                            controllers.Add(@class);
+                        }
+                        else if (@class.Attributes.Contains("TypeScriptObject"))
+                        {
+                            objects.Add(@class);
+                        }
+                        else
+                        {
+                            objects.Add(@class);
+                        }
+                    }
+                }
+            }
+
+            foreach (var netClass in objects)
+            {
+                //var bodyProperties = netClass.Properties.Where(p => p.IsPublic).Cast<NetType>();
+
+                w.Write(ww.WriteNamespace(netClass.Namespace, new[] {netClass}));
+                w.Write(config.NewLines(2));
+            }
+
+            //File.WriteAllText("output2.d.ts", w.());
         }
 
         
-        //TODO: option to include referenced types that are in external assemblies (or how to handle assembly not founds)
-        public static void FromTypes<T>(ICollection<Type> types, TextWriter w, TsWriterConfig config, ITypeScanner<T> typeScanner, INetWriter tsWriter)
-        {
-            var namespaces = types.Select(t => t.Namespace).Distinct();
 
-            foreach (var ns in namespaces)
-            {
-                //w.Write(tsWriter.Write(ns) + config.NewLines(2));
-            }
-        }
-
-
-
-
-
-
+        
         private static string GetHeader(IEnumerable<string> assemblyPaths, bool forceDueToSpecialType)
         {
             if (!forceDueToSpecialType && !assemblyPaths.Any())

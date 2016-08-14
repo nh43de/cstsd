@@ -10,6 +10,8 @@ namespace ToTypeScriptD.Core
         public string FullName { get; set; }
         public bool IsPublic { get; set; }
 
+        public Type ReflectedType { get; set; }
+
         public ICollection<string> Attributes { get; set; } = new List<string>();
 
         public ICollection<NetGenericParameter> GenericParameters { get; set; } = new List<NetGenericParameter>();

@@ -5,7 +5,7 @@ namespace ToTypeScriptD.Core
 {
     public class NetField : NetMember
     {
-        public NetType Type { get; set; }
+        public NetType FieldType { get; set; }
 
         public override string ToString()
         {

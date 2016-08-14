@@ -121,7 +121,7 @@ namespace ToTypeScriptD.Core
             nType.FullName = td.FullName;
             nType.Namespace = td.Namespace;
             nType.IsPublic = td.IsPublic;
-
+            nType.ReflectedType = td;
 
             nType.Attributes = td.CustomAttributes.Select(a => a.AttributeType.Name).ToArray();
             nType.GenericParameters = GetGenericParameters(td).ToArray();
@@ -135,7 +135,7 @@ namespace ToTypeScriptD.Core
         {
             var netNamespace = new NetNamespace
             {
-                Namespace = namespaceStr
+                Name = namespaceStr
             };
             
             foreach (var td in types.Where(t => t.IsNested == false).OrderBy(t => t.Name))
@@ -369,7 +369,7 @@ namespace ToTypeScriptD.Core
             {
                 Name = parameter.Name,
                 IsOutParameter = parameter.IsOut,
-                Type = RegisterType(parameter.ParameterType)
+                FieldType = RegisterType(parameter.ParameterType)
             });
         }
 
@@ -391,7 +391,7 @@ namespace ToTypeScriptD.Core
                     Name = prop.Name,
                     SetterMethod = GetMethod(prop.GetSetMethod()),
                     GetterMethod = GetMethod(prop.GetGetMethod()),
-                    Type = RegisterType(propType)
+                    FieldType = RegisterType(propType)
                 };
 
                 yield return netProperty;
@@ -410,7 +410,7 @@ namespace ToTypeScriptD.Core
                     {
                         IsPublic = field.IsPublic,
                         Name = field.Name,
-                        Type = RegisterType(field.FieldType)
+                        FieldType = RegisterType(field.FieldType)
                     });
         }
 

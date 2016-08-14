@@ -5,12 +5,12 @@ namespace ToTypeScriptD.Core
 {
     public class NetNamespace
     {
-        public string Namespace { get; set; }
-        public ICollection<NetType> TypeDeclarations { get; set; } = new List<NetType>();
+        public string Name { get; set; }
+        public IList<NetType> TypeDeclarations { get; set; } = new List<NetType>();
 
         public override string ToString()
         {
-            return Namespace;
+            return Name;
         }
     }
 }

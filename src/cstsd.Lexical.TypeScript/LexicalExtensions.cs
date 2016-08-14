@@ -3,24 +3,107 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using ToTypeScriptD.Core;
 using ToTypeScriptD.Core.Extensions;
 
 namespace cstsd.Lexical.TypeScript
 {
-    public static class LexicalExtensions
+    public class NullableTypeInfo
+    {
+        public NetType BaseType { get; set; }
+
+        public Type ReflectedBaseType { get; set; }
+
+    }
+
+    public class TypeArrayInfo
+    {
+        public bool IsArrayType { get; set; }
+        public Type ReflectedType { get; set; }
+    }
+
+    public static class NullableTypeExtensions
     {
 
-        private static bool IsNullable(this Type Type)
-        {
-            if (Type.IsValueType)
-                return false;
+    }
 
-            // TODO: is there a better way to determine if it's a Nullable?
-            return Type.Namespace == "System" && Type.Name == "Nullable`1";
+    public static class EnumerableTypeExtensions
+    {
+
+    }
+
+    public static class TypeHelperExtensions
+    {
+        /// <summary>
+        /// If the given <paramref name="type"/> is an array or some other collection
+        /// comprised of 0 or more instances of a "subtype", get that type
+        /// </summary>
+        /// <param name="type">the source type</param>
+        /// <returns></returns>
+        public static Type GetEnumeratedType(this Type type)
+        {
+            // provided by Array
+            var elType = type.GetElementType();
+            if (null != elType) return elType;
+
+            // otherwise provided by collection
+            var elTypes = type.GetGenericArguments();
+            if (elTypes.Length > 0) return elTypes[0];
+
+            // otherwise is not an 'enumerated' type
+            return null;
+        }
+    }
+
+    public static class LexicalExtensions
+    {
+        //TODO: move this somewhere else?
+        public static bool IsNullable(this Type Type)
+        {
+            var typeName = Type.Name;
+            //var typeFullName = Type.FullName;
+
+            return Type.Namespace == "System" && typeName == "Nullable`1";
+        }
+
+        public static Type GetNullableType(this Type Type)
+        {
+            if (!IsNullable(Type)) return Type;
+
+            var genericInstanceType = Type;// as GenericInstanceType;
+            if (genericInstanceType != null)
+            {
+                Type = genericInstanceType.GetGenericArguments()[0];
+            }
+            else
+            {
+                throw new NotImplementedException("For some reason this Nullable didn't have a generic parameter type? " + Type.FullName);
+            }
+
+            return Type;
+        }
+        public static TypeArrayInfo GetTypeArrayInfo(this Type td)
+        {
+            var enumeratedType = td.GetEnumeratedType();
+
+            if (enumeratedType != null)
+            {
+                return new TypeArrayInfo
+                {
+                    IsArrayType = true,
+                    ReflectedType = enumeratedType
+                };
+            }
+
+            return new TypeArrayInfo
+            {
+                IsArrayType = false
+            };
         }
 
 
-        static Dictionary<string, string> typeMap = new Dictionary<string, string>{
+
+        static readonly Dictionary<string, string> _typeMap = new Dictionary<string, string>{
                 { "System.String",               "string"},
                 { "System.Type",                 "string /* System.Type? */"},
                 { "System.Int16",                "number /* Int16 */"},
@@ -44,30 +127,22 @@ namespace cstsd.Lexical.TypeScript
                 { "System.Char[]",               "string"},
                 { "System.DateTime",             "Date"}
         };
-        static Dictionary<string, string> genericTypeMap = null;
 
-        public static string ToTypeScriptNullable(this Type Type)
+        static readonly Lazy<Dictionary<string, string>> _genericTypeMap = new Lazy<Dictionary<string, string>>(() => 
         {
-            return IsNullable(Type) ? "?" : "";
-        }
+            var a = _typeMap
+                .ToDictionary(item => "<" + item.Key + ">", item => "<" + item.Value + ">");
 
-        private static Type GetNullableType(Type Type)
-        {
-            if (!IsNullable(Type)) return Type;
+            _typeMap
+                .ToDictionary(item => item.Key + "[]", item => item.Value + "[]")
+                    .Each(x => a.Add(x.Key, x.Value));
 
-            var genericInstanceType = Type;// as GenericInstanceType;
-            if (genericInstanceType != null)
-            {
-                Type = genericInstanceType.GetGenericArguments()[0];
-            }
-            else
-            {
-                throw new NotImplementedException("For some reason this Nullable didn't have a generic parameter type? " + Type.FullName);
-            }
+            return a;
+        });
 
-            return Type;
-        }
 
+
+        //TODO: what?
         public static string ToTypeScriptItemName(this Type Type)
         {
             // Nested classes don't report their namespace. So we have to walk up the 
@@ -89,107 +164,89 @@ namespace cstsd.Lexical.TypeScript
             return mainTypeName.StripGenericTick();
         }
 
-        public static string ToTypeScriptType(this Type Type)
+
+
+        public static string GetArrayname(Type typeReference)
         {
-            Type = GetNullableType(Type);
+            string fromName;
 
-            if (genericTypeMap == null)
+            Func<Type, bool> collectionInterfaces =
+                i =>
+                    (i.Name.Contains("ICollection") || i.Name.Contains("IEnumerable"));
+
+            if (typeReference.GetInterfaces().Any(collectionInterfaces))
             {
-                genericTypeMap = typeMap
-                    .ToDictionary(item => "<" + item.Key + ">", item => "<" + item.Value + ">");
-
-                typeMap
-                    .ToDictionary(item => item.Key + "[]", item => item.Value + "[]")
-                    .Each(x => genericTypeMap.Add(x.Key, x.Value));
+                var iCollectionTypes = typeReference.GetInterfaces().Where(collectionInterfaces);
+                var iCollectionGenertc = iCollectionTypes.FirstOrDefault(i => i.GetGenericArguments().Any()); //TODO: repeat getintfcs() - fix
+                if (iCollectionGenertc == default(Type))
+                {
+                    fromName = $"System.Int32[]";
+                }
+                else
+                {
+                    fromName = $"{iCollectionGenertc.GetGenericArguments()[0].FullName ?? iCollectionGenertc.GetGenericArguments()[0].Name}[]";
+                }
+            }
+            else
+            {
+                fromName = string.IsNullOrWhiteSpace(typeReference.FullName) ? typeReference.Name : typeReference.FullName;
             }
 
-            var fromName = Type.FullName;
+            return fromName;
+        }
+
+
+        //TODO: move this somewhere else?
+        public static string ToTypeScriptTypeName(this Type typeReference)
+        {
+            typeReference = GetNullableType(typeReference);
+            
+            //TODO: a little hacky (the whole method)
+            var fromName = GetArrayname(typeReference);
 
             // translate / in nested classes into underscores
             fromName = fromName.Replace("/", "_");
 
-            if (typeMap.ContainsKey(fromName))
+            // if we have a direct translation then use it
+            if (_typeMap.ContainsKey(fromName))
             {
-                return typeMap[fromName];
+                return _typeMap[fromName];
             }
 
-            var genericType = genericTypeMap.FirstOrDefault(x => fromName.Contains(x.Key));
-            if (!genericType.Equals(default(System.Collections.Generic.KeyValuePair<string, string>)))
+            // otherwise check for generic type mapping
+            var genericType = _genericTypeMap.Value.FirstOrDefault(x => fromName.Contains(x.Key));
+            if (!genericType.Equals(default(KeyValuePair<string, string>)))
             {
                 fromName = fromName.Replace(genericType.Key, genericType.Value);
             }
 
-            fromName = fromName
-                .StripGenericTick();
+            // If it's an array type return it as such.
 
-            // To lazy to figure out the Mono.Cecil way (or if there is a way), but do 
-            // some string search/replace on types for example:
-            //
-            // turn
-            //      Windows.Foundation.Collections.IMapView<System.String,System.Object>;
-            // into
-            //      Windows.Foundation.Collections.IMapView<string,any>;
-            // 
-            typeMap.Each(item =>
+            var arrayInfo = typeReference.GetTypeArrayInfo();
+
+            if (arrayInfo.IsArrayType)
+            {
+                return arrayInfo.ReflectedType.ToTypeScriptTypeName() + "[]";
+            }
+
+            //if we still don't have it then ..
+            fromName = fromName
+                .StripGenericTick()
+                .StripOutParamSymbol();
+            
+            _typeMap.Each(item =>
             {
                 fromName = fromName.Replace(item.Key, item.Value);
             });
 
-            // If it's an array type return it as such.
-            var genericTypeArgName = "";
-            if (IsTypeArray(Type, out genericTypeArgName))
-            {
-                return genericTypeArgName + "[]";
-            }
-
-            // remove the generic bit
             return fromName;
         }
 
-        private static bool IsTypeArray(Type Type, out string genericTypeArgName)
-        {
-            genericTypeArgName = "";
-
-            return Type.IsConstructedGenericType && IsTypeTypeArray(Type, out genericTypeArgName);
-        }
-        private static bool IsTypeTypeArray(Type Type, out string genericTypeArgName)
-        {
-            var genericTypeInstanceReference = Type;// as GenericInstanceType;
-            if (genericTypeInstanceReference != null)
-            {
-                genericTypeArgName = genericTypeInstanceReference == null
-                    ? "T"
-                    : genericTypeInstanceReference.GenericTypeArguments[0].ToTypeScriptType();
-
-                var enumerableNamePrefix = "System.Collections.IEnumerable";
-
-                // is this IEnumerable?
-                if (Type.FullName.StartsWith(enumerableNamePrefix))
-                {
-                    return true;
-                }
-
-                // does it have an interface that implements IEnumerable?
-                var possibleListType = GetTypeDefinition(genericTypeInstanceReference.GetElementType());
-                if (possibleListType != null)
-                {
-                    if (possibleListType.GetInterfaces().Any(x => x.FullName.StartsWith(enumerableNamePrefix)))
-                    {
-                        return true;
-                    }
-                }
-
-                // TODO: do we need to work harder at inspecting interface items?
-                // TODO: write tests to prove it..
-            }
 
 
 
-            genericTypeArgName = "";
-            return false;
-        }
 
-
+        //TODO: What does this do?
         public static Type GetTypeDefinition(Type Type)
         {
             if (Type == null)
@@ -202,6 +259,7 @@ namespace cstsd.Lexical.TypeScript
                 var result = ass.Modules
                     .SelectMany(x => x.GetTypes())
                     .FirstOrDefault(td => td.FullName == Type.FullName);
+
                 return result;
             }
             catch (Exception ex)
@@ -233,81 +291,6 @@ namespace cstsd.Lexical.TypeScript
                 return true;
 
             return false;
-        }
-
-
-
-        //TODO: move this somewhere else?
-        public static string ToTypeScriptTypeName(this Type typeReference)
-        {
-            if (genericTypeMap == null)
-            {
-                genericTypeMap = typeMap
-                    .ToDictionary(item => "<" + item.Key + ">", item => "<" + item.Value + ">");
-
-                typeMap
-                    .ToDictionary(item => item.Key + "[]", item => item.Value + "[]")
-                    .Each(x => genericTypeMap.Add(x.Key, x.Value));
-            }
-
-            //TODO: hacky
-            string fromName;
-
-            Func<Type, bool> collectionInterfaces =
-                i =>
-                    (i.Name.Contains("ICollection") || i.Name.Contains("IEnumerable"));
-
-            if (typeReference.GetInterfaces().Any(collectionInterfaces))
-            {
-                var iCollectionTypes = typeReference.GetInterfaces().Where(collectionInterfaces);
-                var iCollectionGenertc = iCollectionTypes.FirstOrDefault(i => i.GetGenericArguments().Any()); //TODO: repeat getintfcs() - fix
-                if (iCollectionGenertc == default(Type))
-                {
-                    fromName = $"System.Int32[]";
-                }
-                else
-                {
-                    fromName = $"{iCollectionGenertc.GetGenericArguments()[0].FullName ?? iCollectionGenertc.GetGenericArguments()[0].Name}[]";
-                }
-            }
-            else
-            {
-                fromName = string.IsNullOrWhiteSpace(typeReference.FullName) ? typeReference.Name : typeReference.FullName;
-            }
-
-            // translate / in nested classes into underscores
-            fromName = fromName.Replace("/", "_");
-
-            if (typeMap.ContainsKey(fromName))
-            {
-                return typeMap[fromName];
-            }
-
-            var genericType = genericTypeMap.FirstOrDefault(x => fromName.Contains(x.Key));
-            if (!genericType.Equals(default(KeyValuePair<string, string>)))
-            {
-                fromName = fromName.Replace(genericType.Key, genericType.Value);
-            }
-
-            fromName = fromName
-                .StripGenericTick()
-                .StripOutParamSymbol();
-
-            // To lazy to figure out the Mono.Cecil way (or if there is a way), but do 
-            // some string search/replace on types for example:
-            //
-            // turn
-            //      Windows.Foundation.Collections.IMapView<System.String,System.Object>;
-            // into
-            //      Windows.Foundation.Collections.IMapView<string,any>;
-            // 
-            typeMap.Each(item =>
-            {
-                fromName = fromName.Replace(item.Key, item.Value);
-            });
-
-            // remove the generic bit
-            return fromName;
         }
 
 
