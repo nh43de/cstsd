@@ -16,10 +16,11 @@ namespace ToTypeScriptD.Core
         line = "removeEventListener(eventName: \"{0}\", listener: {1}): void;".FormatWith(eventName, eventListenerType);
         line = "on{0}: (ev: {1}) => void;".FormatWith(eventName, eventListenerType);
         */
+        public ICollection<TsType> BaseTypes { get; set; } = new List<TsType>();
 
+        //class/interface members
         public ICollection<TsMethod> Methods { get; set; } = new List<TsMethod>();
         public ICollection<TsField> Fields { get; set; } = new List<TsField>();
-        public ICollection<TsType> BaseTypes { get; set; } = new List<TsType>();
         public ICollection<TsProperty> Properties { get; set; } = new List<TsProperty>();
         public ICollection<TsEvent> Events { get; set; } = new List<TsEvent>();
         

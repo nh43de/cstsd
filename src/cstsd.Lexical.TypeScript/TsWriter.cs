@@ -134,12 +134,17 @@ namespace cstsd.Lexical.TypeScript
 
         public virtual string WriteEnum(TsEnum netEnum)
         {
-            var enumStr = string.Join(","+_config.NewLine, netEnum.Enums).Indent(_config.Indent);
+            var enumStr = string.Join(","+_config.NewLine, netEnum.Enums.Select(WriteEnumValue)).Indent(_config.Indent);
 
             return $"enum {netEnum.Name}" + _config.NewLine +
                    @"{" + _config.NewLine +
                    $"{enumStr}" + _config.NewLine +
                    @"}";
+        }
+
+        public virtual string WriteEnumValue(TsEnumValue tsEnumValue)
+        {
+            return tsEnumValue.Name + " = " + tsEnumValue.Value;
         }
 
         //TODO: do this
@@ -190,7 +195,7 @@ namespace cstsd.Lexical.TypeScript
         private string GetPropertiesString(TsInterface netInterface)
         {
             var properties = string.Join(_config.NewLine,
-                netInterface.Properties.Select(p => WriteField(p, true) + ";"));
+                netInterface.Properties.Select(p => WriteField(p, p.IsNullable) + ";"));
             if (!string.IsNullOrWhiteSpace(properties))
                 properties = properties.Indent(_config.Indent) + _config.NewLine;
             return properties;
@@ -199,7 +204,7 @@ namespace cstsd.Lexical.TypeScript
         private string GetFieldsString(TsInterface netInterface)
         {
             var fields = string.Join(_config.NewLine,
-                netInterface.Fields.Select(f => WriteField(f, true) + ";"));
+                netInterface.Fields.Select(f => WriteField(f, f.IsNullable) + ";"));
             if (!string.IsNullOrWhiteSpace(fields))
                 fields = fields.Indent(_config.Indent) + _config.NewLine;
             return fields;

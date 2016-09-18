@@ -175,26 +175,20 @@ namespace cstsd.Lexical.TypeScript
         {
             var typeName = type.Name;
             //var typeFullName = Type.FullName;
-
-            return type.Namespace == "System" && typeName == "Nullable`1";
+            
+            return (type.Namespace == "System" && typeName == "Nullable`1") || type.IsValueType == false;
         }
 
         public static Type GetNullableType(this Type type)
         {
-            if (!IsNullable(type)) return type;
+            if (!(type.Namespace == "System" && type.Name == "Nullable`1")) return type;
 
             var genericInstanceType = type;// as GenericInstanceType;
-            if (genericInstanceType != null)
-            {
-                type = genericInstanceType.GetGenericArguments()[0];
-            }
-            else
-            {
-                throw new NotImplementedException("For some reason this Nullable didn't have a generic parameter type? " + type.FullName);
-            }
+            type = genericInstanceType.GetGenericArguments()[0];
 
             return type;
         }
+
         public static TypeArrayInfo GetTypeArrayInfo(this Type td)
         {
             var enumeratedType = td.GetEnumeratedType();

@@ -52,13 +52,23 @@ namespace cstsd.Lexical.TypeScript
             
             w.Write(GetHeader(new[] { assemblyPath }, config.IncludeSpecialTypes));
             
-            var objects = netAssembly.Namespaces.SelectMany(netNamespace => netNamespace.TypeDeclarations).OfType<NetClass>().ToList();
+            var netClasses = netAssembly.Namespaces.SelectMany(netNamespace => netNamespace.TypeDeclarations).OfType<NetClass>().ToList();
+            var netEnums = netAssembly.Namespaces.SelectMany(netNamespace => netNamespace.TypeDeclarations).OfType<NetEnum>().ToList();
 
-            foreach (var netClass in objects)
+
+            foreach (var netClass in netClasses)
             {
                 //var bodyProperties = netClass.Properties.Where(p => p.IsPublic).Cast<NetType>();
 
-                w.Write(ww.WriteNamespace(netClass.Namespace,new [] { tc.GetTsClass(netClass) }, true));
+                w.Write(ww.WriteNamespace(netClass.Namespace,new [] { tc.GetTsInterface(netClass) }, true));
+                w.Write(config.NewLines(2));
+            }
+            
+            foreach (var netEnum in netEnums)
+            {
+                //var bodyProperties = netClass.Properties.Where(p => p.IsPublic).Cast<NetType>();
+
+                w.Write(ww.WriteNamespace(netEnum.Namespace, new[] { tc.GetTsEnum(netEnum) }, true));
                 w.Write(config.NewLines(2));
             }
 

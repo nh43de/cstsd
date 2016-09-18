@@ -1,22 +1,53 @@
 using System.Linq;
 using cstsd.Lexical.TypeScript.Extensions;
 using ToTypeScriptD.Core;
+using ToTypeScriptD.Core.Ts;
 
 namespace cstsd.Lexical.TypeScript
 {
     public class NetTsConverter
     {
-        public virtual TsClass GetTsClass(NetClass netClass)
+        public virtual TsEnum GetTsEnum(NetEnum netEnum)
         {
-            return new TsClass
+            return new TsEnum
+            { 
+                Enums = netEnum.Enums.Select(GetTsEnumValue).ToList(),
+                IsPublic = netEnum.IsPublic,
+                Name = GetTsName(netEnum.Name)
+            };
+        }
+
+        public virtual TsEnumValue GetTsEnumValue(NetEnumValue netEnumValue)
+        {
+            return new TsEnumValue
             {
+                Name = netEnumValue.Name,
+                Value = netEnumValue.Value
+            };
+        }
+
+        public virtual TsInterface GetTsInterface(NetClass netClass)
+        {
+            return new TsInterface
+            {
+                IsPublic = netClass.IsPublic,
                 Name = netClass.Name,
-                Properties = netClass.Properties.Select(netProperty => new TsProperty
-                {
-                    Name = GetTsName(netProperty.Name),
-                    FieldType = GetTsType(netProperty.FieldType)
-                }).ToList()
+                Properties = netClass
+                    .Properties
+                    .Where(p => !p.Attributes.Contains("TsExcludeAttribute"))
+                    .Select(GetTsProperty)
+                    .ToList()
                 //Fields = 
+            };
+        }
+
+        public TsProperty GetTsProperty(NetProperty netProperty)
+        {
+            return new TsProperty
+            {
+                Name = GetTsName(netProperty.Name),
+                FieldType = GetTsType(netProperty.FieldType),
+                IsNullable = !netProperty.FieldType.IsGenericParameter && netProperty.FieldType.ReflectedType.IsNullable()
             };
         }
 
@@ -47,7 +78,7 @@ namespace cstsd.Lexical.TypeScript
         
         public virtual string GetTsTypeName(NetType type)
         {
-            var name = type.ReflectedType.ToTypeScriptTypeName();
+            var name = type.IsGenericParameter ? type.Name : type.ReflectedType.ToTypeScriptTypeName();
             
             return name;
         }

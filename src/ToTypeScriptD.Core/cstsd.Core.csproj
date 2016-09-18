@@ -58,6 +58,8 @@
     <Compile Include="NetNamespace.cs" />
     <Compile Include="NetProperty.cs" />
     <Compile Include="NetType.cs" />
+    <Compile Include="NetEnumValue.cs" />
+    <Compile Include="Ts\TsEnumValue.cs" />
     <Compile Include="Ts\TsModule.cs" />
     <Compile Include="Ts\TsClass.cs" />
     <Compile Include="Ts\TsEnum.cs" />

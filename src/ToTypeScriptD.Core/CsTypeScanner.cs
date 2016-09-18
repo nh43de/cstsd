@@ -96,12 +96,21 @@ namespace ToTypeScriptD.Core
             if (td == null)
                 return null;
 
-            if (string.IsNullOrEmpty(td.FullName))
+            if (td.IsGenericParameter)
+            {
+                return new NetType
+                {
+                    IsGenericParameter = true,
+                    Name = td.Name
+                };
+            }
+            
+            if (!td.IsGenericParameter && string.IsNullOrEmpty(td.FullName))
                 throw new Exception($"Namespace '{td.FullName}' is not valid");
 
             if (RegisteredTypes.ContainsKey(td.FullName))
                 return RegisteredTypes[td.FullName];
-            
+
             NetType nType;
 
             if (td.IsEnum)
@@ -140,13 +149,18 @@ namespace ToTypeScriptD.Core
             nType.IsPublic = td.IsPublic;
             nType.ReflectedType = td;
 
-            nType.Attributes = td.CustomAttributes.Select(a => a.AttributeType.Name).ToArray();
+            nType.Attributes = GetCustomAttributes(td.CustomAttributes);
             nType.GenericParameters = GetGenericParameters(td).ToArray();
 
             return nType;
         }
 
         #endregion
+
+        public virtual ICollection<string> GetCustomAttributes(IEnumerable<CustomAttributeData> customAttributeData)
+        {
+            return customAttributeData.Select(a => a.AttributeType.Name).ToList();
+        }
 
         public virtual NetNamespace GetNamespace(string namespaceStr, ICollection<Type> types)
         {
@@ -207,12 +221,16 @@ namespace ToTypeScriptD.Core
                 return null;
 
             var tsEnum = new NetEnum();
-            
+           
             td.GetFields().For((item, i, isLast) =>
             {
                 if (item.Name == "value__") return;
 
-                tsEnum.Enums.Add(item.Name);
+                tsEnum.Enums.Add( new NetEnumValue
+                {
+                    Name = item.Name,
+                    Value = Convert.ToInt32(item.GetRawConstantValue())
+                });
             });
 
             RegisteredTypes.Add(td.FullName, tsEnum);
@@ -223,12 +241,9 @@ namespace ToTypeScriptD.Core
 
         public virtual IEnumerable<NetType> GetNestedTypes(Type td)
         {
-            if (td == null)
-                return null;
-
             return
-                td.GetNestedTypes()
-                    .Select(nt => RegisterType(nt));
+                td?.GetNestedTypes()
+                    .Select(RegisterType);
         } 
 
 
@@ -302,7 +317,7 @@ namespace ToTypeScriptD.Core
         } 
 
 
-        public virtual List<NetType> GetExportedInterfaces(Type td)
+        public virtual List<NetType> GetExportedInterfaces(Type td) //TODO: rename
         {
             if (td == null)
                 return null;
@@ -360,7 +375,8 @@ namespace ToTypeScriptD.Core
                 IsStatic = method.IsStatic,
                 IsPublic = method.IsPublic,
                 IsConstructor = method.IsConstructor,
-                Parameters = GetParamters(method.GetParameters())?.ToArray()
+                Parameters = GetParamters(method.GetParameters())?.ToArray(),
+                Attributes = GetCustomAttributes(method.CustomAttributes)
             };
             
             // constructors don't have return types.
@@ -386,7 +402,8 @@ namespace ToTypeScriptD.Core
             {
                 Name = parameter.Name,
                 IsOutParameter = parameter.IsOut,
-                FieldType = RegisterType(parameter.ParameterType)
+                FieldType = RegisterType(parameter.ParameterType),
+                Attributes = GetCustomAttributes(parameter.CustomAttributes)
             });
         }
 
@@ -408,6 +425,7 @@ namespace ToTypeScriptD.Core
                     Name = prop.Name,
                     SetterMethod = GetMethod(prop.GetSetMethod()),
                     GetterMethod = GetMethod(prop.GetGetMethod()),
+                    Attributes = GetCustomAttributes(prop.CustomAttributes),
                     FieldType = RegisterType(propType)
                 };
 
@@ -427,7 +445,8 @@ namespace ToTypeScriptD.Core
                     {
                         IsPublic = field.IsPublic,
                         Name = field.Name,
-                        FieldType = RegisterType(field.FieldType)
+                        FieldType = RegisterType(field.FieldType),
+                        Attributes = GetCustomAttributes(field.CustomAttributes)
                     });
         }
 

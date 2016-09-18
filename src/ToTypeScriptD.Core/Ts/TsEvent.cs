@@ -2,9 +2,8 @@ using System;
 
 namespace ToTypeScriptD.Core
 {
-    public class TsEvent
+    public class TsEvent : TsMember //TODO: not finished
     {
-        public string Name { get; set; }
         public TsType EventHandlerType { get; set; }
 
         public override string ToString()

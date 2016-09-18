@@ -22,13 +22,21 @@ namespace cstsd
                 IndentationType = IndentationFormatting.SpaceX4
             };
 
-            using (TextWriter tw = new StreamWriter(@"C:\code\test\output.d.ts", false))
+            using (TextWriter tw = new StreamWriter(@"C:\code\test\eCovenantCloud.DataAccess.d.ts", false))
             {
                 RenderTypescript.FromAssemblyPoco(@"C:\code\test\eCovenantCloud.DataAccess.dll", config2, tw);
             
                 tw.Flush();
             }
-            
+
+
+            using (TextWriter tw = new StreamWriter(@"C:\code\test\eCovenantCloud.Services.Core.d.ts", false))
+            {
+                RenderTypescript.FromAssemblyPoco(@"C:\code\test\eCovenantCloud.Services.Core.dll", config2, tw);
+
+                tw.Flush();
+            }
+
             Console.WriteLine(@"Press any key to continue...");
             Console.ReadLine();
 
