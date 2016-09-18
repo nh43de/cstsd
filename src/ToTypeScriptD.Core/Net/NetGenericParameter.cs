@@ -1,12 +1,12 @@
-﻿using System;
 using System.Collections.Generic;
 
-namespace ToTypeScriptD.Core
+namespace ToTypeScriptD.Core.Net
 {
-    public class NetNamespace
+    public class NetGenericParameter
     {
         public string Name { get; set; }
-        public IList<NetType> TypeDeclarations { get; set; } = new List<NetType>();
+
+        public ICollection<NetType> ParameterConstraints { get; set; } = new List<NetType>();
 
         public override string ToString()
         {

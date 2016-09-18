@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace ToTypeScriptD.Core.Ts
+namespace ToTypeScriptD.Core.Net
 {
-    public class TsModule
+    public class NetNamespace
     {
         public string Name { get; set; }
-
-        public ICollection<TsNamespace> Namespaces { get; set; } = new List<TsNamespace>();
+        public IList<NetType> TypeDeclarations { get; set; } = new List<NetType>();
 
         public override string ToString()
         {

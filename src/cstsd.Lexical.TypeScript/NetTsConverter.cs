@@ -1,6 +1,7 @@
 using System.Linq;
 using cstsd.Lexical.TypeScript.Extensions;
 using ToTypeScriptD.Core;
+using ToTypeScriptD.Core.Net;
 using ToTypeScriptD.Core.Ts;
 
 namespace cstsd.Lexical.TypeScript

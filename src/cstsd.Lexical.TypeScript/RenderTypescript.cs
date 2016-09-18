@@ -7,6 +7,7 @@ using System.Text;
 using cstsd.Lexical.Core;
 using ToTypeScriptD.Core;
 using ToTypeScriptD.Core.Extensions;
+using ToTypeScriptD.Core.Net;
 
 namespace cstsd.Lexical.TypeScript
 {

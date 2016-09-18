@@ -38,27 +38,27 @@
     <Compile Include="CsTypeScanner.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="ITypeScanner.cs" />
-    <Compile Include="NetMember.cs" />
+    <Compile Include="Net\NetMember.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="NetAssembly.cs" />
-    <Compile Include="NetClass.cs" />
-    <Compile Include="NetEnum.cs" />
-    <Compile Include="NetEvent.cs" />
-    <Compile Include="NetField.cs" />
+    <Compile Include="Net\NetAssembly.cs" />
+    <Compile Include="Net\NetClass.cs" />
+    <Compile Include="Net\NetEnum.cs" />
+    <Compile Include="Net\NetEvent.cs" />
+    <Compile Include="Net\NetField.cs" />
     <Compile Include="Extensions\TSFormattingExtensions.cs" />
-    <Compile Include="NetParameter.cs" />
-    <Compile Include="NetGenericParameter.cs" />
-    <Compile Include="NetInterface.cs" />
-    <Compile Include="NetMethod.cs" />
-    <Compile Include="NetNamespace.cs" />
-    <Compile Include="NetProperty.cs" />
-    <Compile Include="NetType.cs" />
-    <Compile Include="NetEnumValue.cs" />
+    <Compile Include="Net\NetParameter.cs" />
+    <Compile Include="Net\NetGenericParameter.cs" />
+    <Compile Include="Net\NetInterface.cs" />
+    <Compile Include="Net\NetMethod.cs" />
+    <Compile Include="Net\NetNamespace.cs" />
+    <Compile Include="Net\NetProperty.cs" />
+    <Compile Include="Net\NetType.cs" />
+    <Compile Include="Net\NetEnumValue.cs" />
     <Compile Include="Ts\TsEnumValue.cs" />
     <Compile Include="Ts\TsModule.cs" />
     <Compile Include="Ts\TsClass.cs" />

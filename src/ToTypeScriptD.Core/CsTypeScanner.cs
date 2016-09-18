@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using ToTypeScriptD.Core.Extensions;
+using ToTypeScriptD.Core.Net;
 
 namespace ToTypeScriptD.Core
 {

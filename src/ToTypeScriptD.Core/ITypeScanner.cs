@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ToTypeScriptD.Core.Net;
 
 namespace ToTypeScriptD.Core
 {

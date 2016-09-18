@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Generic;
 
-namespace ToTypeScriptD.Core
+namespace ToTypeScriptD.Core.Ts
 {
     public class TsInterface : TsType
     {

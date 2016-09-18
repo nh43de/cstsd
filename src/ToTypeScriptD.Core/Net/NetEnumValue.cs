@@ -1,4 +1,4 @@
-﻿namespace ToTypeScriptD.Core
+﻿namespace ToTypeScriptD.Core.Net
 {
     public class NetEnumValue
     {

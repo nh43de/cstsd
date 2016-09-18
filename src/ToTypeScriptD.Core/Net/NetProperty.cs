@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ToTypeScriptD.Core
+﻿namespace ToTypeScriptD.Core.Net
 {
     public class NetProperty : NetField
     {

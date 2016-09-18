@@ -1,6 +1,4 @@
-using System;
-
-namespace ToTypeScriptD.Core
+namespace ToTypeScriptD.Core.Ts
 {
     public class TsEvent : TsMember //TODO: not finished
     {

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
 
-namespace ToTypeScriptD.Core
+namespace ToTypeScriptD.Core.Net
 {
     public class NetAssembly
     {

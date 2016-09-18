@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ToTypeScriptD.Core
+namespace ToTypeScriptD.Core.Net
 {
     public class NetType
     {
