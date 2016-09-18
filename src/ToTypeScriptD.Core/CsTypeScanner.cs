@@ -26,16 +26,33 @@ namespace ToTypeScriptD.Core
 
         public virtual NetAssembly RegisterAssembly(Assembly assembly)
         {
-            return RegisterNetAssembly(GetAssemblyTypes(assembly), assembly.FullName);
+            return RegisterAssembly(GetAssemblyTypes(assembly), assembly.FullName);
         }
 
-        public virtual NetAssembly RegisterNetAssembly(Type[] types, string assemblyName)
+        public virtual NetAssembly RegisterAssembly(Type[] types, string assemblyName)
         {
             var netAssembly = new NetAssembly {
                 Name = assemblyName
             };
+            
+            types = types.Where(t =>
+            {
+                try
+                {
+                    var ns = t.Namespace;
 
-            foreach (var ns in types.Select(t => t.Namespace).Distinct())
+                    return !string.IsNullOrWhiteSpace(ns);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            })
+            .ToArray();
+
+            var nses = types.Select(t => t.Namespace).Distinct().ToArray();
+
+            foreach (var ns in nses)
             {
                 //start the scanning process
                 //TODO: this should be separated from this logic
@@ -52,7 +69,7 @@ namespace ToTypeScriptD.Core
             return netAssembly;
         }
 
-        public virtual Type[] GetAssemblyTypes(Assembly assembly)
+        public static Type[] GetAssemblyTypes(Assembly assembly)
         {
             try
             {

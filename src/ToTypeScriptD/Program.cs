@@ -13,6 +13,27 @@ namespace cstsd
         //TODO: location of output file
         static void Main(string[] args)
         {
+            //RenderTypescript.FromAssemblies(assemblyPaths, config, Console.Out);
+
+            var config2 = new TsWriterConfig
+            {
+                CamelBackCase = true,
+                IncludeSpecialTypes = true,
+                IndentationType = IndentationFormatting.SpaceX4
+            };
+
+            using (TextWriter tw = new StreamWriter(@"C:\code\test\output.d.ts", false))
+            {
+                RenderTypescript.FromAssemblyPoco(@"C:\code\test\eCovenantCloud.DataAccess.dll", config2, tw);
+            
+                tw.Flush();
+            }
+            
+            Console.WriteLine(@"Press any key to continue...");
+            Console.ReadLine();
+
+            return;
+
             TsWriterConfig config = null;
             IList<string> assemblyPaths = new string[] { };
 

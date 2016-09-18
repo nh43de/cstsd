@@ -58,6 +58,19 @@
     <Compile Include="NetNamespace.cs" />
     <Compile Include="NetProperty.cs" />
     <Compile Include="NetType.cs" />
+    <Compile Include="Ts\TsModule.cs" />
+    <Compile Include="Ts\TsClass.cs" />
+    <Compile Include="Ts\TsEnum.cs" />
+    <Compile Include="Ts\TsEvent.cs" />
+    <Compile Include="Ts\TsField.cs" />
+    <Compile Include="Ts\TsGenericParameter.cs" />
+    <Compile Include="Ts\TsInterface.cs" />
+    <Compile Include="Ts\TsMember.cs" />
+    <Compile Include="Ts\TsMethod.cs" />
+    <Compile Include="Ts\TsNamespace.cs" />
+    <Compile Include="Ts\TsParameter.cs" />
+    <Compile Include="Ts\TsProperty.cs" />
+    <Compile Include="Ts\TsType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using cstsd.Lexical.Core;
 using ToTypeScriptD.Core;
@@ -19,59 +20,104 @@ namespace cstsd.Lexical.TypeScript
                 FromAssembly(aPath, config, w);
             }
         }
-        
 
-        //TODO: typescriptexport attribute - flag to do all or look for attribute? what about namespace-level exports? inherited attribute? 
         public static void FromAssembly(string assemblyPath, TsWriterConfig config, TextWriter w)
         {
-            var css = new CsTypeScanner();
+            throw new NotImplementedException();
+        }
 
-            w.Write(GetHeader(new[] { assemblyPath }, config.IncludeSpecialTypes));
-            
-            var netAssembly = css.RegisterAssembly(assemblyPath);
+        public static void FromAssemblyPoco(string assemblyPath, TsWriterConfig config, TextWriter w)
+        {
+            var assembly = Assembly.LoadFrom(new FileInfo(assemblyPath).FullName);
 
-            var ww = new TsWriter(config, w, netAssembly.Namespaces);
-            
-
-            var controllers = new List<NetClass>();
-            var objects = new List<NetClass>();
-            foreach (var netNamespace in netAssembly.Namespaces)
+            var types = CsTypeScanner.GetAssemblyTypes(assembly);
+            var pocoTypes = new List<Type>();
+            foreach (var typeDeclaration in types)
             {
-                foreach (var typeDeclaration in netNamespace.TypeDeclarations)
+                var attributes = typeDeclaration.CustomAttributes.Select(a => a.AttributeType.Name).ToArray();
+
+                if (attributes.Contains("TsExportAttribute"))
                 {
-                    var @class = typeDeclaration as NetClass;
-                    if (@class != null)
-                    {
-                        if (@class.Attributes.Contains("TypeScriptController"))
-                        {
-                            controllers.Add(@class);
-                        }
-                        else if (@class.Attributes.Contains("TypeScriptObject"))
-                        {
-                            objects.Add(@class);
-                        }
-                        else
-                        {
-                            objects.Add(@class);
-                        }
-                    }
+                    pocoTypes.Add(typeDeclaration);
                 }
             }
+            
+            var tc = new NetTsConverter();
+
+            var css = new CsTypeScanner();
+            
+            var netAssembly = css.RegisterAssembly(pocoTypes.ToArray(), assembly.FullName);
+            
+            var ww = new TsWriter(config, w, netAssembly.Namespaces.Select(n => n.Name));
+            
+            w.Write(GetHeader(new[] { assemblyPath }, config.IncludeSpecialTypes));
+            
+            var objects = netAssembly.Namespaces.SelectMany(netNamespace => netNamespace.TypeDeclarations).OfType<NetClass>().ToList();
 
             foreach (var netClass in objects)
             {
                 //var bodyProperties = netClass.Properties.Where(p => p.IsPublic).Cast<NetType>();
 
-                w.Write(ww.WriteNamespace(netClass.Namespace, new[] {netClass}));
+                w.Write(ww.WriteNamespace(netClass.Namespace,new [] { tc.GetTsClass(netClass) }, true));
                 w.Write(config.NewLines(2));
             }
 
             //File.WriteAllText("output2.d.ts", w.());
         }
 
-        
 
-        
+
+
+        //TODO: typescriptexport attribute - flag to do all or look for attribute? what about namespace-level exports? inherited attribute? 
+        //public static void FromAssembly(string assemblyPath, TsWriterConfig config, TextWriter w)
+        //{
+        //    var css = new CsTypeScanner();
+
+        //    w.Write(GetHeader(new[] { assemblyPath }, config.IncludeSpecialTypes));
+
+        //    var netAssembly = css.RegisterAssembly(assemblyPath);
+
+        //    var ww = new TsWriter(config, w, netAssembly.Namespaces);
+
+        //    var controllers = new List<NetClass>();
+        //    var objects = new List<NetClass>();
+        //    foreach (var netNamespace in netAssembly.Namespaces)
+        //    {
+        //        foreach (var typeDeclaration in netNamespace.TypeDeclarations)
+        //        {
+        //            var @class = typeDeclaration as NetClass;
+        //            if (@class != null)
+        //            {
+        //                if (@class.Attributes.Contains("TypeScriptController"))
+        //                {
+        //                    controllers.Add(@class);
+        //                }
+        //                else if (@class.Attributes.Contains("TypeScriptObject"))
+        //                {
+        //                    objects.Add(@class);
+        //                }
+        //                else
+        //                {
+        //                    objects.Add(@class);
+        //                }
+        //            }
+        //        }
+        //    }
+
+        //    foreach (var netClass in objects)
+        //    {
+        //        //var bodyProperties = netClass.Properties.Where(p => p.IsPublic).Cast<NetType>();
+
+        //        w.Write(ww.WriteNamespace(netClass.Namespace, new[] {netClass}));
+        //        w.Write(config.NewLines(2));
+        //    }
+
+        //    //File.WriteAllText("output2.d.ts", w.());
+        //}
+
+
+
+
         private static string GetHeader(IEnumerable<string> assemblyPaths, bool forceDueToSpecialType)
         {
             if (!forceDueToSpecialType && !assemblyPaths.Any())

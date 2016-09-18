@@ -82,8 +82,6 @@
       <Link>Properties\AssemblyInfo.Common.cs</Link>
     </Compile>
     <Compile Include="TestAssembly.cs" />
-    <Compile Include="Winmd\WinmdTestBase.cs" />
-    <Compile Include="Winmd\WinmdTypeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -116,9 +114,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
-  </ItemGroup>
-  <ItemGroup>
-    <TypeScriptCompile Include="Winmd\file1.ts" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ecc.dll" />
