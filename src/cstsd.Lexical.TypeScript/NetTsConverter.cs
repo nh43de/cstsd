@@ -7,36 +7,6 @@ using ToTypeScriptD.Core.Ts;
 
 namespace cstsd.Lexical.TypeScript
 {
-
-    public class NetTsControllerConverter : NetTsConverter
-    {
-        public virtual TsModule GetControllerTsModule(NetClass controllerNetType)
-        {
-            return new TsModule
-            {
-                Name = controllerNetType.Name,
-                FunctionDeclarations = controllerNetType
-                    .Methods
-                    .Where(m => m.IsPublic)
-                    .Select(GetTsFunction)
-                    .ToList()
-            };
-
-            return null;
-        }
-
-
-
-        public virtual TsFunction GetControllerAction(NetMethod controllerActionNetMethod)
-        {
-
-            return null;
-        }
-
-
-    }
-
-
     public class NetTsPocoConverter : NetTsConverter
     {
 
@@ -127,7 +97,7 @@ namespace cstsd.Lexical.TypeScript
             };
         }
 
-        public TsFunction GetTsFunction(NetMethod netMethod)
+        public virtual TsFunction GetTsFunction(NetMethod netMethod)
         {
             return new TsFunction
             {
@@ -140,7 +110,7 @@ namespace cstsd.Lexical.TypeScript
             };
         }
 
-        public TsParameter GetTsParameter(NetParameter netParameter)
+        public virtual TsParameter GetTsParameter(NetParameter netParameter)
         {
             return new TsParameter
             {
@@ -150,7 +120,7 @@ namespace cstsd.Lexical.TypeScript
             };
         }
 
-        public TsProperty GetTsProperty(NetProperty netProperty)
+        public virtual TsProperty GetTsProperty(NetProperty netProperty)
         {
             return new TsProperty
             {

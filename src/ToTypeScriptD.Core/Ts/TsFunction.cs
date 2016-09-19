@@ -10,6 +10,8 @@ namespace ToTypeScriptD.Core.Ts
 
         public ICollection<TsParameter> Parameters { get; set; } = new List<TsParameter>();
 
+        public string FunctionBody { get; set; } = "/* function body */";
+
         public override string ToString()
         {
             return Name;

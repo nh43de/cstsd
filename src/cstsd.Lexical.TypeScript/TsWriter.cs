@@ -18,7 +18,7 @@ namespace cstsd.Lexical.TypeScript
         private string _indent => _config.Indent;
         private TextWriter _w;
         private HashSet<string> _supportedNamespaces;
-        
+
         public TsWriter(TsWriterConfig config, TextWriter w, IEnumerable<string> supportedNamespaces)
         {
             _config = config;
@@ -33,7 +33,7 @@ namespace cstsd.Lexical.TypeScript
         public virtual string WriteModule(TsModule netModule, bool isTopLevelDeclareNamespace)
         {
             var typeDeclarationsContent = string.Join(_config.NewLines(1), netModule.TypeDeclarations.Select(WriteType));
-            var functionDeclarationsContent = string.Join(_config.NewLines(1), netModule.FunctionDeclarations.Select(fd => WriteMethod(fd, true, "test")));
+            var functionDeclarationsContent = string.Join(_config.NewLines(1), netModule.FunctionDeclarations.Select(fd => WriteMethod(fd, true)));
             var namespaceDeclarationsContent = string.Join(_config.NewLines(1), netModule.Namespaces.Select(ns => WriteNamespace(ns, false)));
             
             var content = string.Join(_config.NewLines(1), new[] { typeDeclarationsContent, functionDeclarationsContent, namespaceDeclarationsContent}.Where(p => !string.IsNullOrWhiteSpace(p)));
@@ -52,7 +52,7 @@ namespace cstsd.Lexical.TypeScript
         public virtual string WriteNamespace(TsNamespace netModule, bool isTopLevelDeclareNamespace)
         {
             var typeDeclarationsContent = string.Join(_config.NewLines(1), netModule.TypeDeclarations.Select(WriteType));
-            var functionDeclarationsContent = string.Join(_config.NewLines(1), netModule.FunctionDeclarations.Select(fd => WriteMethod(fd, true, "test")));
+            var functionDeclarationsContent = string.Join(_config.NewLines(1), netModule.FunctionDeclarations.Select(fd => WriteMethod(fd, true)));
             var namespaceDeclarationsContent = string.Join(_config.NewLines(1), netModule.Modules.Select(ns => WriteModule(ns, false)));
 
             var content = string.Join(_config.NewLines(2), typeDeclarationsContent, functionDeclarationsContent, namespaceDeclarationsContent);
@@ -217,8 +217,8 @@ namespace cstsd.Lexical.TypeScript
                 fields = fields.Indent(_config.Indent) + _config.NewLine;
             return fields;
         }
-
-        public virtual string WriteMethod(TsFunction netMethod, bool isGlobal, string body)
+        
+        public virtual string WriteMethod(TsFunction netMethod, bool isGlobal)
         {
             var funParams = string.Join(", ", netMethod.Parameters.Select(p => WriteField(p, false)));
             var returnTypeStr = WriteTypeName(netMethod.ReturnType);
@@ -236,7 +236,9 @@ namespace cstsd.Lexical.TypeScript
                 var staticStr = netMethod.IsStatic ? "static " : "";
                 accessModifier = $"{exportStr}{staticStr}";
             }
-            
+
+            var body = netMethod.FunctionBody;
+
             return $"{accessModifier}{netMethod.Name}({funParams}): {returnType}" + _config.NewLine +
                    @"{" + _config.NewLine +
                    $@"{body.Indent(_config.Indent)}" + _config.NewLine +
@@ -251,7 +253,7 @@ namespace cstsd.Lexical.TypeScript
 
         private string GetMethodsString(TsInterface netInterface)
         {
-            var methods = string.Join(_config.NewLines(2), netInterface.Methods.Select(m => WriteMethod(m, false, "func body")));
+            var methods = string.Join(_config.NewLines(2), netInterface.Methods.Select(m => WriteMethod(m, false)));
             if (!string.IsNullOrWhiteSpace(methods))
                 methods = methods.Indent(_config.Indent) + _config.NewLine;
             return methods;
