@@ -27,6 +27,30 @@ namespace cstsd.Lexical.TypeScript
             throw new NotImplementedException();
         }
 
+        public static void FromAssemblyControllerRoslyn(string textFilePath, string outputNamespace, TsWriterConfig config, TextWriter w)
+        {
+            var tc = new NetTsControllerConverter();
+
+            var css = new RoslynTypeScanner();
+
+            var netAssembly = css.RegisterCodeFile(outputNamespace, textFilePath);
+
+            var ww = new TsWriter(config, w, netAssembly.Namespaces.Select(n => n.Name));
+
+            w.Write(GetHeader(new[] { outputNamespace }));
+
+            var netClasses = netAssembly.Namespaces.SelectMany(netNamespace => netNamespace.TypeDeclarations).OfType<NetClass>().ToList();
+
+            foreach (var netClass in netClasses)
+            {
+                //var bodyProperties = netClass.Properties.Where(p => p.IsPublic).Cast<NetType>();
+
+                w.Write(ww.WriteModule(tc.GetControllerTsModule(netClass), true));
+                w.Write(config.NewLines(2));
+            }
+        }
+
+
         public static void FromAssemblyController(string assemblyPath, TsWriterConfig config, TextWriter w)
         {
             var assembly = Assembly.LoadFile(new FileInfo(assemblyPath).FullName);

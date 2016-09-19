@@ -22,10 +22,11 @@ namespace cstsd
             };
 
 
+
             using (TextWriter tw = new StreamWriter(@"C:\code\test\eCovenantCloud.API.d.ts", false))
             {
-                RenderTypescript.FromAssemblyController(@"C:\code\source\Git.eCovenantCloud.vNext\src\eCovenantCloud.API\bin\Debug\net461\eCovenantCloud.API.dll", config2, tw);
-
+                RenderTypescript.FromAssemblyControllerRoslyn(@"C:\code\source\Git.eCovenantCloud.vNext\src\eCovenantCloud.API\Controllers\BorrowingCompanyController.cs", "eCovenantCloud.API", config2, tw);
+                
                 tw.Flush();
             }
 
