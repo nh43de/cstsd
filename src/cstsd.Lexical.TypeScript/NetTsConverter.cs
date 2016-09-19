@@ -113,7 +113,7 @@ namespace cstsd.Lexical.TypeScript
 
         public virtual bool IsFieldNullable(NetType netType)
         {
-            return !netType.IsGenericParameter && netType.ReflectedType.IsNullable();
+            return !netType.IsGenericParameter && (netType.ReflectedType != null && netType.ReflectedType.IsNullable());
         }
 
         public virtual TsField GetTsField(NetField netField)
@@ -178,7 +178,10 @@ namespace cstsd.Lexical.TypeScript
         
         public virtual string GetTsTypeName(NetType type)
         {
-            var name = type.IsGenericParameter ? type.Name : type.ReflectedType.ToTypeScriptTypeName();
+            var name = type.IsGenericParameter ? type.Name :
+                type.ReflectedType == null 
+                    ? type.ToTypeScriptTypeName()
+                    : type.ReflectedType.ToTypeScriptTypeName();
             
             return name;
         }

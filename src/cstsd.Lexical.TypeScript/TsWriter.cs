@@ -30,36 +30,43 @@ namespace cstsd.Lexical.TypeScript
             };
         }
 
-        public virtual string WriteModule(TsModule netNamespace, bool isTopLevelDeclareNamespace)
+        public virtual string WriteModule(TsModule netModule, bool isTopLevelDeclareNamespace)
         {
-            return WriteModule(netNamespace.Name, netNamespace.TypeDeclarations, isTopLevelDeclareNamespace);
-        }
+            var typeDeclarationsContent = string.Join(_config.NewLines(1), netModule.TypeDeclarations.Select(WriteType));
+            var functionDeclarationsContent = string.Join(_config.NewLines(1), netModule.FunctionDeclarations.Select(fd => WriteMethod(fd, true, "test")));
+            var namespaceDeclarationsContent = string.Join(_config.NewLines(1), netModule.Namespaces.Select(ns => WriteNamespace(ns, false)));
+            
+            var content = string.Join(_config.NewLines(1), new[] { typeDeclarationsContent, functionDeclarationsContent, namespaceDeclarationsContent}.Where(p => !string.IsNullOrWhiteSpace(p)));
 
-        public virtual string WriteModule(string @namespace, IEnumerable<TsType> namespaceDeclarations, bool isTopLevelDeclareNamespace)
-        {
-            var content = string.Join(_config.NewLines(2), namespaceDeclarations.Select(WriteType));
-
-            return WriteModule(@namespace, content, isTopLevelDeclareNamespace);
-        }
-
-        public virtual string WriteModule(TsModule netNamespace, string content, bool isTopLevelDeclareNamespace)
-        {
-            return WriteModule(netNamespace.Name, content, isTopLevelDeclareNamespace);
-        }
-
-        public virtual string WriteModule(string @namespace, string content, bool isTopLevelDeclareNamespace)
-        {
             if (!string.IsNullOrWhiteSpace(content))
                 content = content.Indent(_indent) + _config.NewLine;
 
             var declare = isTopLevelDeclareNamespace ? "declare " : "";
 
-            return $@"{declare}module {@namespace}" + _config.NewLine +
+            return $@"{declare}module {netModule.Name}" + _config.NewLine +
                    @"{" + _config.NewLine +
                    content +
                    @"}";
         }
 
+        public virtual string WriteNamespace(TsNamespace netModule, bool isTopLevelDeclareNamespace)
+        {
+            var typeDeclarationsContent = string.Join(_config.NewLines(1), netModule.TypeDeclarations.Select(WriteType));
+            var functionDeclarationsContent = string.Join(_config.NewLines(1), netModule.FunctionDeclarations.Select(fd => WriteMethod(fd, true, "test")));
+            var namespaceDeclarationsContent = string.Join(_config.NewLines(1), netModule.Modules.Select(ns => WriteModule(ns, false)));
+
+            var content = string.Join(_config.NewLines(2), typeDeclarationsContent, functionDeclarationsContent, namespaceDeclarationsContent);
+
+            if (!string.IsNullOrWhiteSpace(content))
+                content = content.Indent(_indent) + _config.NewLine;
+
+            var declare = isTopLevelDeclareNamespace ? "declare " : "";
+
+            return $@"{declare}namespace {netModule.Name}" + _config.NewLine +
+                   @"{" + _config.NewLine +
+                   content +
+                   @"}";
+        }
 
         public virtual string WriteType(TsType netType)
         {
@@ -211,15 +218,26 @@ namespace cstsd.Lexical.TypeScript
             return fields;
         }
 
-        public virtual string WriteMethod(TsFunction netMethod, string body)
+        public virtual string WriteMethod(TsFunction netMethod, bool isGlobal, string body)
         {
             var funParams = string.Join(", ", netMethod.Parameters.Select(p => WriteField(p, false)));
             var returnTypeStr = WriteTypeName(netMethod.ReturnType);
             var returnType = string.IsNullOrWhiteSpace(returnTypeStr) ? "void" : returnTypeStr;
-            var exportStr = !netMethod.IsPublic ? "private " : "";
-            var staticStr = netMethod.IsStatic ? "static " : "";
 
-            return $"{exportStr}{staticStr}{netMethod.Name}({funParams}) : {returnType}" + _config.NewLine +
+            string accessModifier;
+            if (isGlobal)
+            {
+                var exportStr = netMethod.IsPublic || netMethod.IsStatic ? "export " : "";
+                accessModifier = $"{exportStr}function ";
+            }
+            else
+            {
+                var exportStr = !netMethod.IsPublic ? "private " : "";
+                var staticStr = netMethod.IsStatic ? "static " : "";
+                accessModifier = $"{exportStr}{staticStr}";
+            }
+            
+            return $"{accessModifier}{netMethod.Name}({funParams}): {returnType}" + _config.NewLine +
                    @"{" + _config.NewLine +
                    $@"{body.Indent(_config.Indent)}" + _config.NewLine +
                    @"}";
@@ -233,7 +251,7 @@ namespace cstsd.Lexical.TypeScript
 
         private string GetMethodsString(TsInterface netInterface)
         {
-            var methods = string.Join(_config.NewLines(2), netInterface.Methods.Select(m => WriteMethod(m, "func body")));
+            var methods = string.Join(_config.NewLines(2), netInterface.Methods.Select(m => WriteMethod(m, false, "func body")));
             if (!string.IsNullOrWhiteSpace(methods))
                 methods = methods.Indent(_config.Indent) + _config.NewLine;
             return methods;

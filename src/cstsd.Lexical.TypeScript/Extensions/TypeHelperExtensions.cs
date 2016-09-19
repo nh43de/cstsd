@@ -3,42 +3,67 @@ using System.Collections.Generic;
 using System.Linq;
 using cstsd.Lexical.TypeScript.Extensions;
 using ToTypeScriptD.Core.Extensions;
+using ToTypeScriptD.Core.Net;
 
 namespace cstsd.Lexical.TypeScript
 {
-    public static class TypeHelperExtensions
+    public static class TypeMappings
     {
-        static readonly Dictionary<string, string> TypeMap = new Dictionary<string, string>{
-                { "System.String",               "string"},
-                { "System.Type",                 "string /* System.Type? */"},
+        public static readonly Dictionary<string, string> Default = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase){
+                { "System.Boolean",              "boolean"},
+                { "System.Byte",                 "any /* byte */"},
+                { "System.Byte[]",               "any /* byte[] */"},
+                { "System.Char",                 "string /* char */"},
+                { "System.Char[]",               "string"},
+                { "System.DateTime",             "Date"},
+                { "System.Decimal",              "number"},
+                { "System.Double",               "number"},
+                { "System.Guid",                 "string /* guid */"},
                 { "System.Int16",                "number /* Int16 */"},
                 { "System.Int32",                "number"},
                 { "System.Int64",                "number"},
+                { "System.IntPtr",               "number /* IntPtr */"},
+                { "System.Object",               "any"},
+                { "System.Single",               "number"},
+                { "System.String",               "string"},
+                { "System.Type",                 "string /* System.Type? */"},
                 { "System.UInt16",               "number /* UInt16 */"},
                 { "System.UInt32",               "number"},
                 { "System.UInt64",               "number"},
-                { "System.Object",               "any"},
-                { "Windows.Foundation.DateTime", "Date"},
                 { "System.Void",                 "void"},
-                { "System.Boolean",              "boolean"},
-                { "System.IntPtr",               "number /* IntPtr */"},
-                { "System.Byte",                 "any /* byte */"},
-                { "System.Single",               "number"},
-                { "System.Double",               "number"},
-                { "System.Decimal",              "number"},
-                { "System.Char",                 "any /* char */"},
-                { "System.Guid",                 "any /* guid */"},
-                { "System.Byte[]",               "any /* byte[] */"},
-                { "System.Char[]",               "string"},
-                { "System.DateTime",             "Date"}
+                { "Boolean",              "boolean"},
+                { "Byte",                 "any /* byte */"},
+                { "Byte[]",               "any /* byte[] */"},
+                { "Char",                 "string /* char */"},
+                { "Char[]",               "string"},
+                { "DateTime",             "Date"},
+                { "Decimal",              "number"},
+                { "Double",               "number"},
+                { "Guid",                 "string /* guid */"},
+                { "Int16",                "number /* Int16 */"},
+                { "Int32",                "number"},
+                { "Int64",                "number"},
+                { "IntPtr",               "number /* IntPtr */"},
+                { "Object",               "any"},
+                { "Single",               "number"},
+                { "String",               "string"},
+                { "Type",                 "string /* Type? */"},
+                { "UInt16",               "number /* UInt16 */"},
+                { "UInt32",               "number"},
+                { "UInt64",               "number"},
+                { "Void",                 "void"}
         };
+    }
+
+    public static class TypeHelperExtensions
+    {
 
         static readonly Lazy<Dictionary<string, string>> GenericTypeMap = new Lazy<Dictionary<string, string>>(() =>
         {
-            var a = TypeMap
+            var a = TypeMappings.Default
                 .ToDictionary(item => "<" + item.Key + ">", item => "<" + item.Value + ">");
 
-            TypeMap
+            TypeMappings.Default
                 .ToDictionary(item => item.Key + "[]", item => item.Value + "[]")
                     .Each(x => a.Add(x.Key, x.Value));
 
@@ -89,6 +114,17 @@ namespace cstsd.Lexical.TypeScript
             return fromName;
         }
 
+        public static string ToTypeScriptTypeName(this NetType netType)
+        {
+            var fromName = netType.Name;
+
+            if (TypeMappings.Default.ContainsKey(fromName))
+            {
+                return TypeMappings.Default[fromName];
+            }
+
+            return fromName;
+        }
 
         //TODO: move this somewhere else?
         public static string ToTypeScriptTypeName(this Type typeReference)
@@ -102,9 +138,9 @@ namespace cstsd.Lexical.TypeScript
             fromName = fromName.Replace("/", "_");
 
             // if we have a direct translation then use it
-            if (TypeMap.ContainsKey(fromName))
+            if (TypeMappings.Default.ContainsKey(fromName))
             {
-                return TypeMap[fromName];
+                return TypeMappings.Default[fromName];
             }
 
             // otherwise check for generic type mapping
@@ -128,7 +164,7 @@ namespace cstsd.Lexical.TypeScript
                 .StripGenericTick()
                 .StripOutParamSymbol();
 
-            TypeMap.Each(item =>
+            TypeMappings.Default.Each(item =>
             {
                 fromName = fromName.Replace(item.Key, item.Value);
             });
