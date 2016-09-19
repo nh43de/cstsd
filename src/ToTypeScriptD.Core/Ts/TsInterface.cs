@@ -18,9 +18,8 @@ namespace ToTypeScriptD.Core.Ts
         public ICollection<TsType> BaseTypes { get; set; } = new List<TsType>();
 
         //class/interface members
-        public ICollection<TsMethod> Methods { get; set; } = new List<TsMethod>();
+        public ICollection<TsFunction> Methods { get; set; } = new List<TsFunction>();
         public ICollection<TsField> Fields { get; set; } = new List<TsField>();
-        public ICollection<TsProperty> Properties { get; set; } = new List<TsProperty>();
         public ICollection<TsEvent> Events { get; set; } = new List<TsEvent>();
         
     }

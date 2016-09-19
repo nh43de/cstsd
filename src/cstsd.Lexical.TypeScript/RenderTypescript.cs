@@ -27,6 +27,47 @@ namespace cstsd.Lexical.TypeScript
             throw new NotImplementedException();
         }
 
+        public static void FromAssemblyController(string assemblyPath, TsWriterConfig config, TextWriter w)
+        {
+            var assembly = Assembly.LoadFile(new FileInfo(assemblyPath).FullName);
+
+            var assemblyTypes = CsTypeScanner.GetAssemblyTypes(assembly);
+            var controllerTypes = new List<Type>();
+            foreach (var typeDeclaration in assemblyTypes)
+            {
+                if(typeDeclaration.Name.EndsWith("Controller"))
+                {
+                    controllerTypes.Add(typeDeclaration);
+                }
+            }
+
+            var tc = new NetTsControllerConverter();
+
+            var css = new CsTypeScanner();
+
+            var netAssembly = css.RegisterAssembly(controllerTypes.ToArray(), assembly.FullName);
+
+            var ww = new TsWriter(config, w, netAssembly.Namespaces.Select(n => n.Name));
+            
+            w.Write(GetHeader(new[] { assemblyPath }));
+
+            var netClasses = netAssembly.Namespaces.SelectMany(netNamespace => netNamespace.TypeDeclarations).OfType<NetClass>().ToList();
+            
+            foreach (var netClass in netClasses)
+            {
+                //var bodyProperties = netClass.Properties.Where(p => p.IsPublic).Cast<NetType>();
+
+                w.Write(ww.WriteModule(tc.GetControllerTsModule(netClass), true));
+                w.Write(config.NewLines(2));
+            }
+            
+
+
+        }
+
+
+
+
         public static void FromAssemblyPoco(string assemblyPath, TsWriterConfig config, TextWriter w)
         {
             var assembly = Assembly.LoadFrom(new FileInfo(assemblyPath).FullName);
@@ -43,7 +84,7 @@ namespace cstsd.Lexical.TypeScript
                 }
             }
             
-            var tc = new NetTsConverter();
+            var tc = new NetTsPocoConverter();
 
             var css = new CsTypeScanner();
             
@@ -51,7 +92,7 @@ namespace cstsd.Lexical.TypeScript
             
             var ww = new TsWriter(config, w, netAssembly.Namespaces.Select(n => n.Name));
             
-            w.Write(GetHeader(new[] { assemblyPath }, config.IncludeSpecialTypes));
+            w.Write(GetHeader(new[] { assemblyPath }));
             
             var netClasses = netAssembly.Namespaces.SelectMany(netNamespace => netNamespace.TypeDeclarations).OfType<NetClass>().ToList();
             var netEnums = netAssembly.Namespaces.SelectMany(netNamespace => netNamespace.TypeDeclarations).OfType<NetEnum>().ToList();
@@ -61,7 +102,7 @@ namespace cstsd.Lexical.TypeScript
             {
                 //var bodyProperties = netClass.Properties.Where(p => p.IsPublic).Cast<NetType>();
 
-                w.Write(ww.WriteNamespace(netClass.Namespace,new [] { tc.GetTsInterface(netClass) }, true));
+                w.Write(ww.WriteModule(netClass.Namespace,new [] { tc.GetTsInterface(netClass) }, true));
                 w.Write(config.NewLines(2));
             }
             
@@ -69,7 +110,7 @@ namespace cstsd.Lexical.TypeScript
             {
                 //var bodyProperties = netClass.Properties.Where(p => p.IsPublic).Cast<NetType>();
 
-                w.Write(ww.WriteNamespace(netEnum.Namespace, new[] { tc.GetTsEnum(netEnum) }, true));
+                w.Write(ww.WriteModule(netEnum.Namespace, new[] { tc.GetTsEnum(netEnum) }, true));
                 w.Write(config.NewLines(2));
             }
 
@@ -129,12 +170,8 @@ namespace cstsd.Lexical.TypeScript
 
 
 
-        private static string GetHeader(IEnumerable<string> assemblyPaths, bool forceDueToSpecialType)
+        private static string GetHeader(IEnumerable<string> assemblyPaths)
         {
-            if (!forceDueToSpecialType && !assemblyPaths.Any())
-            {
-                return "";
-            }
 
             if (!assemblyPaths.All(File.Exists))
             {

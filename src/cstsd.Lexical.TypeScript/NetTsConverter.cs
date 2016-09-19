@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using cstsd.Lexical.TypeScript.Extensions;
 using ToTypeScriptD.Core;
@@ -6,15 +7,97 @@ using ToTypeScriptD.Core.Ts;
 
 namespace cstsd.Lexical.TypeScript
 {
-    public class NetTsConverter
+
+    public class NetTsControllerConverter : NetTsConverter
     {
+        public virtual TsModule GetControllerTsModule(NetClass controllerNetType)
+        {
+            return new TsModule
+            {
+                Name = controllerNetType.Name,
+                FunctionDeclarations = controllerNetType
+                    .Methods
+                    .Where(m => m.IsPublic)
+                    .Select(GetTsFunction)
+                    .ToList()
+            };
+
+            return null;
+        }
+
+
+
+        public virtual TsFunction GetControllerAction(NetMethod controllerActionNetMethod)
+        {
+
+            return null;
+        }
+
+
+    }
+
+
+    public class NetTsPocoConverter : NetTsConverter
+    {
+
+
+        public virtual TsInterface GetTsInterface(NetClass netClass)
+        {
+            return new TsInterface
+            {
+                IsPublic = netClass.IsPublic,
+                Name = netClass.Name,
+                Fields = netClass
+                    .Properties
+                    .Where(p => !p.Attributes.Contains("TsExcludeAttribute"))
+                    .Select(GetTsField)
+                    .ToList()
+                //Fields = 
+            };
+        }
+    }
+
+
+    public class NetTsConverter //This is for pocos
+    {
+        public virtual TsType GetTsType(NetType netType) //needs to support case on tsclass, interface, enum, etc
+        {
+        //    if (netType is NetEnum)
+        //    {
+        //        return GetTsEnum((NetEnum) netType);
+        //    }
+
+        //    if (netType is NetClass)
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+
+        //    if (netType is NetInterface)
+        //    {
+        //        return new TsInterface
+        //        {
+        //            Name = GetTsTypeName(netType),
+        //            IsPublic = netType.IsPublic,
+        //            GenericParameters = netType.GenericParameters.Select(GetTsGenericParameter).ToList(),
+        //            //TODO: more not implemented ...
+        //        };
+        //    }
+
+            return new TsType
+            {
+                Name = GetTsTypeName(netType),
+                IsPublic = netType.IsPublic,
+                GenericParameters = netType.GenericParameters.Select(GetTsGenericParameter).ToList()
+            };
+        }
+
         public virtual TsEnum GetTsEnum(NetEnum netEnum)
         {
             return new TsEnum
             { 
                 Enums = netEnum.Enums.Select(GetTsEnumValue).ToList(),
                 IsPublic = netEnum.IsPublic,
-                Name = GetTsName(netEnum.Name)
+                Name = netEnum.Name
             };
         }
 
@@ -27,18 +110,43 @@ namespace cstsd.Lexical.TypeScript
             };
         }
 
-        public virtual TsInterface GetTsInterface(NetClass netClass)
+
+        public virtual bool IsFieldNullable(NetType netType)
         {
-            return new TsInterface
+            return !netType.IsGenericParameter && netType.ReflectedType.IsNullable();
+        }
+
+        public virtual TsField GetTsField(NetField netField)
+        {
+            return new TsField
             {
-                IsPublic = netClass.IsPublic,
-                Name = netClass.Name,
-                Properties = netClass
-                    .Properties
-                    .Where(p => !p.Attributes.Contains("TsExcludeAttribute"))
-                    .Select(GetTsProperty)
-                    .ToList()
-                //Fields = 
+                Name = GetTsName(netField.Name),
+                FieldType = GetTsType(netField.FieldType),
+                IsNullable = IsFieldNullable(netField.FieldType),
+                IsPublic = netField.IsPublic 
+            };
+        }
+
+        public TsFunction GetTsFunction(NetMethod netMethod)
+        {
+            return new TsFunction
+            {
+                IsConstructor = netMethod.IsConstructor,
+                IsPublic = netMethod.IsPublic,
+                IsStatic = netMethod.IsStatic,
+                Name = GetTsName(netMethod.Name),
+                Parameters = netMethod.Parameters.Select(GetTsParameter).ToList(),
+                ReturnType = GetTsType(netMethod.ReturnType)
+            };
+        }
+
+        public TsParameter GetTsParameter(NetParameter netParameter)
+        {
+            return new TsParameter
+            {
+                Name = GetTsName(netParameter.Name),
+                FieldType = GetTsType(netParameter.FieldType),
+                IsNullable = IsFieldNullable(netParameter.FieldType)
             };
         }
 
@@ -48,20 +156,11 @@ namespace cstsd.Lexical.TypeScript
             {
                 Name = GetTsName(netProperty.Name),
                 FieldType = GetTsType(netProperty.FieldType),
-                IsNullable = !netProperty.FieldType.IsGenericParameter && netProperty.FieldType.ReflectedType.IsNullable()
+                IsNullable = IsFieldNullable(netProperty.FieldType),
+                IsPublic = netProperty.IsPublic
             };
         }
-
-        public virtual TsType GetTsType(NetType netType)
-        {
-            return new TsType
-            {
-                Name = GetTsTypeName(netType),
-                IsPublic = netType.IsPublic,
-                GenericParameters = netType.GenericParameters.Select(GetTsGenericParameter).ToList()
-            };
-        }
-
+        
         public virtual TsGenericParameter GetTsGenericParameter(NetGenericParameter netGenericParameter)
         {
             return new TsGenericParameter

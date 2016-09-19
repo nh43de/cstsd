@@ -2,9 +2,8 @@ using System.Collections.Generic;
 
 namespace ToTypeScriptD.Core.Ts
 {
-    public class TsMethod : TsMember
+    public class TsFunction : TsMember
     {
-
         public bool IsConstructor { get; set; } = false;
 
         public TsType ReturnType { get; set; }

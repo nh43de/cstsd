@@ -18,17 +18,23 @@ namespace cstsd
             var config2 = new TsWriterConfig
             {
                 CamelBackCase = true,
-                IncludeSpecialTypes = true,
                 IndentationType = IndentationFormatting.SpaceX4
             };
+
+
+            using (TextWriter tw = new StreamWriter(@"C:\code\test\eCovenantCloud.API.d.ts", false))
+            {
+                RenderTypescript.FromAssemblyController(@"C:\code\source\Git.eCovenantCloud.vNext\src\eCovenantCloud.API\bin\Debug\net461\eCovenantCloud.API.dll", config2, tw);
+
+                tw.Flush();
+            }
 
             using (TextWriter tw = new StreamWriter(@"C:\code\test\eCovenantCloud.DataAccess.d.ts", false))
             {
                 RenderTypescript.FromAssemblyPoco(@"C:\code\test\eCovenantCloud.DataAccess.dll", config2, tw);
-            
+
                 tw.Flush();
             }
-
 
             using (TextWriter tw = new StreamWriter(@"C:\code\test\eCovenantCloud.Services.Core.d.ts", false))
             {
@@ -62,7 +68,6 @@ namespace cstsd
                 config = new TsWriterConfig
                 {
                     CamelBackCase = true,
-                    IncludeSpecialTypes = true,
                     IndentationType = IndentationFormatting.SpaceX4
                 };
             }
@@ -82,7 +87,6 @@ namespace cstsd
                 config = new TsWriterConfig
                 {
                     CamelBackCase = options.CamelBackCase,
-                    IncludeSpecialTypes = options.IncludeSpecialTypeDefinitions,
                     IndentationType = options.IndentationType,
                     RegexFilter = options.RegexFilter,
                     RequireTypeScriptExportAttribute = !options.IncludeAllTypes

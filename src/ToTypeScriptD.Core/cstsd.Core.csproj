@@ -68,7 +68,7 @@
     <Compile Include="Ts\TsGenericParameter.cs" />
     <Compile Include="Ts\TsInterface.cs" />
     <Compile Include="Ts\TsMember.cs" />
-    <Compile Include="Ts\TsMethod.cs" />
+    <Compile Include="Ts\TsFunction.cs" />
     <Compile Include="Ts\TsNamespace.cs" />
     <Compile Include="Ts\TsParameter.cs" />
     <Compile Include="Ts\TsProperty.cs" />

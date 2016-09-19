@@ -30,24 +30,24 @@ namespace cstsd.Lexical.TypeScript
             };
         }
 
-        public virtual string WriteNamespace(TsNamespace netNamespace, bool isTopLevelDeclareNamespace)
+        public virtual string WriteModule(TsModule netNamespace, bool isTopLevelDeclareNamespace)
         {
-            return WriteNamespace(netNamespace.Name, netNamespace.TypeDeclarations, isTopLevelDeclareNamespace);
+            return WriteModule(netNamespace.Name, netNamespace.TypeDeclarations, isTopLevelDeclareNamespace);
         }
 
-        public virtual string WriteNamespace(string @namespace, IEnumerable<TsType> namespaceDeclarations, bool isTopLevelDeclareNamespace)
+        public virtual string WriteModule(string @namespace, IEnumerable<TsType> namespaceDeclarations, bool isTopLevelDeclareNamespace)
         {
             var content = string.Join(_config.NewLines(2), namespaceDeclarations.Select(WriteType));
-            
-            return WriteNamespace(@namespace, content, isTopLevelDeclareNamespace);
-        }
-        
-        public virtual string WriteNamespace(TsNamespace netNamespace, string content, bool isTopLevelDeclareNamespace)
-        {
-            return WriteNamespace(netNamespace.Name, content, isTopLevelDeclareNamespace);
+
+            return WriteModule(@namespace, content, isTopLevelDeclareNamespace);
         }
 
-        public virtual string WriteNamespace(string @namespace, string content, bool isTopLevelDeclareNamespace)
+        public virtual string WriteModule(TsModule netNamespace, string content, bool isTopLevelDeclareNamespace)
+        {
+            return WriteModule(netNamespace.Name, content, isTopLevelDeclareNamespace);
+        }
+
+        public virtual string WriteModule(string @namespace, string content, bool isTopLevelDeclareNamespace)
         {
             if (!string.IsNullOrWhiteSpace(content))
                 content = content.Indent(_indent) + _config.NewLine;
@@ -59,6 +59,7 @@ namespace cstsd.Lexical.TypeScript
                    content +
                    @"}";
         }
+
 
         public virtual string WriteType(TsType netType)
         {
@@ -94,11 +95,11 @@ namespace cstsd.Lexical.TypeScript
 
             var methods = GetMethodsString(netClass);
             var fields = GetFieldsString(netClass);
-            var properties = GetPropertiesString(netClass);
+            //var properties = GetPropertiesString(netClass);
             var events = GetEventsString(netClass);
             var nestedClasses = GetNestedClassesString(netClass);
 
-            var body = JoinBodyText(fields, properties, events, methods);
+            var body = JoinBodyText(fields, events, methods);
 
             //TODO: config for brackets on same line as declaration
             return $"{exportStr}class {netClass.Name}{generics}{extends}" + _config.NewLine +
@@ -120,10 +121,9 @@ namespace cstsd.Lexical.TypeScript
 
             var methods = GetMethodsString(netInterface);
             var fields = GetFieldsString(netInterface);
-            var properties = GetPropertiesString(netInterface);
             var events = GetEventsString(netInterface);
 
-            var body = JoinBodyText(fields, properties, events, methods);
+            var body = JoinBodyText(fields, events, methods);
 
             return $"{exportStr}interface {netInterface.Name}{generics}{extends}" + _config.NewLine +
                    @"{" + _config.NewLine +
@@ -192,14 +192,15 @@ namespace cstsd.Lexical.TypeScript
             return events;
         }
 
-        private string GetPropertiesString(TsInterface netInterface)
-        {
-            var properties = string.Join(_config.NewLine,
-                netInterface.Properties.Select(p => WriteField(p, p.IsNullable) + ";"));
-            if (!string.IsNullOrWhiteSpace(properties))
-                properties = properties.Indent(_config.Indent) + _config.NewLine;
-            return properties;
-        }
+        //interfaces can't have properties
+        //private string GetPropertiesString(TsInterface netInterface)
+        //{
+        //    var properties = string.Join(_config.NewLine,
+        //        netInterface.Properties.Select(p => WriteField(p, p.IsNullable) + ";"));
+        //    if (!string.IsNullOrWhiteSpace(properties))
+        //        properties = properties.Indent(_config.Indent) + _config.NewLine;
+        //    return properties;
+        //}
 
         private string GetFieldsString(TsInterface netInterface)
         {
@@ -210,7 +211,7 @@ namespace cstsd.Lexical.TypeScript
             return fields;
         }
 
-        public virtual string WriteMethod(TsMethod netMethod, string body)
+        public virtual string WriteMethod(TsFunction netMethod, string body)
         {
             var funParams = string.Join(", ", netMethod.Parameters.Select(p => WriteField(p, false)));
             var returnTypeStr = WriteTypeName(netMethod.ReturnType);

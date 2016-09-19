@@ -7,8 +7,7 @@ namespace cstsd.Lexical.TypeScript
     public class TsWriterConfig
     {
         public virtual bool CamelBackCase { get; set; } = true;
-        
-        public bool IncludeSpecialTypes { get; set; }
+       
         public string RegexFilter { get; set; } = "";
         public IndentationFormatting IndentationType { get; set; } = IndentationFormatting.SpaceX4;
 

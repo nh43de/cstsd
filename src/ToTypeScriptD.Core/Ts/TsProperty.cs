@@ -2,9 +2,9 @@
 {
     public class TsProperty : TsField
     {
-        public TsMethod GetterMethod { get; set; }
+        public TsFunction GetterMethod { get; set; }
 
-        public TsMethod SetterMethod { get; set; }
+        public TsFunction SetterMethod { get; set; }
 
     }
 }
