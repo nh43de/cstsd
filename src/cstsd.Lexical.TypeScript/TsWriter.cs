@@ -248,8 +248,12 @@ namespace cstsd.Lexical.TypeScript
 
         public virtual string WriteTypeName(TsType netType)
         {
-            return netType.Name;
-        }
+            if (netType.GenericParameters.Count == 0)
+                return netType.Name;
+
+            //render generic parameters
+            return $"{netType.Name}<{string.Join(",", netType.GenericParameters.Select(gp => gp.Name))}>";
+    }
 
         private string GetMethodsString(TsInterface netInterface)
         {

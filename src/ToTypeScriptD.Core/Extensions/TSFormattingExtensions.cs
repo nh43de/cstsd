@@ -10,7 +10,7 @@ namespace ToTypeScriptD.Core.Extensions
         {
             return IndentRegex.Replace(str, "".PadLeft(spaces));
         }
-
+        
         public static string Indent(this string str, string indentionStr)
         {
             return IndentRegex.Replace(str, indentionStr);
