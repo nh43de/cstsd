@@ -36,7 +36,7 @@ namespace cstsd.Lexical.TypeScript
             var functionDeclarationsContent = string.Join(_config.NewLines(1), netModule.FunctionDeclarations.Select(fd => WriteMethod(fd, true)));
             var namespaceDeclarationsContent = string.Join(_config.NewLines(1), netModule.Namespaces.Select(ns => WriteNamespace(ns, false)));
             
-            var content = string.Join(_config.NewLines(1), new[] { typeDeclarationsContent, functionDeclarationsContent, namespaceDeclarationsContent}.Where(p => !string.IsNullOrWhiteSpace(p)));
+            var content = JoinNonEmpty(typeDeclarationsContent, functionDeclarationsContent, namespaceDeclarationsContent);
 
             if (!string.IsNullOrWhiteSpace(content))
                 content = content.Indent(_indent) + _config.NewLine;
@@ -55,7 +55,7 @@ namespace cstsd.Lexical.TypeScript
             var functionDeclarationsContent = string.Join(_config.NewLines(1), netModule.FunctionDeclarations.Select(fd => WriteMethod(fd, true)));
             var namespaceDeclarationsContent = string.Join(_config.NewLines(1), netModule.Modules.Select(ns => WriteModule(ns, false)));
 
-            var content = string.Join(_config.NewLines(2), typeDeclarationsContent, functionDeclarationsContent, namespaceDeclarationsContent);
+            var content = JoinBodyText(typeDeclarationsContent, functionDeclarationsContent, namespaceDeclarationsContent);
 
             if (!string.IsNullOrWhiteSpace(content))
                 content = content.Indent(_indent) + _config.NewLine;
@@ -177,9 +177,14 @@ namespace cstsd.Lexical.TypeScript
 
         private string JoinBodyText(params string[] bodytexts)
         {
-            var body = string.Join(_config.NewLines(2),
-               bodytexts.Where(s => !string.IsNullOrWhiteSpace(s)));
+            var body = JoinNonEmpty(_config.NewLines(2), bodytexts);
             return body;
+        }
+
+        private static string JoinNonEmpty(string joinStr, params string[] textStrings)
+        {
+            var content = string.Join(joinStr, textStrings.Where(p => !string.IsNullOrWhiteSpace(p)));
+            return content;
         }
 
         private string GetNestedClassesString(TsClass netClass)
@@ -248,7 +253,7 @@ namespace cstsd.Lexical.TypeScript
 
         public virtual string WriteTypeName(TsType netType)
         {
-            if (netType.GenericParameters.Count == 0)
+            if ((netType.GenericParameters?.Count ?? 0) == 0)
                 return netType.Name;
 
             //render generic parameters

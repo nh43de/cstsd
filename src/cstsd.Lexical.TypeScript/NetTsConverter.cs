@@ -7,27 +7,6 @@ using ToTypeScriptD.Core.Ts;
 
 namespace cstsd.Lexical.TypeScript
 {
-    public class NetTsPocoConverter : NetTsConverter
-    {
-
-
-        public virtual TsInterface GetTsInterface(NetClass netClass)
-        {
-            return new TsInterface
-            {
-                IsPublic = netClass.IsPublic,
-                Name = netClass.Name,
-                Fields = netClass
-                    .Properties
-                    .Where(p => !p.Attributes.Contains("TsExcludeAttribute"))
-                    .Select(GetTsField)
-                    .ToList()
-                //Fields = 
-            };
-        }
-    }
-
-
     public class NetTsConverter //This is for pocos
     {
         public virtual TsType GetTsType(NetType netType) //needs to support case on tsclass, interface, enum, etc

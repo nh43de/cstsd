@@ -124,8 +124,14 @@ namespace cstsd.Lexical.TypeScript
                 return TypeMappings.Default[fromName];
             }
 
-            return fromName;
+            if (!netType.GenericParameters.Any()) return fromName;
+            
+            var genericParamsStr = string.Join(",", netType.GenericParameters.Select(gp => gp.Name));
+                
+            return $"{fromName}<{genericParamsStr}>";
         }
+
+        
 
         //TODO: move this somewhere else?
         public static string ToTypeScriptTypeName(this Type typeReference)

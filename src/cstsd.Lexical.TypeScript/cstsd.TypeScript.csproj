@@ -45,6 +45,7 @@
     <Compile Include="Extensions\NullableTypeExtensions.cs" />
     <Compile Include="NetTsControllerConverter.cs" />
     <Compile Include="NetTsConverter.cs" />
+    <Compile Include="NetTsPocoConverter.cs" />
     <Compile Include="NullableTypeInfo.cs" />
     <Compile Include="TsWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

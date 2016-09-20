@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using cstsd.Lexical.Core;
@@ -42,15 +43,18 @@ namespace cstsd.Lexical.TypeScript
 
             var netClasses = netAssembly.Namespaces.SelectMany(netNamespace => netNamespace.TypeDeclarations).OfType<NetClass>().ToList();
 
+            var tsNamespace = new TsNamespace
+            {
+                Name = outputNamespace
+            };
+
             foreach (var netClass in netClasses)
             {
-                //var bodyProperties = netClass.Properties.Where(p => p.IsPublic).Cast<NetType>();
-
                 var module = tc.GetControllerTsModule(netClass);
-
-                w.Write(ww.WriteModule(module, false));
-                w.Write(config.NewLines(2));
+                tsNamespace.Modules.Add(module);
             }
+            
+            w.Write(ww.WriteNamespace(tsNamespace, false));
         }
 
 

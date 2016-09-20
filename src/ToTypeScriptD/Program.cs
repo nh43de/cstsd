@@ -23,36 +23,43 @@ namespace cstsd
 
 
 
-            using (TextWriter tw = new StreamWriter(@"C:\code\test\eCovenantCloud.API.d.ts", false))
-            {
-                RenderTypescript.FromAssemblyControllerRoslyn(@"C:\code\source\Git.eCovenantCloud.vNext\src\eCovenantCloud.API\Controllers\BorrowingCompanyController.cs", "eCovenantCloud.API", config2, tw);
-                
-                tw.Flush();
-            }
-            
-            using (TextWriter tw = new StreamWriter(@"C:\code\test\InvestmentAnalytics.DataAccess.d.ts", false))
-            {
-                RenderTypescript.FromAssemblyPoco(@"C:\code\test\InvestmentAnalytics.DataAccess.dll", config2, tw, "InvestmentAnalytics");
+            //using (TextWriter tw = new StreamWriter(@"C:\code\test\eCovenantCloud.API.d.ts", false))
+            //{
+            //    RenderTypescript.FromAssemblyControllerRoslyn(@"C:\code\source\Git.eCovenantCloud.vNext\src\eCovenantCloud.API\Controllers\BorrowingCompanyController.cs", "eCovenantCloud.API", config2, tw);
 
-                tw.Flush();
-            }
+            //    tw.Flush();
+            //}
 
-            using (TextWriter tw = new StreamWriter(@"C:\code\test\eCovenantCloud.DataAccess.d.ts", false))
+            using (TextWriter tw = new StreamWriter(@"C:\code\source\AlmFirst\AlmFirst\ALMFirst.Web\wwwroot\ViewModels\Holdings\HoldingsController.ts", false))
             {
-                RenderTypescript.FromAssemblyPoco(@"C:\code\test\eCovenantCloud.DataAccess.dll", config2, tw);
+                RenderTypescript.FromAssemblyControllerRoslyn(@"C:\code\source\AlmFirst\AlmFirst\ALMFirst.Web\Controllers\HoldingsController.cs", "AlmFirst.Web.InvestmentAnalytics", config2, tw);
 
                 tw.Flush();
             }
 
-            using (TextWriter tw = new StreamWriter(@"C:\code\test\eCovenantCloud.Services.Core.d.ts", false))
-            {
-                RenderTypescript.FromAssemblyPoco(@"C:\code\test\eCovenantCloud.Services.Core.dll", config2, tw);
+            //using (TextWriter tw = new StreamWriter(@"C:\code\source\AlmFirst\AlmFirst\ALMFirst.Web\ViewScripts\Models\InvestmentAnalytics.DataAccess.d.ts", false))
+            //{
+            //    RenderTypescript.FromAssemblyPoco(@"C:\code\source\AlmFirst\AlmFirst\Data\InvestmentAnalytics.DataAccess\bin\Debug\InvestmentAnalytics.DataAccess.dll", config2, tw, "InvestmentAnalytics");
 
-                tw.Flush();
-            }
+            //    tw.Flush();
+            //}
 
-            Console.WriteLine(@"Press any key to continue...");
-            Console.ReadLine();
+            //using (TextWriter tw = new StreamWriter(@"C:\code\test\eCovenantCloud.DataAccess.d.ts", false))
+            //{
+            //    RenderTypescript.FromAssemblyPoco(@"C:\code\test\eCovenantCloud.DataAccess.dll", config2, tw);
+
+            //    tw.Flush();
+            //}
+
+            //using (TextWriter tw = new StreamWriter(@"C:\code\test\eCovenantCloud.Services.Core.d.ts", false))
+            //{
+            //    RenderTypescript.FromAssemblyPoco(@"C:\code\test\eCovenantCloud.Services.Core.dll", config2, tw);
+
+            //    tw.Flush();
+            //}
+
+            //Console.WriteLine(@"Press any key to continue...");
+           // Console.ReadLine();
 
             return;
 
