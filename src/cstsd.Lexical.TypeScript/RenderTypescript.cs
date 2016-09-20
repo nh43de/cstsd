@@ -95,7 +95,7 @@ namespace cstsd.Lexical.TypeScript
 
 
 
-        public static void FromAssemblyPoco(string assemblyPath, TsWriterConfig config, TextWriter w)
+        public static void FromAssemblyPoco(string assemblyPath, TsWriterConfig config, TextWriter w, string namespaceOverride = "")
         {
             var assembly = Assembly.LoadFrom(new FileInfo(assemblyPath).FullName);
 
@@ -115,7 +115,7 @@ namespace cstsd.Lexical.TypeScript
 
             var css = new CsTypeScanner();
             
-            var netAssembly = css.RegisterAssembly(pocoTypes.ToArray(), assembly.FullName);
+            var netAssembly = css.RegisterAssembly(pocoTypes.ToArray(), string.IsNullOrWhiteSpace(namespaceOverride) ? assembly.FullName : namespaceOverride);
             
             var ww = new TsWriter(config, w, netAssembly.Namespaces.Select(n => n.Name));
             
@@ -127,15 +127,26 @@ namespace cstsd.Lexical.TypeScript
 
             foreach (var netClass in netClasses)
             {
-                //var bodyProperties = netClass.Properties.Where(p => p.IsPublic).Cast<NetType>();
-                var tsModule = new TsModule
+                if (true) //write interfaces {
+                {                
+                    w.Write(ww.WriteInterface(tc.GetTsInterface(netClass)));
+                    w.Write(config.NewLines(2));
+                }
+                else //write interfaces in modules
                 {
-                    Name = netClass.Namespace,
-                    TypeDeclarations = new[] { tc.GetTsInterface(netClass) }
-                };
+                    //var bodyProperties = netClass.Properties.Where(p => p.IsPublic).Cast<NetType>();
+                    var tsModule = new TsModule
+                    {
+                        Name = netClass.Namespace,
+                        TypeDeclarations = new[] { tc.GetTsInterface(netClass) }
+                    };
 
-                w.Write(ww.WriteModule(tsModule, true));
-                w.Write(config.NewLines(2));
+                    w.Write(ww.WriteModule(tsModule, true));
+                    w.Write(config.NewLines(2));
+                }
+               
+
+
             }
             
             foreach (var netEnum in netEnums)

@@ -29,6 +29,13 @@ namespace cstsd
                 
                 tw.Flush();
             }
+            
+            using (TextWriter tw = new StreamWriter(@"C:\code\test\InvestmentAnalytics.DataAccess.d.ts", false))
+            {
+                RenderTypescript.FromAssemblyPoco(@"C:\code\test\InvestmentAnalytics.DataAccess.dll", config2, tw, "InvestmentAnalytics");
+
+                tw.Flush();
+            }
 
             using (TextWriter tw = new StreamWriter(@"C:\code\test\eCovenantCloud.DataAccess.d.ts", false))
             {
