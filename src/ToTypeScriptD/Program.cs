@@ -32,12 +32,12 @@ namespace cstsd
 
             using (TextWriter tw = new StreamWriter(@"C:\code\source\AlmFirst\AlmFirst\ALMFirst.Web\wwwroot\ViewModels\Holdings\HoldingsController.ts", false))
             {
-                RenderTypescript.FromAssemblyControllerRoslyn(@"C:\code\source\AlmFirst\AlmFirst\ALMFirst.Web\Controllers\HoldingsController.cs", "AlmFirst.Web.InvestmentAnalytics", config2, tw);
+                RenderTypescript.FromAssemblyControllerRoslyn(@"C:\code\source\AlmFirst\AlmFirst\ALMFirst.Web\Controllers\HoldingsController.cs", "AlmFirst.Web.InvestmentAnalytics.Holdings", config2, tw);
 
                 tw.Flush();
             }
 
-            //using (TextWriter tw = new StreamWriter(@"C:\code\source\AlmFirst\AlmFirst\ALMFirst.Web\ViewScripts\Models\InvestmentAnalytics.DataAccess.d.ts", false))
+            //using (TextWriter tw = new StreamWriter(@"C:\code\source\AlmFirst\AlmFirst\ALMFirst.Web\wwwroot\ViewModels\InvestmentAnalytics.DataAccess.ts", false))
             //{
             //    RenderTypescript.FromAssemblyPoco(@"C:\code\source\AlmFirst\AlmFirst\Data\InvestmentAnalytics.DataAccess\bin\Debug\InvestmentAnalytics.DataAccess.dll", config2, tw, "InvestmentAnalytics");
 
@@ -59,7 +59,7 @@ namespace cstsd
             //}
 
             //Console.WriteLine(@"Press any key to continue...");
-           // Console.ReadLine();
+            // Console.ReadLine();
 
             return;
 

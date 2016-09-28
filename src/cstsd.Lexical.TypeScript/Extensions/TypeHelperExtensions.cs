@@ -32,6 +32,7 @@ namespace cstsd.Lexical.TypeScript
                 { "System.UInt64",               "number"},
                 { "System.Void",                 "void"},
                 { "Boolean",              "boolean"},
+                { "Bool",                 "boolean"},
                 { "Int",                  "number"},
                 { "Byte",                 "any /* byte */"},
                 { "Byte[]",               "any /* byte[] */"},

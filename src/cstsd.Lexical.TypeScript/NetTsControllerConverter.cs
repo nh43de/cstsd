@@ -17,7 +17,8 @@ namespace cstsd.Lexical.TypeScript
                     .Methods
                     .Where(m => m.IsPublic && m.Attributes.Any(a => a == "TsExport"))
                     .Select(a => GetTsFunction(a, controllerNetClass))
-                    .ToList()
+                    .ToList(),
+                IsExport = true
             };
         }
 
@@ -47,7 +48,7 @@ namespace cstsd.Lexical.TypeScript
             
             //a.FunctionBody = $"/* controller: {controllerNetClass.Name}; action: {netMethod.Name} */";
 
-            var dataParametersString = string.Join(",\r\n",  a.Parameters.Select(p => $"{p.Name}: {p.FieldType.Name}"));
+            var dataParametersString = string.Join(",\r\n",  a.Parameters.Select(p => $"{p.Name}: {p.Name}"));
 
             a.Parameters.Add(new TsParameter
             {
@@ -60,11 +61,11 @@ namespace cstsd.Lexical.TypeScript
 
             a.FunctionBody =
 @"$.ajax({
-	url: """ + $"/api/{controllerName}/{actionName}" + @""",
+	url: """ + $"/{controllerName}/{actionName}" + @""",
 	data: {
 " + dataParametersString.Indent("\t\t\t") + @"
 	},
-	type: ""POST"",
+	type: ""GET"",
 	//data: idRequestData,
 	dataType: ""JSON"",
 	success(response: " + functionReturnType + @") {

@@ -42,8 +42,9 @@ namespace cstsd.Lexical.TypeScript
                 content = content.Indent(_indent) + _config.NewLine;
 
             var declare = isTopLevelDeclareNamespace ? "declare " : "";
+            var export = netModule.IsExport ? "export " : "";
 
-            return $@"{declare}module {netModule.Name}" + _config.NewLine +
+            return $@"{declare}{export}module {netModule.Name}" + _config.NewLine +
                    @"{" + _config.NewLine +
                    content +
                    @"}";

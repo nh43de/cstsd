@@ -12,6 +12,7 @@ namespace ToTypeScriptD.Core.Ts
 
         public ICollection<TsFunction> FunctionDeclarations { get; set; } = new List<TsFunction>();
 
+        public bool IsExport { get; set; } = false;
 
         public override string ToString()
         {
