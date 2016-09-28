@@ -54,7 +54,7 @@
       <Project>{87056633-5442-4fcb-8459-1f0884a1da1e}</Project>
       <Name>cstsd.Lexical.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ToTypeScriptD.Core\cstsd.Core.csproj">
+    <ProjectReference Include="..\cstsd.Core\cstsd.Core.csproj">
       <Project>{fea71855-6f65-45cb-97c4-51f1891904f6}</Project>
       <Name>cstsd.Core</Name>
     </ProjectReference>

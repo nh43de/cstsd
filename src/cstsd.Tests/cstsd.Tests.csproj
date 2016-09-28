@@ -95,19 +95,19 @@
       <Project>{d928441c-26cd-41de-97f6-aab1ce14e710}</Project>
       <Name>cstsd.TypeScript</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ToTypeScriptD.Core\cstsd.Core.csproj">
+    <ProjectReference Include="..\cstsd.Core\cstsd.Core.csproj">
       <Project>{fea71855-6f65-45cb-97c4-51f1891904f6}</Project>
       <Name>cstsd.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ToTypeScriptD.Lexical\cstsd.Lexical.csproj">
+    <ProjectReference Include="..\cstsd.Lexical\cstsd.Lexical.csproj">
       <Project>{50fd28ea-65e4-479e-9193-20b758e10930}</Project>
       <Name>cstsd.Lexical</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ToTypeScriptD.TestAssembly.CSharp\ToTypeScriptD.TestAssembly.CSharp.csproj">
+    <ProjectReference Include="..\cstsd.TestAssembly.CSharp\cstsd.TestAssembly.CSharp.csproj">
       <Project>{c7f85246-c5d8-44b0-a125-e526e24f900b}</Project>
       <Name>ToTypeScriptD.TestAssembly.CSharp</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ToTypeScriptD\cstsd.csproj">
+    <ProjectReference Include="..\cstsd\cstsd.csproj">
       <Project>{128a58cf-d911-4c50-b20f-3afa6d75cae8}</Project>
       <Name>cstsd</Name>
     </ProjectReference>
