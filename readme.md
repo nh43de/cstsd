@@ -10,23 +10,12 @@ With the rewrite it is now much easier to develop your own type scanner and leav
 TS rendering logic intact now that the rendering and type scanning logic are completely 
 decoupled, and implementing a Mono-based type scanner would not be difficult.
 
-In addition, I have added a few additional options that may be useful:
 
-1) TypeScriptExport attribute - this lets you add the [TypeScriptExport] attribute to 
-items that you want marked to be dumped to TypeScript. I am also considering codegen injection
-into these attributes. TypeScanner Filtering by this attribute can be overriden by adding the -a
-flag to the command lines arguments to dump all assembly types to TS.
+Currently there are two code generation options:
 
-2) Output to file. Use the -o <filepath> to output the generated TS to a file.
-
-
-Note: this project is still a work in progress but I welcome any feedback/contributions.
-
+1) Generate .d.ts files from POCO classes that contain TS interfaces (using Reflection)
+2) Generate jQuery AJAX methods from controller classes (using Roslyn)
 
 ---
 
-
-## Contribute
-
-Checkout the [Contribution](CONTRIBUTING.md) guide.
-
+More documentation coming soon!
