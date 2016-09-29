@@ -54,46 +54,61 @@ namespace cstsd
             }
 
             var cstsdDir = new FileInfo(filePath).Directory?.FullName ?? "";
-            
-            //render controllers
-            foreach (var controllerTask in cstsdConfig.ControllerTasks)
+
+            Console.WriteLine("Scanning controllers");
+            if (cstsdConfig.ControllerTasks != null)
             {
-                var fileName = Path.GetFileNameWithoutExtension(controllerTask.SourceFile);
-
-                var outputFile = Path.IsPathRooted(controllerTask.OutputDirectory) == false 
-                    ? Path.Combine(cstsdDir, controllerTask.OutputDirectory, fileName + ".ts") 
-                    : Path.Combine(controllerTask.OutputDirectory, fileName + ".ts");
-                
-                var nameSpace = string.IsNullOrWhiteSpace(controllerTask.Namespace)
-                    ? cstsdConfig.DefaultControllerNamespace
-                    : controllerTask.Namespace;
-
-                using (TextWriter tw = new StreamWriter(outputFile, false))
+                //render controllers
+                foreach (var controllerTask in cstsdConfig.ControllerTasks)
                 {
-                    RenderTypescript.FromAssemblyControllerRoslyn(controllerTask.SourceFile, nameSpace, cstsdConfig, tw);
-                    tw.Flush();
+                    Console.WriteLine($"Scanning controller: {controllerTask.SourceFile}");
+
+                    var fileName = Path.GetFileNameWithoutExtension(controllerTask.SourceFile);
+
+                    var outputFile = Path.IsPathRooted(controllerTask.OutputDirectory) == false
+                        ? Path.Combine(cstsdDir, controllerTask.OutputDirectory, fileName + ".ts")
+                        : Path.Combine(controllerTask.OutputDirectory, fileName + ".ts");
+
+                    var nameSpace = string.IsNullOrWhiteSpace(controllerTask.Namespace)
+                        ? cstsdConfig.DefaultControllerNamespace
+                        : controllerTask.Namespace;
+
+                    using (TextWriter tw = new StreamWriter(outputFile, false))
+                    {
+                        RenderTypescript.FromAssemblyControllerRoslyn(controllerTask.SourceFile, nameSpace, cstsdConfig,
+                            tw);
+                        tw.Flush();
+                    }
                 }
             }
 
-            //render poco's from one dll into one .d.ts file
-            foreach (var pocoTask in cstsdConfig.PocoObjectTasks)
+            Console.WriteLine("Scanning poco objects");
+            if (cstsdConfig.PocoObjectTasks != null)
             {
-                var fileName = Path.GetFileNameWithoutExtension(pocoTask.SourceFile);
-
-                var outputFile = Path.IsPathRooted(pocoTask.OutputDirectory) == false
-                    ? Path.Combine(cstsdDir, pocoTask.OutputDirectory, fileName + ".d.ts")
-                    : Path.Combine(pocoTask.OutputDirectory, fileName + ".d.ts");
-                
-                var nameSpace = string.IsNullOrWhiteSpace(pocoTask.Namespace)
-                    ? cstsdConfig.DefaultPocoNamespace
-                    : pocoTask.Namespace;
-
-                using (TextWriter tw = new StreamWriter(outputFile, false))
+                //render poco's from one dll into one .d.ts file
+                foreach (var pocoTask in cstsdConfig.PocoObjectTasks)
                 {
-                    RenderTypescript.FromAssemblyPoco(pocoTask.SourceFile, cstsdConfig, tw, nameSpace);
-                    tw.Flush();
+                    Console.WriteLine($"Scanning poco object: {pocoTask.SourceFile}");
+
+                    var fileName = Path.GetFileNameWithoutExtension(pocoTask.SourceFile);
+
+                    var outputFile = Path.IsPathRooted(pocoTask.OutputDirectory) == false
+                        ? Path.Combine(cstsdDir, pocoTask.OutputDirectory, fileName + ".d.ts")
+                        : Path.Combine(pocoTask.OutputDirectory, fileName + ".d.ts");
+
+                    var nameSpace = string.IsNullOrWhiteSpace(pocoTask.Namespace)
+                        ? cstsdConfig.DefaultPocoNamespace
+                        : pocoTask.Namespace;
+
+                    using (TextWriter tw = new StreamWriter(outputFile, false))
+                    {
+                        RenderTypescript.FromAssemblyPoco(pocoTask.SourceFile, cstsdConfig, tw, nameSpace);
+                        tw.Flush();
+                    }
                 }
             }
+
+
             
             // Console.WriteLine(@"Press any key to continue...");
             // Console.ReadLine();

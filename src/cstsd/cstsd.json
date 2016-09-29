@@ -1,7 +1,7 @@
 ﻿{
   "ProjectDirectory": "./",
-  "DefaultControllerNamespace": "AlmExtranet",
-  "DefaultPocoNamespace": "AlmExtranet",
+  "DefaultControllerNamespace": "SampleWebProject",
+  "DefaultPocoNamespace": "SampleWebProject",
   "ControllerTasks": [
     {
       "SourceFile": "Controllers/AccountController.cs",
@@ -18,7 +18,7 @@
   ],
   "PocoObjectTasks": [
     {
-      "SourceFile": "bin/Debug/net46/win7-x64/ALMFirst.Extranet.exe",
+      "SourceFile": "bin/Debug/MyProject.Domain.dll",
       "OutputDirectory": "Typings"
     }
   ]
