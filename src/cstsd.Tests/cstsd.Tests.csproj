@@ -69,7 +69,6 @@
   <ItemGroup>
     <Compile Include="DotNet\CSharpTestBase.cs" />
     <Compile Include="DotNet\CSharpTypeTests.cs" />
-    <Compile Include="ExeTests\CommandLineArgTests.cs" />
     <Compile Include="ExeTests\ExeProcessResult.cs" />
     <Compile Include="ExeTests\ExeTestBase.cs" />
     <Compile Include="Helpers\ApprovalExtensions.cs" />

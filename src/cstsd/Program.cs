@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using cstsd.Lexical.Core;
 using cstsd.Lexical.TypeScript;
+using Fclp;
 using Newtonsoft.Json;
 
 namespace cstsd
@@ -26,7 +27,28 @@ namespace cstsd
         //TODO: location of output file
         static void Main(string[] args)
         {
+            var p = new FluentCommandLineParser();
+
+            p.SetupHelp("?", "help")
+                .Callback(helpText =>
+                {
+                    Console.WriteLine("Welcome to cstsd. Use the following command line args:");
+                    Console.WriteLine(helpText);
+                    Console.WriteLine("");
+                    Console.WriteLine("");
+                });
+            
             var filePath = "cstsd.json";
+            p.Setup<string>('c', "config")
+                .Callback(s => filePath = s)
+                .WithDescription("This is the path cstsd config json file or directory where cstsd.json is located.")
+            ;
+
+            var attr = File.GetAttributes(filePath);
+
+            if (attr.HasFlag(FileAttributes.Directory))
+                filePath = Path.Combine(filePath, "cstsd.json");
+            
             var cstsdConfig = new TsWriterConfig();
             if (File.Exists(filePath))
             {
