@@ -20,6 +20,24 @@ namespace cstsd
                 itemAction(item);
             }
         }
+
+
+
+    }
+
+    public static class FileHelpers
+    {
+        /// <summary>
+        /// Returns true if the path is a dir, false if it's a file and null if it's neither or doesn't exist. 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static bool? IsDirFile(string path)
+        {
+            if (!Directory.Exists(path) && !File.Exists(path)) return null;
+            var fileAttr = File.GetAttributes(path);
+            return !fileAttr.HasFlag(FileAttributes.Directory);
+        }
     }
 
     class Program
@@ -44,15 +62,26 @@ namespace cstsd
                 .WithDescription("This is the path cstsd config json file or directory where cstsd.json is located.")
             ;
 
-            var attr = File.GetAttributes(filePath);
+            var isDirFile = FileHelpers.IsDirFile(filePath);
 
-            if (attr.HasFlag(FileAttributes.Directory))
-                filePath = Path.Combine(filePath, "cstsd.json");
+            if (isDirFile == null)
+            {
+                Console.WriteLine($"Could not find '{Path.GetFullPath(filePath)}'...");
+                return;
+            }
             
-            var cstsdConfig = new TsWriterConfig();
+            if (!isDirFile.Value)
+                filePath = Path.Combine(filePath, "cstsd.json");
+
+            TsWriterConfig cstsdConfig;
             if (File.Exists(filePath))
             {
                 cstsdConfig = JsonConvert.DeserializeObject<TsWriterConfig>(File.ReadAllText(filePath));
+            }
+            else
+            {
+                Console.WriteLine($"Could not find '{filePath}'...");
+                return;
             }
             
             //render controllers
@@ -90,5 +119,13 @@ namespace cstsd
             // Console.WriteLine(@"Press any key to continue...");
             // Console.ReadLine();
         }
+
+        public void Exit()
+        {
+
+            
+            // Console.ReadLine();
+        }
+
     }
 }
