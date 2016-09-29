@@ -52,12 +52,18 @@ namespace cstsd
                 Console.WriteLine($"Could not find '{filePath}'...");
                 return;
             }
+
+            var cstsdDir = new FileInfo(filePath).Directory?.FullName ?? "";
             
             //render controllers
             foreach (var controllerTask in cstsdConfig.ControllerTasks)
             {
                 var fileName = Path.GetFileNameWithoutExtension(controllerTask.SourceFile);
-                var outputFile = Path.Combine(controllerTask.OutputDirectory, fileName + ".ts");
+
+                var outputFile = Path.IsPathRooted(controllerTask.OutputDirectory) == false 
+                    ? Path.Combine(cstsdDir, controllerTask.OutputDirectory, fileName + ".ts") 
+                    : Path.Combine(controllerTask.OutputDirectory, fileName + ".ts");
+                
                 var nameSpace = string.IsNullOrWhiteSpace(controllerTask.Namespace)
                     ? cstsdConfig.DefaultControllerNamespace
                     : controllerTask.Namespace;
@@ -73,7 +79,11 @@ namespace cstsd
             foreach (var pocoTask in cstsdConfig.PocoObjectTasks)
             {
                 var fileName = Path.GetFileNameWithoutExtension(pocoTask.SourceFile);
-                var outputFile = Path.Combine(pocoTask.OutputDirectory, fileName + ".d.ts");
+
+                var outputFile = Path.IsPathRooted(pocoTask.OutputDirectory) == false
+                    ? Path.Combine(cstsdDir, pocoTask.OutputDirectory, fileName + ".d.ts")
+                    : Path.Combine(pocoTask.OutputDirectory, fileName + ".d.ts");
+                
                 var nameSpace = string.IsNullOrWhiteSpace(pocoTask.Namespace)
                     ? cstsdConfig.DefaultPocoNamespace
                     : pocoTask.Namespace;

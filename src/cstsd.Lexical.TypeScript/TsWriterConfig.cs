@@ -32,8 +32,6 @@ namespace cstsd.Lexical.TypeScript
 
         public IndentationFormatting IndentationFormatting { get; set; } = IndentationFormatting.SpaceX4;
 
-        public string ProjectDirectory { get; set; }
-
         public string DefaultControllerNamespace { get; set; }
 
         public string DefaultPocoNamespace { get; set; }
