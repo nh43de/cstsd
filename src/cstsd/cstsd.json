@@ -1,16 +1,25 @@
 ﻿{
-  "DefaultControllerNamespace": "",
-  "DefaultPocoNamespace": "",
+  "ProjectDirectory": "./",
+  "DefaultControllerNamespace": "AlmExtranet",
+  "DefaultPocoNamespace": "AlmExtranet",
   "ControllerTasks": [
     {
-      "SourceFile": "",
-      "OutputDirectory": ""
+      "SourceFile": "Controllers/AccountController.cs",
+      "OutputDirectory": "wwwroot/ViewModels/Account"
+    },
+    {
+      "SourceFile": "Controllers/ClientController.cs",
+      "OutputDirectory": "wwwroot/ViewModels/Client"
+    },
+    {
+      "SourceFile": "Controllers/MyFilesController.cs",
+      "OutputDirectory": "wwwroot/ViewModels/MyFiles"
     }
   ],
   "PocoObjectTasks": [
     {
-      "SourceFile": "",
-      "OutputDirectory": ""
+      "SourceFile": "bin/Debug/net46/win7-x64/ALMFirst.Extranet.exe",
+      "OutputDirectory": "Typings"
     }
   ]
 }
