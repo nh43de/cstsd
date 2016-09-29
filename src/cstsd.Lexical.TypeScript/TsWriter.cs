@@ -15,7 +15,7 @@ namespace cstsd.Lexical.TypeScript
     {
         private readonly TsWriterConfig _config;
 
-        private string _indent => _config.Indent;
+        private string _indent => _config.IndentationFormatting.GetIndentationString();
         private TextWriter _w;
         private HashSet<string> _supportedNamespaces;
 
@@ -142,7 +142,7 @@ namespace cstsd.Lexical.TypeScript
 
         public virtual string WriteEnum(TsEnum netEnum)
         {
-            var enumStr = string.Join(","+_config.NewLine, netEnum.Enums.Select(WriteEnumValue)).Indent(_config.Indent);
+            var enumStr = string.Join(","+_config.NewLine, netEnum.Enums.Select(WriteEnumValue)).Indent(_indent);
 
             return $"enum {netEnum.Name}" + _config.NewLine +
                    @"{" + _config.NewLine +
@@ -201,7 +201,7 @@ namespace cstsd.Lexical.TypeScript
         {
             var events = string.Join(_config.NewLine, netInterface.Events.Select(p => WriteEvent(p) + ";"));
             if (!string.IsNullOrWhiteSpace(events))
-                events = events.Indent(_config.Indent) + _config.NewLine;
+                events = events.Indent(_indent) + _config.NewLine;
             return events;
         }
 
@@ -220,7 +220,7 @@ namespace cstsd.Lexical.TypeScript
             var fields = string.Join(_config.NewLine,
                 netInterface.Fields.Select(f => WriteField(f, f.IsNullable) + ";"));
             if (!string.IsNullOrWhiteSpace(fields))
-                fields = fields.Indent(_config.Indent) + _config.NewLine;
+                fields = fields.Indent(_indent) + _config.NewLine;
             return fields;
         }
         
@@ -247,7 +247,7 @@ namespace cstsd.Lexical.TypeScript
 
             return $"{accessModifier}{netMethod.Name}({funParams}): {returnType}" + _config.NewLine +
                    @"{" + _config.NewLine +
-                   $@"{body.Indent(_config.Indent)}" + _config.NewLine +
+                   $@"{body.Indent(_indent)}" + _config.NewLine +
                    @"}";
             //TODO: if body is null then we should only render a method signature
         }
@@ -265,7 +265,7 @@ namespace cstsd.Lexical.TypeScript
         {
             var methods = string.Join(_config.NewLines(2), netInterface.Methods.Select(m => WriteMethod(m, false)));
             if (!string.IsNullOrWhiteSpace(methods))
-                methods = methods.Indent(_config.Indent) + _config.NewLine;
+                methods = methods.Indent(_indent) + _config.NewLine;
             return methods;
         }
         public virtual string WriteField(TsField netField, bool useNullable)

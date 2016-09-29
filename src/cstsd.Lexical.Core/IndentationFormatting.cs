@@ -1,4 +1,3 @@
-﻿
 namespace cstsd.Lexical.Core
 {
     public enum IndentationFormatting
@@ -13,6 +12,6 @@ namespace cstsd.Lexical.Core
         SpaceX5,
         SpaceX6,
         SpaceX7,
-        SpaceX8,
+        SpaceX8
     }
 }

@@ -23,8 +23,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cstsd.Lexical", "cstsd.Lexi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cstsd.Lexical.Core", "cstsd.Lexical.Core\cstsd.Lexical.Core.csproj", "{87056633-5442-4FCB-8459-1F0884A1DA1E}"
 EndProject
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cstsd.TypeScript", "cstsd.Lexical.TypeScript\cstsd.TypeScript.csproj", "{D928441C-26CD-41DE-97F6-AAB1CE14E710}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{3C836A54-C1F3-487A-BA1A-E930010A0561}"
+	ProjectSection(SolutionItems) = preProject
+		..\.editorconfig = ..\.editorconfig
+		..\.gitignore = ..\.gitignore
+		..\LICENSE.md = ..\LICENSE.md
+		..\readme.md = ..\readme.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

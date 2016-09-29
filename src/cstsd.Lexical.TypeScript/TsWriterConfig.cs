@@ -2,20 +2,47 @@
 
 namespace cstsd.Lexical.TypeScript
 {
+    public class CstsdTask
+    {
+        public string SourceFile { get; set; }
+        public string OutputDirectory { get; set; }
+
+        /// <summary>
+        /// Optional
+        /// </summary>
+        public string Namespace { get; set; }
+    }
+
+    public class PocoTask : CstsdTask
+    {
+
+    }
+
+    public class ControllerTask : CstsdTask
+    {
+
+    }
 
     
     public class TsWriterConfig
     {
-        public virtual bool CamelBackCase { get; set; } = true;
-       
-        public string RegexFilter { get; set; } = "";
-        public IndentationFormatting IndentationType { get; set; } = IndentationFormatting.SpaceX4;
-
-
-
-        public bool RequireTypeScriptExportAttribute { get; set; } = true;
-
+        public bool CamelBackCase { get; set; } = true;
+        
         public string NewLine { get; set; } = "\r\n";
+
+        public IndentationFormatting IndentationFormatting { get; set; } = IndentationFormatting.SpaceX4;
+
+        public string ProjectDirectory { get; set; }
+
+        public string DefaultControllerNamespace { get; set; }
+
+        public string DefaultPocoNamespace { get; set; }
+
+        public ControllerTask[] ControllerTasks { get; set; }
+
+        public PocoTask[] PocoObjectTasks { get; set; }
+
+
 
         public string NewLines(int count)
         {
@@ -28,27 +55,6 @@ namespace cstsd.Lexical.TypeScript
             return rtn;
         }
 
-        public string Indent
-        {
-            get
-            {
-                switch (IndentationType)
-                {
-                    case IndentationFormatting.None: return "";
-                    case IndentationFormatting.TabX1: return "\t";
-                    case IndentationFormatting.TabX2: return "\t\t";
-                    case IndentationFormatting.SpaceX1: return " ";
-                    case IndentationFormatting.SpaceX2: return "  ";
-                    case IndentationFormatting.SpaceX3: return "   ";
-                    case IndentationFormatting.SpaceX4: return "    ";
-                    case IndentationFormatting.SpaceX5: return "     ";
-                    case IndentationFormatting.SpaceX6: return "      ";
-                    case IndentationFormatting.SpaceX7: return "       ";
-                    case IndentationFormatting.SpaceX8: return "        ";
-                    default:
-                        return "    ";
-                }
-            }
-        }
+
     }
 }

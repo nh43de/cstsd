@@ -78,9 +78,6 @@
     <Compile Include="SpecExtensions\xUnitSpecificationExtensions.cs" />
     <Compile Include="Spike.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="..\SharedItems\AssemblyInfo.Common.cs">
-      <Link>Properties\AssemblyInfo.Common.cs</Link>
-    </Compile>
     <Compile Include="TestAssembly.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -105,7 +102,7 @@
     </ProjectReference>
     <ProjectReference Include="..\cstsd.TestAssembly.CSharp\cstsd.TestAssembly.CSharp.csproj">
       <Project>{c7f85246-c5d8-44b0-a125-e526e24f900b}</Project>
-      <Name>ToTypeScriptD.TestAssembly.CSharp</Name>
+      <Name>cstsd.TestAssembly.CSharp</Name>
     </ProjectReference>
     <ProjectReference Include="..\cstsd\cstsd.csproj">
       <Project>{128a58cf-d911-4c50-b20f-3afa6d75cae8}</Project>
@@ -114,9 +111,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ecc.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -1,0 +1,17 @@
+﻿{
+  "ProjectDirectory": "./",
+  "DefaultControllerNamespace": "",
+  "DefaultPocoNamespace": "",
+  "ControllerTasks": [
+    {
+      "SourceFile": "",
+      "OutputDirectory": ""
+    }
+  ],
+  "PocoObjectTasks": [
+    {
+      "SourceFile": "",
+      "OutputDirectory": ""
+    }
+  ]
+}
