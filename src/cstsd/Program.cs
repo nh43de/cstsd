@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using cstsd.Lexical.Core;
 using cstsd.Lexical.TypeScript;
 using Fclp;
+using Fclp.Internals.Extensions;
 using Newtonsoft.Json;
 
 namespace cstsd
@@ -55,10 +57,11 @@ namespace cstsd
 
             var cstsdDir = new FileInfo(filePath).Directory?.FullName ?? "";
 
+
+            //render controllers
             Console.WriteLine("Scanning controllers");
             if (cstsdConfig.ControllerTasks != null)
             {
-                //render controllers
                 foreach (var controllerTask in cstsdConfig.ControllerTasks)
                 {
                     Console.WriteLine($"Scanning controller: {controllerTask.SourceFile}");
@@ -75,26 +78,36 @@ namespace cstsd
 
                     using (TextWriter tw = new StreamWriter(outputFile, false))
                     {
-                        RenderTypescript.FromAssemblyControllerRoslyn(controllerTask.SourceFile, nameSpace, cstsdConfig,
+                        RenderTypescript.FromControllerRoslyn(controllerTask.SourceFile, nameSpace, cstsdConfig,
                             tw);
                         tw.Flush();
                     }
                 }
             }
 
+            //render poco objects
             Console.WriteLine("Scanning poco objects");
             if (cstsdConfig.PocoObjectTasks != null)
             {
                 //render poco's from one dll into one .d.ts file
                 foreach (var pocoTask in cstsdConfig.PocoObjectTasks)
                 {
-                    Console.WriteLine($"Scanning poco object: {pocoTask.SourceFile}");
-
-                    var fileName = Path.GetFileNameWithoutExtension(pocoTask.SourceFile);
+                    var sourceFiles = new List<string>();
+                    
+                    pocoTask.SourceDirectories.ForEach(sd =>
+                    {
+                        Console.WriteLine($"Scanning poco dir: {sd}");
+                        if(pocoTask.Recursive)
+                            FileHelpers.ScanRecursive(sd, sourceFiles.Add);
+                        else
+                            FileHelpers.ScanStandard(sd, sourceFiles.Add);
+                    });
+                    
+                    var outputFileName = pocoTask.OutputName; //make the outputfilename the na
 
                     var outputFile = Path.IsPathRooted(pocoTask.OutputDirectory) == false
-                        ? Path.Combine(cstsdDir, pocoTask.OutputDirectory, fileName + ".d.ts")
-                        : Path.Combine(pocoTask.OutputDirectory, fileName + ".d.ts");
+                        ? Path.Combine(cstsdDir, pocoTask.OutputDirectory, outputFileName + ".d.ts")
+                        : Path.Combine(pocoTask.OutputDirectory, outputFileName + ".d.ts");
 
                     var nameSpace = string.IsNullOrWhiteSpace(pocoTask.Namespace)
                         ? cstsdConfig.DefaultPocoNamespace
@@ -102,7 +115,7 @@ namespace cstsd
 
                     using (TextWriter tw = new StreamWriter(outputFile, false))
                     {
-                        RenderTypescript.FromAssemblyPoco(pocoTask.SourceFile, cstsdConfig, tw, nameSpace);
+                        RenderTypescript.FromPocoRoslyn(sourceFiles, nameSpace, cstsdConfig, tw);
                         tw.Flush();
                     }
                 }

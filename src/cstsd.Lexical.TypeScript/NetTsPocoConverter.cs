@@ -6,7 +6,7 @@ namespace cstsd.Lexical.TypeScript
 {
     public class NetTsPocoConverter : NetTsConverter
     {
-        public virtual TsInterface GetTsInterface(NetClass netClass)
+        public TsInterface GetTsInterface(NetClass netClass)
         {
             return new TsInterface
             {
@@ -17,6 +17,8 @@ namespace cstsd.Lexical.TypeScript
                     .Where(p => !p.Attributes.Contains("TsExcludeAttribute"))
                     .Select(GetTsField)
                     .ToList()
+
+
                 //Fields = 
             };
         }

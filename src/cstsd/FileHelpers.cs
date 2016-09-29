@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace cstsd
 {
@@ -15,5 +16,30 @@ namespace cstsd
             var fileAttr = File.GetAttributes(path);
             return !fileAttr.HasFlag(FileAttributes.Directory);
         }
+
+        public static void ScanRecursive(string rootDir, Action<string> fileAction)
+        {
+            //recurse dirs too
+            var dirs = Directory.GetDirectories(rootDir);
+            foreach (var d in dirs)
+            {
+                ScanRecursive(d, fileAction);
+            }
+
+            ScanStandard(rootDir, fileAction);
+        }
+
+        public static void ScanStandard(string rootDir, Action<string> fileAction)
+        {
+            var files = Directory.GetFiles(rootDir);
+
+            foreach (var file in files)
+            {
+                fileAction(file);
+            }
+        }
     }
+
+
+
 }

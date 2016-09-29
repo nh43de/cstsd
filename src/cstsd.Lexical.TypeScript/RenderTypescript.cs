@@ -29,19 +29,19 @@ namespace cstsd.Lexical.TypeScript
             throw new NotImplementedException();
         }
 
-        public static void FromAssemblyControllerRoslyn(string textFilePath, string outputNamespace, TsWriterConfig config, TextWriter w)
+        public static void FromControllerRoslyn(string textFilePath, string outputNamespace, TsWriterConfig config, TextWriter w)
         {
             var tc = new NetTsControllerConverter();
 
-            var css = new RoslynTypeScanner();
+            var css = new RoslynTypeScanner(outputNamespace);
 
-            var netAssembly = css.RegisterCodeFile(outputNamespace, textFilePath);
+            css.RegisterCodeFile(textFilePath);
 
-            var ww = new TsWriter(config, w, netAssembly.Namespaces.Select(n => n.Name));
+            var ww = new TsWriter(config, w, css.NetAssembly.Namespaces.Select(n => n.Name));
 
             w.Write(GetHeader(new[] { outputNamespace }));
 
-            var netClasses = netAssembly.Namespaces.SelectMany(netNamespace => netNamespace.TypeDeclarations).OfType<NetClass>().ToList();
+            var netClasses = css.NetAssembly.Namespaces.SelectMany(netNamespace => netNamespace.TypeDeclarations).OfType<NetClass>().ToList();
 
             var tsNamespace = new TsNamespace
             {
@@ -57,49 +57,67 @@ namespace cstsd.Lexical.TypeScript
             w.Write(ww.WriteNamespace(tsNamespace, false));
         }
 
+        
 
-        public static void FromAssemblyController(string assemblyPath, TsWriterConfig config, TextWriter w)
+        public static void FromPocoRoslyn(IEnumerable<string> inputFiles, string outputNamespace, TsWriterConfig config, TextWriter w)
         {
-            var assembly = Assembly.LoadFile(new FileInfo(assemblyPath).FullName);
+            var tc = new NetTsPocoConverter();
 
-            var assemblyTypes = CsTypeScanner.GetAssemblyTypes(assembly);
-            var controllerTypes = new List<Type>();
-            foreach (var typeDeclaration in assemblyTypes)
+            var css = new RoslynTypeScanner(outputNamespace);
+
+            foreach (var filePath in inputFiles)
             {
-                if(typeDeclaration.Name.EndsWith("Controller"))
-                {
-                    controllerTypes.Add(typeDeclaration);
-                }
+                css.RegisterCodeFile(filePath);
             }
 
-            var tc = new NetTsControllerConverter();
+            var ww = new TsWriter(config, w, css.NetAssembly.Namespaces.Select(n => n.Name));
 
-            var css = new CsTypeScanner();
+            w.Write(GetHeader(new[] { outputNamespace }));
 
-            var netAssembly = css.RegisterAssembly(controllerTypes.ToArray(), assembly.FullName);
+            var netClasses = css.NetAssembly.Namespaces.SelectMany(netNamespace => netNamespace.TypeDeclarations).OfType<NetClass>().ToList();
+            var netEnums = css.NetAssembly.Namespaces.SelectMany(netNamespace => netNamespace.TypeDeclarations).OfType<NetEnum>().ToList();
 
-            var ww = new TsWriter(config, w, netAssembly.Namespaces.Select(n => n.Name));
-            
-            w.Write(GetHeader(new[] { assemblyPath }));
-
-            var netClasses = netAssembly.Namespaces.SelectMany(netNamespace => netNamespace.TypeDeclarations).OfType<NetClass>().ToList();
-            
             foreach (var netClass in netClasses)
+            {
+                //write interfaces 
+                if(netClass.Attributes.All(a => a != "TsExport"))
+                    continue;
+
+                w.Write(ww.WriteInterface(tc.GetTsInterface(netClass)));
+                w.Write(config.NewLines(2));
+                
+                //write interface declarations inside of module declarations
+                /*
+                    var tsModule = new TsModule
+                    {
+                        Name = netClass.Namespace,
+                        TypeDeclarations = new[] { tc.GetTsInterface(netClass) }
+                    };
+
+                    w.Write(ww.WriteModule(tsModule, true));
+                    w.Write(config.NewLines(2));
+                */
+            }
+
+            foreach (var netEnum in netEnums)
             {
                 //var bodyProperties = netClass.Properties.Where(p => p.IsPublic).Cast<NetType>();
 
-                w.Write(ww.WriteModule(tc.GetControllerTsModule(netClass), true));
+                var tsModule = new TsModule
+                {
+                    Name = netEnum.Namespace,
+                    TypeDeclarations = new[] { tc.GetTsEnum(netEnum) }
+                };
+
+                w.Write(ww.WriteModule(tsModule, true));
                 w.Write(config.NewLines(2));
             }
-            
 
-
+            //File.WriteAllText("output2.d.ts", w.());
         }
 
-
-
-
-        public static void FromAssemblyPoco(string assemblyPath, TsWriterConfig config, TextWriter w, string namespaceOverride = "")
+        [Obsolete]
+        public static void FromPocoAssembly(string assemblyPath, TsWriterConfig config, TextWriter w, string namespaceOverride = "")
         {
             var assembly = Assembly.LoadFrom(new FileInfo(assemblyPath).FullName);
 
@@ -170,6 +188,42 @@ namespace cstsd.Lexical.TypeScript
             //File.WriteAllText("output2.d.ts", w.());
         }
 
+
+        [Obsolete]
+        public static void FromControllerAssembly(string assemblyPath, TsWriterConfig config, TextWriter w)
+        {
+            var assembly = Assembly.LoadFile(new FileInfo(assemblyPath).FullName);
+
+            var assemblyTypes = CsTypeScanner.GetAssemblyTypes(assembly);
+            var controllerTypes = new List<Type>();
+            foreach (var typeDeclaration in assemblyTypes)
+            {
+                if (typeDeclaration.Name.EndsWith("Controller"))
+                {
+                    controllerTypes.Add(typeDeclaration);
+                }
+            }
+
+            var tc = new NetTsControllerConverter();
+
+            var css = new CsTypeScanner();
+
+            var netAssembly = css.RegisterAssembly(controllerTypes.ToArray(), assembly.FullName);
+
+            var ww = new TsWriter(config, w, netAssembly.Namespaces.Select(n => n.Name));
+
+            w.Write(GetHeader(new[] { assemblyPath }));
+
+            var netClasses = netAssembly.Namespaces.SelectMany(netNamespace => netNamespace.TypeDeclarations).OfType<NetClass>().ToList();
+
+            foreach (var netClass in netClasses)
+            {
+                //var bodyProperties = netClass.Properties.Where(p => p.IsPublic).Cast<NetType>();
+
+                w.Write(ww.WriteModule(tc.GetControllerTsModule(netClass), true));
+                w.Write(config.NewLines(2));
+            }
+        }
 
 
 

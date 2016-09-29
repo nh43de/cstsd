@@ -27,28 +27,24 @@ namespace ToTypeScriptD.Core
 
         #region assemblies
 
-        public Dictionary<string, NetAssembly> RegisteredAssemblies { get; set; } = new Dictionary<string, NetAssembly>();
-        
-        public Dictionary<string, NetNamespace> RegisteredNamespaces { get; set; } = new Dictionary<string, NetNamespace>();
-
-
-        public virtual NetAssembly RegisterCodeFile(string assemblyName, string codeFilePath)
+        public RoslynTypeScanner(string assemblyName)
         {
-            var syntaxTree = CSharpSyntaxTree.ParseText(File.ReadAllText(codeFilePath));
-
-            var netAssembly = new NetAssembly
+            NetAssembly = new NetAssembly
             {
                 Name = assemblyName
             };
-
-            RegisteredAssemblies.Add(assemblyName, netAssembly);
-
-            syntaxTree.GetRoot().ChildNodes().OfType<NamespaceDeclarationSyntax>().Select(RegisterNamespace).Each(netAssembly.Namespaces.Add);
-            
-            return netAssembly;
         }
 
-        public static NetNamespace RegisterNamespace(NamespaceDeclarationSyntax nsContext)
+        public NetAssembly NetAssembly { get; set; }
+
+        public virtual void RegisterCodeFile(string codeFilePath)
+        {
+            var syntaxTree = CSharpSyntaxTree.ParseText(File.ReadAllText(codeFilePath));
+
+            syntaxTree.GetRoot().ChildNodes().OfType<NamespaceDeclarationSyntax>().Each(RegisterNamespace);
+        }
+
+        public void RegisterNamespace(NamespaceDeclarationSyntax nsContext)
         {
             var nsName = nsContext.Name.ToString();
                 
@@ -58,7 +54,7 @@ namespace ToTypeScriptD.Core
                 TypeDeclarations = GetNamespaceTypeDeclarations(nsContext)
             };
             
-            return a;
+            NetAssembly.Namespaces.Add(a);
         }
 
         public static NetType[] GetNamespaceTypeDeclarations(NamespaceDeclarationSyntax nsDeclarationSyntax)
@@ -85,11 +81,25 @@ namespace ToTypeScriptD.Core
                 Attributes = GetAttributeList(classDeclaration.AttributeLists),
                 IsPublic = IsPublic(classDeclaration.Modifiers),
                 Name = classDeclaration.Identifier.ToString(),
-                Methods = classDeclaration.Members.OfType<MethodDeclarationSyntax>().Select(GetNetMethod).ToList()
+                Methods = classDeclaration.Members.OfType<MethodDeclarationSyntax>().Select(GetNetMethod).ToList(),
+                Properties = classDeclaration.Members.OfType<PropertyDeclarationSyntax>().Select(GetNetProperty).ToList()
             };
 
             return a;
         }
+
+        public static NetProperty GetNetProperty(PropertyDeclarationSyntax propertyDeclarationSyntax)
+        {
+            return new NetProperty
+            {
+                Attributes = GetAttributeList(propertyDeclarationSyntax.AttributeLists),
+                IsPublic = IsPublic(propertyDeclarationSyntax.Modifiers),
+                Name = propertyDeclarationSyntax.Identifier.ToString(),
+                IsStatic = IsStatic(propertyDeclarationSyntax.Modifiers),
+                FieldType = GetType(propertyDeclarationSyntax.Type)
+            };
+        }
+
 
         public static List<string> GetAttributeList(SyntaxList<AttributeListSyntax> attributeListSyntax)
         {

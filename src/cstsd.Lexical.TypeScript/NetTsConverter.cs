@@ -99,6 +99,7 @@ namespace cstsd.Lexical.TypeScript
             };
         }
 
+        //using properties in typescript isn't very common 
         public virtual TsProperty GetTsProperty(NetProperty netProperty)
         {
             return new TsProperty

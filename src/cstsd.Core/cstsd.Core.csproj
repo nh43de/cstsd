@@ -51,7 +51,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes\TsControllerExportAttribute.cs" />
     <Compile Include="Attributes\TsExcludeAttribute.cs" />
     <Compile Include="Attributes\TsExportAttribute.cs" />
     <Compile Include="RoslynTypeScanner.cs" />
