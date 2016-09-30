@@ -2,7 +2,7 @@
 
 namespace cstsd.Core.Attributes
 {
-    public class TsExcludeAttribute : Attribute
+    public class TsIgnoreAttribute : Attribute
     {
         
     }

@@ -24,8 +24,7 @@ namespace cstsd.Core
             return;
         }
 
-        #region assemblies
-
+       
         public RoslynTypeScanner(string assemblyName)
         {
             NetAssembly = new NetAssembly
@@ -116,11 +115,34 @@ namespace cstsd.Core
                 IsPublic = IsPublic(classDeclaration.Modifiers),
                 Name = classDeclaration.Identifier.ToString(),
                 Methods = classDeclaration.Members.OfType<MethodDeclarationSyntax>().Select(GetNetMethod).ToList(),
-                Properties = classDeclaration.Members.OfType<PropertyDeclarationSyntax>().Select(GetNetProperty).ToList()
+                Properties = classDeclaration.Members.OfType<PropertyDeclarationSyntax>().Select(GetNetProperty).ToList(),
+                BaseTypes = GetBaseTypes(classDeclaration.BaseList),
+                GenericParameters = GetGenericTypeParameters(classDeclaration.TypeParameterList)
             };
 
             return a;
         }
+
+        public static List<NetGenericParameter> GetGenericTypeParameters(TypeParameterListSyntax typeParameterList)
+        {
+            if (typeParameterList == null)
+                return new List<NetGenericParameter>();
+
+            return typeParameterList.Parameters.Select(pa => new NetGenericParameter
+            {
+                Name = pa.Identifier.ToString()
+            }).ToList();
+        }
+
+        public static List<NetType> GetBaseTypes(BaseListSyntax baseListSyntax)
+        {
+            if(baseListSyntax == null)
+                return new List<NetType>();
+
+            return baseListSyntax.Types.Select(bt => GetType(bt.Type)).ToList();
+        }
+
+
 
         public static NetProperty GetNetProperty(PropertyDeclarationSyntax propertyDeclarationSyntax)
         {
@@ -183,10 +205,7 @@ namespace cstsd.Core
                 return new NetType()
                 {
                     Name = genericType.Identifier.ToString(),
-                    GenericParameters = genericType.TypeArgumentList.Arguments.Select(ga => new NetGenericParameter
-                    {
-                        Name  = ga.ToString()
-                    }).ToList()
+                    GenericParameters = GetGenericParameters(genericType.TypeArgumentList)
                 };
             }
 
@@ -205,6 +224,14 @@ namespace cstsd.Core
             };
         }
 
+        public static List<NetGenericParameter> GetGenericParameters(TypeArgumentListSyntax typeArgumentList)
+        {
+            return typeArgumentList.Arguments.Select(ga => new NetGenericParameter
+            {
+                Name = ga.ToString()
+            }).ToList();
+        }
+        
 
         public static Type[] GetAssemblyTypes(Assembly assembly)
         {
@@ -220,8 +247,6 @@ namespace cstsd.Core
                 return ex.Types.Where(t => t != null).ToArray();
             }
         }
-
-        #endregion
 
         
 

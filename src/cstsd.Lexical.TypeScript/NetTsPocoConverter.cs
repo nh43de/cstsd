@@ -31,10 +31,12 @@ namespace cstsd.TypeScript
             return new TsInterface
             {
                 IsPublic = netClass.IsPublic,
+                GenericParameters = netClass.GenericParameters.Select(GetTsGenericParameter).ToList(),
+                BaseTypes = netClass.BaseTypes.Select(GetTsType).ToList(),
                 Name = netClass.Name,
                 Fields = netClass
                     .Properties
-                    .Where(p => !p.Attributes.Contains("TsExcludeAttribute"))
+                    .Where(p => !p.Attributes.Contains("TsIgnore"))
                     .Select(GetTsField)
                     .ToList()
 
