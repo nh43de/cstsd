@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using cstsd.Lexical.TypeScript.Extensions;
 using ToTypeScriptD.Core;
@@ -9,28 +10,63 @@ namespace cstsd.Lexical.TypeScript
 {
     public class NetTsConverter //This is for pocos
     {
+        public class NetCollectionType
+        {
+            public string Namespace { get; set; }
+            public string Name { get; set; }
+        }
+        
+        private static readonly NetCollectionType[] NetCollectionTypes = new []
+        {
+            new NetCollectionType { Name = "ICollection", Namespace = "System.Collections.Generic"} ,
+            new NetCollectionType { Name = "IList", Namespace = "System.Collections.Generic"} ,
+            new NetCollectionType { Name = "List", Namespace = "System.Collections.Generic"} ,
+            new NetCollectionType { Name = "ArrayList", Namespace = "System.Collections.Generic"} ,
+            new NetCollectionType { Name = "IEnumerable", Namespace = "System.Collections.Generic"} 
+        };
+
+        public static readonly Lazy<HashSet<string>> NetCollectionTypesLazy = new Lazy<HashSet<string>>(() =>
+        {
+            var a = new HashSet<string>();
+            foreach (var netCollectionType in NetCollectionTypes)
+            {
+                a.Add(netCollectionType.Namespace + "." + netCollectionType.Name);
+                a.Add(netCollectionType.Name);
+            }
+            return a;
+        });
+
         public virtual TsType GetTsType(NetType netType) //needs to support case on tsclass, interface, enum, etc
         {
-        //    if (netType is NetEnum)
-        //    {
-        //        return GetTsEnum((NetEnum) netType);
-        //    }
+            //    if (netType is NetEnum)
+            //    {
+            //        return GetTsEnum((NetEnum) netType);
+            //    }
 
-        //    if (netType is NetClass)
-        //    {
-        //        throw new NotImplementedException();
-        //    }
+            //    if (netType is NetClass)
+            //    {
+            //        throw new NotImplementedException();
+            //    }
 
-        //    if (netType is NetInterface)
-        //    {
-        //        return new TsInterface
-        //        {
-        //            Name = GetTsTypeName(netType),
-        //            IsPublic = netType.IsPublic,
-        //            GenericParameters = netType.GenericParameters.Select(GetTsGenericParameter).ToList(),
-        //            //TODO: more not implemented ...
-        //        };
-        //    }
+            //    if (netType is NetInterface)
+            //    {
+            //        return new TsInterface
+            //        {
+            //            Name = GetTsTypeName(netType),
+            //            IsPublic = netType.IsPublic,
+            //            GenericParameters = netType.GenericParameters.Select(GetTsGenericParameter).ToList(),
+            //            //TODO: more not implemented ...
+            //        };
+            //    }
+            if (NetCollectionTypesLazy.Value.Contains(netType.Name))
+            {
+                return new TsType
+                {
+                    Name = netType.GenericParameters.First().Name,
+                    IsPublic = netType.IsPublic,
+                    IsArray = true
+                };
+            }
 
             return new TsType
             {
@@ -55,7 +91,7 @@ namespace cstsd.Lexical.TypeScript
             return new TsEnumValue
             {
                 Name = netEnumValue.Name,
-                Value = netEnumValue.Value
+                EnumValue = netEnumValue.EnumValue
             };
         }
 
@@ -71,7 +107,7 @@ namespace cstsd.Lexical.TypeScript
             {
                 Name = GetTsName(netField.Name),
                 FieldType = GetTsType(netField.FieldType),
-                IsNullable = IsFieldNullable(netField.FieldType),
+                IsNullable = netField.FieldType.IsNullable,
                 IsPublic = netField.IsPublic 
             };
         }

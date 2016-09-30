@@ -10,6 +10,8 @@ namespace ToTypeScriptD.Core.Net
         public string FullName { get; set; }
         public bool IsPublic { get; set; }
 
+        public bool IsNullable { get; set; } = false;
+
         public bool IsGenericParameter { get; set; } = false;
         public Type ReflectedType { get; set; }
 

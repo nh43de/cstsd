@@ -230,7 +230,7 @@ namespace ToTypeScriptD.Core
                 tsEnum.Enums.Add( new NetEnumValue
                 {
                     Name = item.Name,
-                    Value = Convert.ToInt32(item.GetRawConstantValue())
+                    EnumValue = Convert.ToInt32(item.GetRawConstantValue())
                 });
             });
 

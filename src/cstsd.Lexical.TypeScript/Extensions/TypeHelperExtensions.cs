@@ -116,15 +116,16 @@ namespace cstsd.Lexical.TypeScript
             return fromName;
         }
 
+
         public static string ToTypeScriptTypeName(this NetType netType)
         {
             var fromName = netType.Name;
-
+            
             if (TypeMappings.Default.ContainsKey(fromName))
             {
                 return TypeMappings.Default[fromName];
             }
-
+            
             if (!netType.GenericParameters.Any()) return fromName;
             
             var genericParamsStr = string.Join(",", netType.GenericParameters.Select(gp => gp.Name));
@@ -132,7 +133,16 @@ namespace cstsd.Lexical.TypeScript
             return $"{fromName}<{genericParamsStr}>";
         }
 
-        
+        public static string TryGetTsEquivalent(string typeString)
+        {
+            if (TypeMappings.Default.ContainsKey(typeString))
+            {
+                return TypeMappings.Default[typeString];
+            }
+            return typeString;
+        }
+
+
 
         //TODO: move this somewhere else?
         public static string ToTypeScriptTypeName(this Type typeReference)

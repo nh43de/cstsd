@@ -7,7 +7,9 @@ namespace ToTypeScriptD.Core.Ts
         public string Name { get; set; }
 
         public bool IsPublic { get; set; } = true;
-        
+
+        public bool IsArray { get; set; } = false;
+
         public ICollection<TsGenericParameter> GenericParameters { get; set; } = new List<TsGenericParameter>();
 
         public override string ToString()

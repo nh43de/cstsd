@@ -3,6 +3,6 @@
     public class TsEnumValue
     {
         public string Name { get; set; }
-        public int Value { get; set; }
+        public int? EnumValue { get; set; }
     }
 }

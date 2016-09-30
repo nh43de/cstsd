@@ -152,7 +152,10 @@ namespace cstsd.Lexical.TypeScript
 
         public virtual string WriteEnumValue(TsEnumValue tsEnumValue)
         {
-            return tsEnumValue.Name + " = " + tsEnumValue.Value;
+            if(tsEnumValue.EnumValue != null)
+                return tsEnumValue.Name + " = " + tsEnumValue.EnumValue;
+
+            return tsEnumValue.Name;
         }
 
         //TODO: do this
@@ -254,12 +257,14 @@ namespace cstsd.Lexical.TypeScript
 
         public virtual string WriteTypeName(TsType netType)
         {
-            if ((netType.GenericParameters?.Count ?? 0) == 0)
-                return netType.Name;
+            var arrString = netType.IsArray ? "[]" : "";
 
+            if ((netType.GenericParameters?.Count ?? 0) == 0)
+                return netType.Name + arrString;
+            
             //render generic parameters
-            return $"{netType.Name}<{string.Join(",", netType.GenericParameters.Select(gp => gp.Name))}>";
-    }
+            return $"{netType.Name}<{string.Join(",", netType.GenericParameters.Select(gp => gp.Name))}>" + arrString;
+        }
 
         private string GetMethodsString(TsInterface netInterface)
         {

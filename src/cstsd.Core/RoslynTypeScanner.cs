@@ -67,15 +67,50 @@ namespace ToTypeScriptD.Core
                 {
                     a.Add(GetNetClass((ClassDeclarationSyntax)cn));
                 }
+                else if (cn is EnumDeclarationSyntax)
+                {
+                    a.Add(GetNetEnum((EnumDeclarationSyntax)cn));
+                }
             }
 
             return a.ToArray();
         }
-        
+
+        public static NetEnum GetNetEnum(EnumDeclarationSyntax enumDeclaration)
+        {
+            var name = enumDeclaration.Identifier.ToString();
+
+            var a = new NetEnum
+            {
+                Attributes = GetAttributeList(enumDeclaration.AttributeLists),
+                IsPublic = IsPublic(enumDeclaration.Modifiers),
+                Name = enumDeclaration.Identifier.ToString(),
+                Enums =  GetNetEnumValues(enumDeclaration.Members)
+            };
+
+            return a;
+        }
+
+        public static List<NetEnumValue> GetNetEnumValues(SeparatedSyntaxList<EnumMemberDeclarationSyntax> enumMembers)
+        {
+            return enumMembers.Select(m =>
+            {
+                var v = new NetEnumValue
+                {
+                    Name = m.Identifier.ToString()
+                };
+
+                int evi;
+                if (m.EqualsValue?.Value != null && int.TryParse(m.EqualsValue.Value.ToString(), out evi))
+                {
+                    v.EnumValue = evi;
+                }
+                return v;
+            }).ToList();
+        }
+
         public static NetClass GetNetClass(ClassDeclarationSyntax classDeclaration)
         {
-            var name = classDeclaration.Identifier.ToString();
-            
             var a = new NetClass
             {
                 Attributes = GetAttributeList(classDeclaration.AttributeLists),
@@ -155,10 +190,19 @@ namespace ToTypeScriptD.Core
                     }).ToList()
                 };
             }
-            
+
+            if (typeSyntax is NullableTypeSyntax)
+            {
+                return new NetType
+                {
+                    Name = ((NullableTypeSyntax)typeSyntax).ElementType.ToString(),
+                    IsNullable = true
+                };
+            }
+
             return new NetType
             {
-                Name = typeSyntax.ToString()
+                Name = typeSyntax.ToString(),
             };
         }
 
