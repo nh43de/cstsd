@@ -1,10 +1,9 @@
-using System.CodeDom;
 using System.Linq;
-using ToTypeScriptD.Core.Extensions;
-using ToTypeScriptD.Core.Net;
-using ToTypeScriptD.Core.Ts;
+using cstsd.Core.Extensions;
+using cstsd.Core.Net;
+using cstsd.Core.Ts;
 
-namespace cstsd.Lexical.TypeScript
+namespace cstsd.TypeScript
 {
     public class NetTsControllerConverter : NetTsConverter
     {

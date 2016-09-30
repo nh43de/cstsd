@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
+using cstsd.Core.Extensions;
+using cstsd.Core.Ts;
 using cstsd.Lexical.Core;
-using cstsd.Lexical.TypeScript.Extensions;
-using ToTypeScriptD.Core;
-using ToTypeScriptD.Core.Extensions;
-using ToTypeScriptD.Core.Ts;
 
-namespace cstsd.Lexical.TypeScript
+namespace cstsd.TypeScript
 {
     public class TsWriter // : ITsWriter
     {

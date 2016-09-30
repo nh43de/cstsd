@@ -1,10 +1,7 @@
-﻿using System.Text;
-using ApprovalTests;
-using ToTypeScriptD.Core;
-using ToTypeScriptD.Tests.Helpers;
+﻿using cstsd.Tests.Helpers;
 using Xunit;
 
-namespace ToTypeScriptD.Tests.DotNet
+namespace cstsd.Tests.DotNet
 {
 
     public class CSharpTypeTests : CSharpTestBase

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ToTypeScriptD.Core.Attributes
+namespace cstsd.Core.Attributes
 {
     public class TsExcludeAttribute : Attribute
     {

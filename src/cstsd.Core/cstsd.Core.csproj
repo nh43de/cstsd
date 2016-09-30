@@ -7,8 +7,8 @@
     <ProjectGuid>{FEA71855-6F65-45CB-97C4-51F1891904F6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ToTypeScriptD.Core</RootNamespace>
-    <AssemblyName>ToTypeScriptD.Core</AssemblyName>
+    <RootNamespace>cstsd.Core</RootNamespace>
+    <AssemblyName>cstsd.Core</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

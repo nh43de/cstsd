@@ -8,8 +8,8 @@
     <ProjectGuid>{7539E4F5-4829-4D53-90B3-6FBA87878F38}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ToTypeScriptD.Tests</RootNamespace>
-    <AssemblyName>ToTypeScriptD.Tests</AssemblyName>
+    <RootNamespace>cstsd.Tests</RootNamespace>
+    <AssemblyName>cstsd.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

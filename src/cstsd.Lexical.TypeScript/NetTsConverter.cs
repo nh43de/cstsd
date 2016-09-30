@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using cstsd.Lexical.TypeScript.Extensions;
-using ToTypeScriptD.Core;
-using ToTypeScriptD.Core.Net;
-using ToTypeScriptD.Core.Ts;
+using cstsd.Core.Net;
+using cstsd.Core.Ts;
+using cstsd.TypeScript.Extensions;
 
-namespace cstsd.Lexical.TypeScript
+namespace cstsd.TypeScript
 {
     public class NetTsConverter //This is for pocos
     {

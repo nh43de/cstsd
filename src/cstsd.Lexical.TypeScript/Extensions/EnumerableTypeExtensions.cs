@@ -1,4 +1,4 @@
-namespace cstsd.Lexical.TypeScript
+namespace cstsd.TypeScript.Extensions
 {
     public static class EnumerableTypeExtensions
     {

@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Text;
-using ToTypeScriptD.Core.Extensions;
+using cstsd.Core.Extensions;
 
-namespace cstsd.Lexical.TypeScript.Extensions
+namespace cstsd.TypeScript.Extensions
 {
     public static class LexicalExtensions
     {

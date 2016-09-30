@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ToTypeScriptD.Core.Ts
+namespace cstsd.Core.Ts
 {
     public class TsEnum : TsType
     {

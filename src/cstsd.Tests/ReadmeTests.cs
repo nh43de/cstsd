@@ -1,9 +1,4 @@
-﻿using System;
-using System.Linq;
-using ToTypeScriptD.Tests.ExeTests;
-using Xunit;
-
-namespace ToTypeScriptD.Tests
+﻿namespace cstsd.Tests
 {
     public class ReadmeTests
     {

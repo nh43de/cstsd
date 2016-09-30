@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using cstsd.Lexical.TypeScript.Extensions;
-using ToTypeScriptD.Core.Extensions;
-using ToTypeScriptD.Core.Net;
+using cstsd.Core.Extensions;
+using cstsd.Core.Net;
 
-namespace cstsd.Lexical.TypeScript
+namespace cstsd.TypeScript.Extensions
 {
     public static class TypeMappings
     {

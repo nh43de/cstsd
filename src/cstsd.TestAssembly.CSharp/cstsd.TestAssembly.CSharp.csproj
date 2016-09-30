@@ -7,8 +7,8 @@
     <ProjectGuid>{C7F85246-C5D8-44B0-A125-E526E24F900B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ToTypeScriptD.TestAssembly.CSharp</RootNamespace>
-    <AssemblyName>ToTypeScriptD.TestAssembly.CSharp</AssemblyName>
+    <RootNamespace>cstsd.TestAssembly.CSharp</RootNamespace>
+    <AssemblyName>cstsd.TestAssembly.CSharp</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

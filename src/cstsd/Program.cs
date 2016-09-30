@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using cstsd.Lexical.Core;
-using cstsd.Lexical.TypeScript;
+using cstsd.TypeScript;
 using Fclp;
 using Fclp.Internals.Extensions;
 using Newtonsoft.Json;

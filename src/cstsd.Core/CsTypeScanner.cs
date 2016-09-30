@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using ToTypeScriptD.Core.Extensions;
-using ToTypeScriptD.Core.Net;
+using cstsd.Core.Extensions;
+using cstsd.Core.Net;
 
-namespace ToTypeScriptD.Core
+namespace cstsd.Core
 {
     /// <summary>
     /// Returns generation AST objects.
@@ -230,7 +230,7 @@ namespace ToTypeScriptD.Core
                 tsEnum.Enums.Add( new NetEnumValue
                 {
                     Name = item.Name,
-                    EnumValue = Convert.ToInt32(item.GetRawConstantValue())
+                    EnumValue = Convert.ToInt32((object) item.GetRawConstantValue())
                 });
             });
 

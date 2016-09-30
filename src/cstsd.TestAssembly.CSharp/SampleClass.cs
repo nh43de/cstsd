@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace ToTypeScriptD.TestAssembly.CSharp
+namespace cstsd.TestAssembly.CSharp
 {
     public interface IAmAnInterface
     {

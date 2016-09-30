@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using ToTypeScriptD.Core.Net;
+using cstsd.Core.Net;
 
-namespace ToTypeScriptD.Core
+namespace cstsd.Core
 {
     public interface ITypeScanner<TType>
     {

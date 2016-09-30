@@ -1,9 +1,8 @@
 ﻿using System.IO;
-using cstsd;
-using cstsd.Lexical.TypeScript;
-using ToTypeScriptD.Core;
+using cstsd.Tests.ExeTests;
+using cstsd.TypeScript;
 
-namespace ToTypeScriptD.Tests.Helpers
+namespace cstsd.Tests.Helpers
 {
     public static class ApprovalsExtensions
     {
@@ -29,7 +28,7 @@ namespace ToTypeScriptD.Tests.Helpers
             ApprovalTests.Approvals.Verify(item);
         }
 
-        public static void Verify(this ToTypeScriptD.Tests.ExeTests.ExeProcessResult item)
+        public static void Verify(this ExeProcessResult item)
         {
             item.ToString().Verify();
         }

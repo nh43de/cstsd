@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace ToTypeScriptD.Tests.ExeTests
+namespace cstsd.Tests.ExeTests
 {
     public class ExeTestBase
     {

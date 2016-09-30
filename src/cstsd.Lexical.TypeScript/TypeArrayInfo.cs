@@ -1,6 +1,6 @@
 using System;
 
-namespace cstsd.Lexical.TypeScript
+namespace cstsd.TypeScript
 {
     public class TypeArrayInfo
     {

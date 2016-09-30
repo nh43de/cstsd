@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using cstsd.Core.Extensions;
+using cstsd.Core.Net;
 using Microsoft.CodeAnalysis;
-using ToTypeScriptD.Core.Extensions;
-using ToTypeScriptD.Core.Net;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-
-namespace ToTypeScriptD.Core
+namespace cstsd.Core
 {
     /// <summary>
     /// Returns generation AST objects.

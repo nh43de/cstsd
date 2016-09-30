@@ -1,6 +1,6 @@
 ﻿using cstsd.Lexical.Core;
 
-namespace cstsd.Lexical.TypeScript
+namespace cstsd.TypeScript
 {
     public class CstsdTask
     {

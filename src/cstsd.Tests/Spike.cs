@@ -1,11 +1,6 @@
-﻿using ApprovalTests;
-using System;
-using System.Collections.Generic;
-using ToTypeScriptD.Core;
-using ToTypeScriptD.Tests.ExeTests;
-using Xunit;
+﻿using Xunit;
 
-namespace ToTypeScriptD.Tests
+namespace cstsd.Tests
 {
 
     public class Spike

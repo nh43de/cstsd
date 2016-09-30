@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace ToTypeScriptD.Core.Extensions
+namespace cstsd.Core.Extensions
 {
     public static class TSFormattingExtensions
     {

@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace ToTypeScriptD.Core.Extensions
+namespace cstsd.Core.Extensions
 {
 
     public static class Extensions

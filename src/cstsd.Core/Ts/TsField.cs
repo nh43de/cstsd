@@ -1,4 +1,4 @@
-namespace ToTypeScriptD.Core.Ts
+namespace cstsd.Core.Ts
 {
     public class TsField : TsMember
     {

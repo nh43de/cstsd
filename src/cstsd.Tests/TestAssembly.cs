@@ -1,10 +1,9 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace ToTypeScriptD.Tests
+namespace cstsd.Tests
 {
     public class TestAssembly
     {

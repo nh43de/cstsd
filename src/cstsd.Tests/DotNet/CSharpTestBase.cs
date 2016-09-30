@@ -1,13 +1,14 @@
 ﻿using System.IO;
+using cstsd.TestAssembly.CSharp;
 
-namespace ToTypeScriptD.Tests.DotNet
+namespace cstsd.Tests.DotNet
 {
     public class CSharpTestBase
     {
         public TestAssembly CSharpAssembly { get; private set; }
         public CSharpTestBase()
         {
-            var path = typeof(ToTypeScriptD.TestAssembly.CSharp.IAmAnInterface).Assembly.Location;
+            var path = typeof(IAmAnInterface).Assembly.Location;
             path = Path.Combine(Path.GetDirectoryName(path), Path.GetFileName(path));
             CSharpAssembly = new TestAssembly(path);
         }

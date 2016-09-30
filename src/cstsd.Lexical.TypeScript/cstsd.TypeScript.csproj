@@ -7,8 +7,8 @@
     <ProjectGuid>{D928441C-26CD-41DE-97F6-AAB1CE14E710}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>cstsd.Lexical.TypeScript</RootNamespace>
-    <AssemblyName>cstsd.Lexical.TypeScript</AssemblyName>
+    <RootNamespace>cstsd.TypeScript</RootNamespace>
+    <AssemblyName>cstsd.TypeScript</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

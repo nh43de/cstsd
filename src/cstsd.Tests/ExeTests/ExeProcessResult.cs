@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace ToTypeScriptD.Tests.ExeTests
+﻿namespace cstsd.Tests.ExeTests
 {
     public class ExeProcessResult
     {

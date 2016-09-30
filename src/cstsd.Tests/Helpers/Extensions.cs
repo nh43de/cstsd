@@ -1,4 +1,4 @@
-﻿namespace ToTypeScriptD.Tests.Helpers
+﻿namespace cstsd.Tests.Helpers
 {
     public static class Extensions
     {

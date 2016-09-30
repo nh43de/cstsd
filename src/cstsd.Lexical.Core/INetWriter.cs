@@ -1,5 +1,4 @@
-﻿using ToTypeScriptD.Core;
-using ToTypeScriptD.Core.Net;
+﻿using cstsd.Core.Net;
 
 namespace cstsd.Lexical.Core
 {

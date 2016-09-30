@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using cstsd.Lexical.TypeScript;
+using cstsd.TypeScript;
 
-namespace ToTypeScriptD.TestAssembly.CSharp
+namespace cstsd.TestAssembly.CSharp
 {
     [TypeScriptExport]
     public class GenericClass<T>

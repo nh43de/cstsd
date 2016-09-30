@@ -2,16 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using cstsd.Lexical.Core;
-using ToTypeScriptD.Core;
-using ToTypeScriptD.Core.Extensions;
-using ToTypeScriptD.Core.Net;
-using ToTypeScriptD.Core.Ts;
+using cstsd.Core;
+using cstsd.Core.Extensions;
+using cstsd.Core.Net;
+using cstsd.Core.Ts;
 
-namespace cstsd.Lexical.TypeScript
+namespace cstsd.TypeScript
 {
     public class RenderTypescript
     {
