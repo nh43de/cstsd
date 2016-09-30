@@ -116,7 +116,7 @@ namespace cstsd.TypeScript.Extensions
         }
 
 
-        public static string ToTypeScriptTypeName(this NetType netType)
+        public static string ToTypeScriptTypeName(this NetType netType, bool writeGenerics)
         {
             var fromName = netType.Name;
             
@@ -124,11 +124,11 @@ namespace cstsd.TypeScript.Extensions
             {
                 return TypeMappings.Default[fromName];
             }
-            
-            if (!netType.GenericParameters.Any()) return fromName;
-            
+
+            if (!netType.GenericParameters.Any() || writeGenerics == false) return fromName;
+
             var genericParamsStr = string.Join(",", netType.GenericParameters.Select(gp => gp.Name));
-                
+
             return $"{fromName}<{genericParamsStr}>";
         }
 

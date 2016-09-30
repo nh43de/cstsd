@@ -2,34 +2,6 @@
 
 namespace cstsd.TypeScript
 {
-    public class CstsdTask
-    {
-        public string OutputDirectory { get; set; }
-
-        /// <summary>
-        /// Optional
-        /// </summary>
-        public string Namespace { get; set; }
-    }
-
-    public class PocoTask : CstsdTask
-    {
-
-        public string[] SourceDirectories { get; set; }
-        
-        public string OutputName { get; set; }
-
-        public bool Recursive { get; set; } = false;
-
-    }
-
-    public class ControllerTask : CstsdTask
-    {
-        public string SourceFile { get; set; }
-
-    }
-
-
     public class TsWriterConfig
     {
         public bool CamelBackCase { get; set; } = true;

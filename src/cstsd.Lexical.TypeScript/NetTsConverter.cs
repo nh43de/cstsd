@@ -161,15 +161,16 @@ namespace cstsd.TypeScript
             return name;
         }
         
-        public virtual string GetTsTypeName(NetType type)
+        public virtual string GetTsTypeName(NetType type, bool writeGenerics = false)
         {
             var name = type.IsGenericParameter ? type.Name :
                 type.ReflectedType == null 
-                    ? type.ToTypeScriptTypeName()
+                    ? type.ToTypeScriptTypeName(writeGenerics)
                     : type.ReflectedType.ToTypeScriptTypeName();
             
             return name;
         }
 
+        
     }
 }

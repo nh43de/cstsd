@@ -76,6 +76,7 @@ namespace cstsd
                         ? cstsdConfig.DefaultControllerNamespace
                         : controllerTask.Namespace;
 
+                    CheckCreateDir(outputFile);
                     using (TextWriter tw = new StreamWriter(outputFile, false))
                     {
                         RenderTypescript.FromControllerRoslyn(controllerTask.SourceFile, nameSpace, cstsdConfig,
@@ -112,7 +113,8 @@ namespace cstsd
                     var nameSpace = string.IsNullOrWhiteSpace(pocoTask.Namespace)
                         ? cstsdConfig.DefaultPocoNamespace
                         : pocoTask.Namespace;
-
+                    
+                    CheckCreateDir(outputFile);
                     using (TextWriter tw = new StreamWriter(outputFile, false))
                     {
                         RenderTypescript.FromPocoRoslyn(sourceFiles, nameSpace, cstsdConfig, tw);
@@ -127,12 +129,17 @@ namespace cstsd
             // Console.ReadLine();
         }
 
-        public void Exit()
-        {
 
-            
-            // Console.ReadLine();
+        private static void CheckCreateDir(string filePath)
+        {
+            var dirPath = Path.GetDirectoryName(filePath);
+
+            if (Directory.Exists(dirPath))
+                return;
+
+            var di = Directory.CreateDirectory(dirPath);
         }
+
 
     }
 }

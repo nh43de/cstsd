@@ -40,6 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ControllerTask.cs" />
+    <Compile Include="CstsdTask.cs" />
     <Compile Include="Extensions\EnumerableTypeExtensions.cs" />
     <Compile Include="Extensions\LexicalExtensions.cs" />
     <Compile Include="Extensions\NullableTypeExtensions.cs" />
@@ -47,6 +49,7 @@
     <Compile Include="NetTsConverter.cs" />
     <Compile Include="NetTsPocoConverter.cs" />
     <Compile Include="NullableTypeInfo.cs" />
+    <Compile Include="PocoTask.cs" />
     <Compile Include="TsWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderTypescript.cs" />

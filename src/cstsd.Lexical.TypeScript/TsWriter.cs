@@ -114,6 +114,15 @@ namespace cstsd.TypeScript
                    nestedClasses;
         }
 
+        public virtual string WriteGenericArguments(IList<TsGenericParameter> genericParameters)
+        {
+            if (!genericParameters.Any()) return "";
+
+            var genericParamsStr = string.Join(",", genericParameters.Select(gp => gp.Name));
+
+            return $"<{genericParamsStr}>";
+        }
+
         public virtual string WriteInterface(TsInterface netInterface)
         {
             var exportStr = netInterface.IsPublic ? "export " : "";
@@ -121,7 +130,7 @@ namespace cstsd.TypeScript
                 ? " extends " + string.Join(", ", netInterface.BaseTypes.Select(WriteTypeName))
                 : "";
             var generics = netInterface.GenericParameters.Any()
-                ? $" <{string.Join(", ", netInterface.GenericParameters.Select(WriteGenericParameterName))}>"
+                ? $"<{string.Join(", ", netInterface.GenericParameters.Select(WriteGenericParameterName))}>"
                 : "";
 
             var methods = GetMethodsString(netInterface);
