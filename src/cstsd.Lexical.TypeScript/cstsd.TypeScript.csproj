@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="ControllerTask.cs" />
     <Compile Include="CstsdTask.cs" />
+    <Compile Include="EnumTask.cs" />
     <Compile Include="Extensions\EnumerableTypeExtensions.cs" />
     <Compile Include="Extensions\LexicalExtensions.cs" />
     <Compile Include="Extensions\NullableTypeExtensions.cs" />

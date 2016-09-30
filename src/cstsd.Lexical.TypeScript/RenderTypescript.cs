@@ -55,8 +55,42 @@ namespace cstsd.TypeScript
             w.Write(ww.WriteNamespace(tsNamespace, false));
         }
 
-        
 
+        public static void FromEnumRoslyn(IEnumerable<string> inputFiles, string outputNamespace, TsWriterConfig config, TextWriter w)
+        {
+            var tc = new NetTsPocoConverter();
+
+            var css = new RoslynTypeScanner(outputNamespace);
+
+            foreach (var filePath in inputFiles)
+            {
+                css.RegisterCodeFile(filePath);
+            }
+
+            var ww = new TsWriter(config, w, css.NetAssembly.Namespaces.Select(n => n.Name));
+
+            w.Write(GetHeader(new[] { outputNamespace }));
+
+            var netEnums = css.NetAssembly.Namespaces.SelectMany(netNamespace => netNamespace.TypeDeclarations).OfType<NetEnum>().ToList();
+
+            var tsNamespace = new TsNamespace
+            {
+                Name = outputNamespace
+            };
+
+            //write enums
+            foreach (var netEnum in netEnums)
+            {
+                //var tsEnum = tc.GetTsEnum(netEnum);
+                //tsEnum.IsPublic = true;
+
+                tsNamespace.TypeDeclarations.Add(tc.GetTsEnum(netEnum));
+            }
+
+            w.Write(ww.WriteNamespace(tsNamespace, false));
+        }
+
+        
         public static void FromPocoRoslyn(IEnumerable<string> inputFiles, string outputNamespace, TsWriterConfig config, TextWriter w)
         {
             var tc = new NetTsPocoConverter();
@@ -73,7 +107,6 @@ namespace cstsd.TypeScript
             w.Write(GetHeader(new[] { outputNamespace }));
             
             var netClasses = css.NetAssembly.Namespaces.SelectMany(netNamespace => netNamespace.TypeDeclarations).OfType<NetClass>().ToList();
-            var netEnums = css.NetAssembly.Namespaces.SelectMany(netNamespace => netNamespace.TypeDeclarations).OfType<NetEnum>().ToList();
 
             var tsNamespace = new TsNamespace
             {
@@ -88,14 +121,11 @@ namespace cstsd.TypeScript
                 tsNamespace.TypeDeclarations.Add(tc.GetTsInterface(netClass));
             }
 
-            //write enums
-            foreach (var netEnum in netEnums)
-            {
-                tsNamespace.TypeDeclarations.Add(tc.GetTsEnum(netEnum));
-            }
-
             w.Write(ww.WriteNamespace(tsNamespace, true));
         }
+
+
+
 
         [Obsolete]
         public static void FromPocoAssembly(string assemblyPath, TsWriterConfig config, TextWriter w, string namespaceOverride = "")

@@ -14,10 +14,13 @@ namespace cstsd.TypeScript
 
         public string DefaultPocoNamespace { get; set; }
 
+        public string DefaultEnumNamespace { get; set; }
+
         public ControllerTask[] ControllerTasks { get; set; }
 
         public PocoTask[] PocoObjectTasks { get; set; }
 
+        public EnumTask[] EnumTasks { get; set; }
 
 
         public string NewLines(int count)

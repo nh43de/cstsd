@@ -149,8 +149,9 @@ namespace cstsd.TypeScript
         public virtual string WriteEnum(TsEnum netEnum)
         {
             var enumStr = string.Join(","+_config.NewLine, netEnum.Enums.Select(WriteEnumValue)).Indent(_indent);
+            var exportStr = netEnum.IsPublic ? "export " : "";
 
-            return $"enum {netEnum.Name}" + _config.NewLine +
+            return $"{exportStr}enum {netEnum.Name}" + _config.NewLine +
                    @"{" + _config.NewLine +
                    $"{enumStr}" + _config.NewLine +
                    @"}";

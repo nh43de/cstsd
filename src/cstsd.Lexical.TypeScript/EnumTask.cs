@@ -1,6 +1,6 @@
 ﻿namespace cstsd.TypeScript
 {
-    public class PocoTask : CstsdTask
+    public class EnumTask : CstsdTask
     {
 
         public string[] SourceDirectories { get; set; }

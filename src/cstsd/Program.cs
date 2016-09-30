@@ -123,8 +123,43 @@ namespace cstsd
                 }
             }
 
+            //render enum tasks
+            Console.WriteLine("Scanning enum objects");
+            if (cstsdConfig.EnumTasks != null)
+            {
+                //render enum's from one dll into one .d.ts file
+                foreach (var enumTask in cstsdConfig.EnumTasks)
+                {
+                    var sourceFiles = new List<string>();
 
-            
+                    enumTask.SourceDirectories.ForEach(sd =>
+                    {
+                        Console.WriteLine($"Scanning enum dir: {sd}");
+                        if (enumTask.Recursive)
+                            FileHelpers.ScanRecursive(sd, sourceFiles.Add);
+                        else
+                            FileHelpers.ScanStandard(sd, sourceFiles.Add);
+                    });
+
+                    var outputFileName = enumTask.OutputName; //make the outputfilename the na
+
+                    var outputFile = Path.IsPathRooted(enumTask.OutputDirectory) == false
+                        ? Path.Combine(cstsdDir, enumTask.OutputDirectory, outputFileName + ".ts")
+                        : Path.Combine(enumTask.OutputDirectory, outputFileName + ".ts");
+
+                    var nameSpace = string.IsNullOrWhiteSpace(enumTask.Namespace)
+                        ? cstsdConfig.DefaultEnumNamespace
+                        : enumTask.Namespace;
+
+                    CheckCreateDir(outputFile);
+                    using (TextWriter tw = new StreamWriter(outputFile, false))
+                    {
+                        RenderTypescript.FromEnumRoslyn(sourceFiles, nameSpace, cstsdConfig, tw);
+                        tw.Flush();
+                    }
+                }
+            }
+
             // Console.WriteLine(@"Press any key to continue...");
             // Console.ReadLine();
         }

@@ -6,7 +6,7 @@ namespace cstsd.Core.Ts
     {
         public string Name { get; set; }
 
-        public bool IsPublic { get; set; } = true;
+        public bool IsPublic { get; set; } = true; //TODO: rename to IsExport
 
         public bool IsArray { get; set; } = false;
 
