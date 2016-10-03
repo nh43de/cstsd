@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using cstsd.Core.Extensions;
 using cstsd.Core.Net;
@@ -44,7 +45,10 @@ namespace cstsd.TypeScript
             
             var controllerName = GetControllerName(controllerNetClass.Name);
             var actionName = netMethod.Name;
-            
+
+            var actionType = netMethod.Attributes.Any(attr => string.Equals(attr, "HttpGet", StringComparison.InvariantCultureIgnoreCase)) ? "GET" : "POST";
+            actionType = netMethod.Attributes.Any(attr => string.Equals(attr, "HttpPost", StringComparison.InvariantCultureIgnoreCase)) ? "POST" : actionType;
+
             //a.FunctionBody = $"/* controller: {controllerNetClass.Name}; action: {netMethod.Name} */";
 
             var dataParametersString = string.Join(",\r\n",  a.Parameters.Select(p => $"{p.Name}: {p.Name}"));
@@ -64,7 +68,7 @@ namespace cstsd.TypeScript
 	data: {
 " + dataParametersString.Indent("\t\t\t") + @"
 	},
-	type: ""GET"",
+	type: """ + actionType + @""",
 	//data: idRequestData,
 	dataType: ""JSON"",
 	success(response: " + functionReturnType + @") {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using cstsd.Core.Extensions;
 using cstsd.Core.Net;
+using cstsd.Core.Ts;
 
 namespace cstsd.TypeScript.Extensions
 {
@@ -115,22 +116,39 @@ namespace cstsd.TypeScript.Extensions
             return fromName;
         }
 
+        
 
         public static string ToTypeScriptTypeName(this NetType netType, bool writeGenerics)
         {
-            var fromName = netType.Name;
+            return WriteTypeName(netType.Name, netType.GenericParameters);
+        }
+
+        public static string WriteTypeName(string typeName, IEnumerable<NetGenericParameter> genericParameters)
+        {
+            var fromName = TryGetTsEquivalent(typeName);
+
+            var gps = genericParameters.ToArray();
+
+            if (gps.Length == 0) return fromName;
+
+            var genericParamsStr = string.Join(",", gps.Select(gp => WriteTypeName(gp.Name, gp.NetGenericParameters)));
             
-            if (TypeMappings.Default.ContainsKey(fromName))
-            {
-                return TypeMappings.Default[fromName];
-            }
-
-            if (!netType.GenericParameters.Any() || writeGenerics == false) return fromName;
-
-            var genericParamsStr = string.Join(",", netType.GenericParameters.Select(gp => gp.Name));
-
             return $"{fromName}<{genericParamsStr}>";
         }
+            
+        //public static string WriteGenerics(string typeName, IEnumerable<NetGenericParameter> genericParameters)
+        //{
+
+
+        //    var gps2 = gps.ToArray();
+
+        //    if (gps2.Length == 0) return "";
+
+        //    var genericParamsStr = string.Join(",", gps2.Select(gp => WriteGenerics(gp.NetGenericParameters)));
+
+        //    return $"<{genericParamsStr}>";
+
+        //}
 
         public static string TryGetTsEquivalent(string typeString)
         {

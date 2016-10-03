@@ -11,7 +11,7 @@ namespace cstsd.TypeScript
     {
         public class NetCollectionType
         {
-            public string Namespace { get; set; }
+            public string Namespace { get; set; } = "";
             public string Name { get; set; }
         }
         
@@ -21,7 +21,8 @@ namespace cstsd.TypeScript
             new NetCollectionType { Name = "IList", Namespace = "System.Collections.Generic"} ,
             new NetCollectionType { Name = "List", Namespace = "System.Collections.Generic"} ,
             new NetCollectionType { Name = "ArrayList", Namespace = "System.Collections.Generic"} ,
-            new NetCollectionType { Name = "IEnumerable", Namespace = "System.Collections.Generic"} 
+            new NetCollectionType { Name = "IEnumerable", Namespace = "System.Collections.Generic"} ,
+            new NetCollectionType { Name = "PaginatedList" }
         };
 
         public static readonly Lazy<HashSet<string>> NetCollectionTypesLazy = new Lazy<HashSet<string>>(() =>
@@ -37,6 +38,9 @@ namespace cstsd.TypeScript
 
         public virtual TsType GetTsType(NetType netType) //needs to support case on tsclass, interface, enum, etc
         {
+            //TODO: this can probably be re-thought
+
+
             //    if (netType is NetEnum)
             //    {
             //        return GetTsEnum((NetEnum) netType);
@@ -62,6 +66,15 @@ namespace cstsd.TypeScript
                 return new TsType
                 {
                     Name = netType.GenericParameters.First().Name,
+                    IsPublic = netType.IsPublic,
+                    IsArray = true
+                };
+            }
+            else if (netType.Name.EndsWith("[]"))
+            {
+                return new TsType
+                {
+                    Name = TypeHelperExtensions.TryGetTsEquivalent(netType.Name.Substring(0, netType.Name.Length - 2)),
                     IsPublic = netType.IsPublic,
                     IsArray = true
                 };
@@ -151,7 +164,8 @@ namespace cstsd.TypeScript
             return new TsGenericParameter
             {
                 Name = netGenericParameter.Name,
-                ParameterConstraints = netGenericParameter.ParameterConstraints.Select(GetTsType).ToList()
+                ParameterConstraints = netGenericParameter.ParameterConstraints.Select(GetTsType).ToList(),
+                GenericParameters = netGenericParameter.NetGenericParameters.Select(GetTsGenericParameter).ToList()
             };
         }
 

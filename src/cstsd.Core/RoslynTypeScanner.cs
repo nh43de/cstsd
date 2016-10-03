@@ -226,9 +226,21 @@ namespace cstsd.Core
 
         public static List<NetGenericParameter> GetGenericParameters(TypeArgumentListSyntax typeArgumentList)
         {
-            return typeArgumentList.Arguments.Select(ga => new NetGenericParameter
+            return typeArgumentList.Arguments.Select(typeSyntax =>
             {
-                Name = ga.ToString()
+                if (typeSyntax is GenericNameSyntax)
+                {
+                    return new NetGenericParameter
+                    {
+                        Name = ((GenericNameSyntax) typeSyntax).Identifier.ToString(),
+                        NetGenericParameters = GetGenericParameters(((GenericNameSyntax) typeSyntax).TypeArgumentList)
+                    };
+                }
+                else
+                    return new NetGenericParameter
+                    {
+                        Name = typeSyntax.ToString()
+                    };
             }).ToList();
         }
         

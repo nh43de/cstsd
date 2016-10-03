@@ -8,6 +8,8 @@ namespace cstsd.Core.Ts
 
         public ICollection<TsType> ParameterConstraints { get; set; } = new List<TsType>();
 
+        public ICollection<TsGenericParameter> GenericParameters { get; set; } = new List<TsGenericParameter>();
+
         public override string ToString()
         {
             return Name;
