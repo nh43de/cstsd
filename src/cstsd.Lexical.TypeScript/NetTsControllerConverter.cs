@@ -77,7 +77,6 @@ namespace cstsd.TypeScript
 	},
 	error(response) {
 		var a: " + functionReturnType + @" = {
-			responseObject: null,
 			message: ""XHR Error"",
 			responseCode: ServiceResponseCode.Failed
 		};
