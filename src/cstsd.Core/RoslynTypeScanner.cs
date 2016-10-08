@@ -198,6 +198,11 @@ namespace cstsd.Core
 
         public static NetType GetType(TypeSyntax typeSyntax)
         {
+            if (typeSyntax is QualifiedNameSyntax)
+            {
+                typeSyntax = ((QualifiedNameSyntax) typeSyntax).Right;
+            }
+
             if (typeSyntax is GenericNameSyntax)
             {
                 var genericType = (GenericNameSyntax)typeSyntax;

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using cstsd.Core.Extensions;
 using cstsd.Core.Net;
 using cstsd.Core.Ts;
@@ -33,7 +34,7 @@ namespace cstsd.TypeScript
         public TsFunction GetTsFunction(NetMethod netMethod, NetClass controllerNetClass)
         {
             var a = base.GetTsFunction(netMethod);
-        
+
 
             var functionReturnType = GetTsTypeName(netMethod.ReturnType, true);
 
@@ -42,10 +43,32 @@ namespace cstsd.TypeScript
                 Name = "void"
             };
 
-            
             var controllerName = GetControllerName(controllerNetClass.Name);
             var actionName = netMethod.Name;
 
+            var routeInfo = controllerNetClass.Attributes.FirstOrDefault(attr => attr.StartsWith("Route"));
+
+            if (string.IsNullOrWhiteSpace(routeInfo))
+            {
+                routeInfo = "[controller]/[action]";
+            }
+            else
+            {
+                var m = Regex.Match(routeInfo, "\"(.*?)\"");
+
+                if (m.Success && m.Groups.Count > 1 && m.Groups[1].Success)
+                {
+                    routeInfo = m.Groups[1].Value;
+                }
+            }
+
+            var route = routeInfo
+                .Replace("[controller]", controllerName)
+                .Replace("[action]", actionName);
+
+            if (!route.StartsWith("/"))
+                route = "/" + route;
+            
             var actionType = netMethod.Attributes.Any(attr => string.Equals(attr, "HttpGet", StringComparison.InvariantCultureIgnoreCase)) ? "GET" : "POST";
             actionType = netMethod.Attributes.Any(attr => string.Equals(attr, "HttpPost", StringComparison.InvariantCultureIgnoreCase)) ? "POST" : actionType;
 
@@ -64,7 +87,7 @@ namespace cstsd.TypeScript
 
             a.FunctionBody =
 @"$.ajax({
-	url: """ + $"/{controllerName}/{actionName}" + @""",
+	url: """ + $"{route}" + @""",
 	data: {
 " + dataParametersString.Indent("\t\t\t") + @"
 	},
