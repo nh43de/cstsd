@@ -127,6 +127,8 @@ namespace cstsd.TypeScript.Extensions
         {
             var fromName = TryGetTsEquivalent(typeName);
 
+
+
             var gps = genericParameters.ToArray();
 
             if (gps.Length == 0) return fromName;
@@ -152,11 +154,16 @@ namespace cstsd.TypeScript.Extensions
 
         public static string TryGetTsEquivalent(string typeString)
         {
+            var isArray = typeString.EndsWith("[]");
+
+            if (isArray)
+                typeString = typeString.Substring(0, typeString.Length - 2);
+            
             if (TypeMappings.Default.ContainsKey(typeString))
             {
-                return TypeMappings.Default[typeString];
+                typeString = TypeMappings.Default[typeString];
             }
-            return typeString;
+            return typeString + (isArray ? "[]" : "");
         }
 
 
