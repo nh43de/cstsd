@@ -127,8 +127,6 @@ namespace cstsd.TypeScript.Extensions
         {
             var fromName = TryGetTsEquivalent(typeName);
 
-
-
             var gps = genericParameters.ToArray();
 
             if (gps.Length == 0) return fromName;
