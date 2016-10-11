@@ -65,7 +65,7 @@ namespace cstsd.TypeScript
             {
                 return new TsType
                 {
-                    Name = netType.GenericParameters.First().Name,
+                    Name = TypeHelperExtensions.TryGetTsEquivalent(netType.GenericParameters.First().Name),
                     IsPublic = netType.IsPublic,
                     IsArray = true
                 };
