@@ -40,7 +40,7 @@ namespace cstsd.TypeScript
 
             a.ReturnType = new TsType
             {
-                Name = "void"
+                Name = "JQueryXHR"
             };
 
             var controllerName = GetControllerName(controllerNetClass.Name);
@@ -86,7 +86,7 @@ namespace cstsd.TypeScript
             });
 
             a.FunctionBody =
-@"$.ajax({
+@"return $.ajax({
 	url: """ + $"{route}" + @""",
 	data: {
 " + dataParametersString.Indent("\t\t\t") + @"
