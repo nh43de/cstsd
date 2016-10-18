@@ -31,10 +31,9 @@ namespace cstsd.TypeScript
             return controllerName;
         }
 
-        public TsFunction GetTsFunction(NetMethod netMethod, NetClass controllerNetClass)
+        public TsFunction GetControllerExecFunction(NetMethod netMethod, string url)
         {
             var a = base.GetTsFunction(netMethod);
-
 
             var functionReturnType = GetTsTypeName(netMethod.ReturnType, true);
 
@@ -42,6 +41,62 @@ namespace cstsd.TypeScript
             {
                 Name = "JQueryXHR"
             };
+
+            var actionType = netMethod.Attributes.Any(attr => string.Equals(attr, "HttpGet", StringComparison.InvariantCultureIgnoreCase)) ? "GET" : "POST";
+            actionType = netMethod.Attributes.Any(attr => string.Equals(attr, "HttpPost", StringComparison.InvariantCultureIgnoreCase)) ? "POST" : actionType;
+
+            //a.FunctionBody = $"/* controller: {controllerNetClass.Name}; action: {netMethod.Name} */";
+
+            var dataParametersString = string.Join(",\r\n", a.Parameters.Select(p => $"{p.Name}: {p.Name}"));
+
+            a.Parameters.Add(new TsParameter
+            {
+                FieldType = new TsType
+                {
+                    Name = $"(response: {functionReturnType}) => void"
+                },
+                Name = "callback"
+            });
+
+            a.FunctionBody =
+                @"return $.ajax({
+	                url: """ + $"{url}" + @""",
+	                data: {
+                " + dataParametersString.Indent("\t\t\t") + @"
+	                },
+	                type: """ + actionType + @""",
+	                //data: idRequestData,
+	                dataType: ""JSON"",
+	                success(response: " + functionReturnType + @") {
+		                $(""#debugOut"").text(JSON.stringify(response));
+		                callback(response);
+	                },
+	                error(response) {
+		                var a: " + functionReturnType + @" = {
+			                message: ""XHR Error"",
+			                responseCode: ServiceResponseCode.Failed
+		                };
+		                callback(a);
+	                }
+                });";
+
+            return a;
+        }
+
+        public TsFunction GetUrlNavigateFunction(NetMethod netMethod, string url)
+        {
+            var a = base.GetTsFunction(netMethod);
+
+            a.ReturnType.Name = "string";
+            a.Name = "get" + netMethod.Name + "Url";
+            
+            a.FunctionBody = "return \"" + url + "\";";
+
+            return a;
+        }
+
+        public TsFunction GetTsFunction(NetMethod netMethod, NetClass controllerNetClass)
+        {
 
             var controllerName = GetControllerName(controllerNetClass.Name);
             var actionName = netMethod.Name;
@@ -68,46 +123,16 @@ namespace cstsd.TypeScript
 
             if (!route.StartsWith("/"))
                 route = "/" + route;
-            
-            var actionType = netMethod.Attributes.Any(attr => string.Equals(attr, "HttpGet", StringComparison.InvariantCultureIgnoreCase)) ? "GET" : "POST";
-            actionType = netMethod.Attributes.Any(attr => string.Equals(attr, "HttpPost", StringComparison.InvariantCultureIgnoreCase)) ? "POST" : actionType;
 
-            //a.FunctionBody = $"/* controller: {controllerNetClass.Name}; action: {netMethod.Name} */";
 
-            var dataParametersString = string.Join(",\r\n",  a.Parameters.Select(p => $"{p.Name}: {p.Name}"));
-
-            a.Parameters.Add(new TsParameter
+            if (netMethod.ReturnType.Name == "IActionResult")
             {
-                FieldType = new TsType
-                {
-                    Name = $"(response: {functionReturnType}) => void"
-                },
-                Name = "callback"
-            });
-
-            a.FunctionBody =
-@"return $.ajax({
-	url: """ + $"{route}" + @""",
-	data: {
-" + dataParametersString.Indent("\t\t\t") + @"
-	},
-	type: """ + actionType + @""",
-	//data: idRequestData,
-	dataType: ""JSON"",
-	success(response: " + functionReturnType + @") {
-		$(""#debugOut"").text(JSON.stringify(response));
-		callback(response);
-	},
-	error(response) {
-		var a: " + functionReturnType + @" = {
-			message: ""XHR Error"",
-			responseCode: ServiceResponseCode.Failed
-		};
-		callback(a);
-	}
-});";
-
-            return a;
+                return GetUrlNavigateFunction(netMethod, route);
+            }
+            else
+            {
+                return GetControllerExecFunction(netMethod, route);
+            }
         }
     }
 }
