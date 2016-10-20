@@ -13,7 +13,6 @@ namespace cstsd.TypeScript
         {
             var controllerMethods = controllerNetClass
                 .Methods
-                .Where(m => m.IsPublic && m.Attributes.Any(a => a == "TsExport"))
                 .ToList();
 
             return new TsModule
@@ -21,6 +20,7 @@ namespace cstsd.TypeScript
                 Name = controllerNetClass.Name,
                 FunctionDeclarations = controllerMethods
                     .Where(m => m.ReturnType.Name != "IActionResult")
+                    .Where(m => m.IsPublic && m.Attributes.Any(a => a == "TsExport"))
                     .Select(a => GetControllerExecFunction(a))
                     .ToList(),
                 FieldDeclarations = controllerMethods.Select(m => GetUrlNavigateConstFieldDeclaration(m, controllerNetClass)).ToList(),
