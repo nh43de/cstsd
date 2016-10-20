@@ -69,7 +69,7 @@ namespace cstsd.TypeScript
 @"return $.ajax({
 	url: " + $"this.{netMethod.Name}Url" + @",
 	data: {
-" + dataParametersString.Indent("\t\t\t\t\t\t") + @"
+" + dataParametersString.Indent("\t\t") + @"
 	},
 	type: """ + actionType + @""",
 	//data: idRequestData,
