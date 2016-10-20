@@ -99,7 +99,7 @@ namespace cstsd.TypeScript
                 DefaultValue = "\"" + route + "\"",
                 FieldDeclarationType = FieldDeclarationType.Const,
                 FieldType = new TsType { Name = "string"},
-                IsPublic = true,
+                IsStatic = true,
                 Name = netMethod.Name + "Url"
             };
             return a;
