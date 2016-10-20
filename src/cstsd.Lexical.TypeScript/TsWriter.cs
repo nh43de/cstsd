@@ -29,11 +29,12 @@ namespace cstsd.TypeScript
 
         public virtual string WriteModule(TsModule netModule, bool isTopLevelDeclareNamespace)
         {
-            var typeDeclarationsContent = string.Join(_config.NewLines(1), netModule.TypeDeclarations.Select(WriteType));
-            var functionDeclarationsContent = string.Join(_config.NewLines(1), netModule.FunctionDeclarations.Select(fd => WriteMethod(fd, true)));
-            var namespaceDeclarationsContent = string.Join(_config.NewLines(1), netModule.Namespaces.Select(ns => WriteNamespace(ns, false)));
-            
-            var content = JoinNonEmpty(typeDeclarationsContent, functionDeclarationsContent, namespaceDeclarationsContent);
+            var typeDeclarationsContent = string.Join(_config.NewLines(2), netModule.TypeDeclarations.Select(WriteType));
+            var functionDeclarationsContent = string.Join(_config.NewLines(2), netModule.FunctionDeclarations.Select(fd => WriteMethod(fd, true)));
+            var namespaceDeclarationsContent = string.Join(_config.NewLines(2), netModule.Namespaces.Select(ns => WriteNamespace(ns, false)));
+            var fieldDeclarationsContent = string.Join(_config.NewLines(2), netModule.FieldDeclarations.Select(fd => WriteFieldDeclaration(fd)));
+
+            var content = JoinNonEmpty(_config.NewLines(2), typeDeclarationsContent, functionDeclarationsContent, namespaceDeclarationsContent, fieldDeclarationsContent);
 
             if (!string.IsNullOrWhiteSpace(content))
                 content = content.Indent(_indent) + _config.NewLine;
@@ -280,12 +281,57 @@ namespace cstsd.TypeScript
                 methods = methods.Indent(_indent) + _config.NewLine;
             return methods;
         }
+
+        public virtual string GetFieldDeclarationTypeString(FieldDeclarationType fieldDeclarationType)
+        {
+            switch (fieldDeclarationType)
+            {
+                case FieldDeclarationType.Const:
+                    return "const";
+                case FieldDeclarationType.Var:
+                    return "var";
+                case FieldDeclarationType.Let:
+                    return "let";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(fieldDeclarationType), fieldDeclarationType, null);
+            }
+        }
+
+        public virtual string WriteFieldDeclaration(TsFieldDeclaration tsFieldDeclaration)
+        {
+            var staticStr = tsFieldDeclaration.IsStatic ? "export " : "";
+            var fieldDeclarationTypeString = GetFieldDeclarationTypeString(tsFieldDeclaration.FieldDeclarationType);
+            var defaultValue = tsFieldDeclaration.DefaultValue;
+
+            if (string.IsNullOrWhiteSpace(defaultValue))
+            {
+                defaultValue = "";
+            }
+            else
+            {
+                defaultValue = " = " + defaultValue + ";";
+            }
+
+            return $"{staticStr}{fieldDeclarationTypeString} {tsFieldDeclaration.Name}: {WriteTypeName(tsFieldDeclaration.FieldType)}{defaultValue}";
+        }
+
+
         public virtual string WriteField(TsField netField, bool useNullable)
         {
             var staticStr = netField.IsStatic ? "export " : "";
             var nullableStr = netField.IsNullable ? "?" : "";
+            var defaultValue = netField.DefaultValue;
 
-            return $"{staticStr}{netField.Name}{nullableStr} : {WriteTypeName(netField.FieldType)}";
+            if (string.IsNullOrWhiteSpace(defaultValue))
+            {
+                defaultValue = "";
+            }
+            else
+            {
+                defaultValue = " = " + defaultValue + ";";
+            }
+            
+            return $"{staticStr}{netField.Name}{nullableStr}: {WriteTypeName(netField.FieldType)}{defaultValue}";
         }
 
         ///////////////////////

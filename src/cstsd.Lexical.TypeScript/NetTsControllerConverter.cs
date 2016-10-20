@@ -11,14 +11,19 @@ namespace cstsd.TypeScript
     {
         public virtual TsModule GetControllerTsModule(NetClass controllerNetClass)
         {
+            var controllerMethods = controllerNetClass
+                .Methods
+                .Where(m => m.IsPublic && m.Attributes.Any(a => a == "TsExport"))
+                .ToList();
+
             return new TsModule
             {
                 Name = controllerNetClass.Name,
-                FunctionDeclarations = controllerNetClass
-                    .Methods
-                    .Where(m => m.IsPublic && m.Attributes.Any(a => a == "TsExport"))
-                    .Select(a => GetTsFunction(a, controllerNetClass))
+                FunctionDeclarations = controllerMethods
+                    .Where(m => m.ReturnType.Name != "IActionResult")
+                    .Select(a => GetControllerExecFunction(a))
                     .ToList(),
+                FieldDeclarations = controllerMethods.Select(m => GetUrlNavigateConstFieldDeclaration(m, controllerNetClass)).ToList(),
                 IsExport = true
             };
         }
@@ -31,7 +36,9 @@ namespace cstsd.TypeScript
             return controllerName;
         }
 
-        public TsFunction GetControllerExecFunction(NetMethod netMethod, string url)
+        
+
+        public TsFunction GetControllerExecFunction(NetMethod netMethod)
         {
             var a = base.GetTsFunction(netMethod);
 
@@ -60,9 +67,9 @@ namespace cstsd.TypeScript
 
             a.FunctionBody =
                 @"return $.ajax({
-	                url: """ + $"{url}" + @""",
+	                url: " + $"this.{netMethod.Name}Url" + @",
 	                data: {
-                " + dataParametersString.Indent("\t\t\t") + @"
+" + dataParametersString.Indent("\t\t\t\t\t\t") + @"
 	                },
 	                type: """ + actionType + @""",
 	                //data: idRequestData,
@@ -83,24 +90,25 @@ namespace cstsd.TypeScript
             return a;
         }
 
-        public TsFunction GetUrlNavigateFunction(NetMethod netMethod, string url)
+        public TsFieldDeclaration GetUrlNavigateConstFieldDeclaration(NetMethod netMethod, NetClass controllerNetClass)
         {
-            var a = base.GetTsFunction(netMethod);
+            var route = GetRouteInfo(controllerNetClass, netMethod);
 
-            a.ReturnType.Name = "string";
-            a.Name = "get" + netMethod.Name + "Url";
-            
-            a.FunctionBody = "return \"" + url + "\";";
-
+            var a = new TsFieldDeclaration
+            {
+                DefaultValue = "\"" + route + "\"",
+                FieldDeclarationType = FieldDeclarationType.Const,
+                FieldType = new TsType { Name = "string"},
+                IsPublic = true,
+                Name = netMethod.Name + "Url"
+            };
             return a;
         }
 
-        public TsFunction GetTsFunction(NetMethod netMethod, NetClass controllerNetClass)
+        public string GetRouteInfo(NetClass controllerNetClass, NetMethod netMethod)
         {
-
             var controllerName = GetControllerName(controllerNetClass.Name);
             var actionName = netMethod.Name;
-
             var routeInfo = controllerNetClass.Attributes.FirstOrDefault(attr => attr.StartsWith("Route"));
 
             if (string.IsNullOrWhiteSpace(routeInfo))
@@ -124,15 +132,9 @@ namespace cstsd.TypeScript
             if (!route.StartsWith("/"))
                 route = "/" + route;
 
-
-            if (netMethod.ReturnType.Name == "IActionResult")
-            {
-                return GetUrlNavigateFunction(netMethod, route);
-            }
-            else
-            {
-                return GetControllerExecFunction(netMethod, route);
-            }
+            return route;
         }
+
+
     }
 }
