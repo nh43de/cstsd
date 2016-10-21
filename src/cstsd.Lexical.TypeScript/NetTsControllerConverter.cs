@@ -23,7 +23,7 @@ namespace cstsd.TypeScript
                     .Where(m => m.IsPublic && m.Attributes.Any(a => a == "TsExport"))
                     .Select(a => GetControllerExecFunction(a))
                     .ToList(),
-                FieldDeclarations = controllerMethods.Select(m => GetUrlNavigateConstFieldDeclaration(m, controllerNetClass)).ToList(),
+                FieldDeclarations = controllerMethods.Select(m => m.Name).Distinct().GroupJoin(controllerMethods, name => name, netMethod => netMethod.Name, (name, netMethods) => netMethods.First()).Select(m => GetUrlNavigateConstFieldDeclaration(m, controllerNetClass)).ToList(),
                 IsExport = true
             };
         }
@@ -98,7 +98,7 @@ namespace cstsd.TypeScript
             {
                 DefaultValue = "\"" + route + "\"",
                 FieldDeclarationType = FieldDeclarationType.Const,
-                FieldType = new TsType { Name = "string"},
+                FieldType = new TsType { Name = "string" },
                 IsStatic = true,
                 Name = netMethod.Name + "Url"
             };

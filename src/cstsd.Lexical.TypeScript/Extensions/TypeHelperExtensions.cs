@@ -44,6 +44,7 @@ namespace cstsd.TypeScript.Extensions
                 { "Guid",                 "string /* guid */"},
                 { "Int16",                "number /* Int16 */"},
                 { "Int32",                "number"},
+                { "short",                "number"},
                 { "Int64",                "number"},
                 { "IntPtr",               "number /* IntPtr */"},
                 { "Object",               "any"},
