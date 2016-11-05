@@ -66,25 +66,13 @@ namespace cstsd.TypeScript
             });
 
             a.FunctionBody =
-@"return $.ajax({
+@"return frameworkExec({
 	url: " + $"this.{netMethod.Name}Url" + @",
 	data: {
 " + dataParametersString.Indent("\t\t") + @"
 	},
 	type: """ + actionType + @""",
-	//data: idRequestData,
-	dataType: ""JSON"",
-	success(response: " + functionReturnType + @") {
-		$(""#debugOut"").text(JSON.stringify(response));
-		callback(response);
-	},
-	error(response) {
-		var a: " + functionReturnType + @" = {
-			message: ""XHR Error"",
-			responseCode: ServiceResponseCode.Failed
-		};
-		callback(a);
-	}
+	callback: callback
 });";
 
             return a;
