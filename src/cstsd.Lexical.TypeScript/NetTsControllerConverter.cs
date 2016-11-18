@@ -4,6 +4,8 @@ using System.Text.RegularExpressions;
 using cstsd.Core.Extensions;
 using cstsd.Core.Net;
 using cstsd.Core.Ts;
+using System.Collections.Generic;
+
 
 namespace cstsd.TypeScript
 {
@@ -23,7 +25,7 @@ namespace cstsd.TypeScript
                     .Where(m => m.IsPublic && m.Attributes.Any(a => a == "TsExport"))
                     .Select(a => GetControllerExecFunction(a))
                     .ToList(),
-                FieldDeclarations = controllerMethods.Select(m => m.Name).Distinct().GroupJoin(controllerMethods, name => name, netMethod => netMethod.Name, (name, netMethods) => netMethods.First()).Select(m => GetUrlNavigateConstFieldDeclaration(m, controllerNetClass)).ToList(),
+                FieldDeclarations = GetFields(controllerMethods, controllerNetClass),
                 IsExport = true
             };
         }
@@ -36,7 +38,25 @@ namespace cstsd.TypeScript
             return controllerName;
         }
 
-        
+        public List<TsFieldDeclaration> GetFields(List<NetMethod> controllerMethods, NetClass controllerNetClass)
+        {
+            var distinctControllerMethods = controllerMethods.Select(m => m.Name)
+                .Distinct()
+                .GroupJoin(
+                    controllerMethods,
+                    name => name,
+                    netMethod => netMethod.Name,
+                    (name, netMethods) => netMethods.First());
+
+            var urlStringFields =
+                   distinctControllerMethods.Select(m => GetUrlNavigateConstFieldDeclaration(m, controllerNetClass));
+            
+            var routeDataFields =
+                   distinctControllerMethods.Select(m => GetRouteDataFieldDeclaration(m, controllerNetClass));
+
+            return urlStringFields.Union(routeDataFields).ToList();
+        }
+
 
         public TsFunction GetControllerExecFunction(NetMethod netMethod)
         {
@@ -84,7 +104,7 @@ namespace cstsd.TypeScript
 
             var a = new TsFieldDeclaration
             {
-                DefaultValue = "\"" + route + "\"",
+                DefaultValue = "\"" + route.Url + "\"",
                 FieldDeclarationType = FieldDeclarationType.Const,
                 FieldType = new TsType { Name = "string" },
                 IsStatic = true,
@@ -93,7 +113,27 @@ namespace cstsd.TypeScript
             return a;
         }
 
-        public string GetRouteInfo(NetClass controllerNetClass, NetMethod netMethod)
+        public TsFieldDeclaration GetRouteDataFieldDeclaration(NetMethod netMethod, NetClass controllerNetClass)
+        {
+            var route = GetRouteInfo(controllerNetClass, netMethod);
+
+            var a = new TsFieldDeclaration
+            {
+                DefaultValue = 
+$@"{{
+    baseUrl: '/',
+    controller: '{route.Controller}',
+    action: '{route.Action}'
+}}",
+                FieldDeclarationType = FieldDeclarationType.Const,
+                FieldType = new TsType { Name = "IRouteData" },
+                IsStatic = true,
+                Name = netMethod.Name + "Route"
+            };
+            return a;
+        }
+        
+        public RouteInfo GetRouteInfo(NetClass controllerNetClass, NetMethod netMethod)
         {
             var controllerName = GetControllerName(controllerNetClass.Name);
             var actionName = netMethod.Name;
@@ -120,7 +160,20 @@ namespace cstsd.TypeScript
             if (!route.StartsWith("/"))
                 route = "/" + route;
 
-            return route;
+            return new RouteInfo
+            {
+                Url = route,
+                Controller = controllerName,
+                Action = actionName
+            };
+        }
+
+        public class RouteInfo
+        {
+            public string Controller { get; set; }
+            public string Action { get; set; }
+
+            public string Url { get; set; }
         }
 
 
