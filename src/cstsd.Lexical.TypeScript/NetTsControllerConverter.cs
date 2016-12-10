@@ -87,7 +87,7 @@ namespace cstsd.TypeScript
 
             a.FunctionBody =
 @"return frameworkExec({
-	url: " + $"controllerName.{netMethod.Name}Url" + @",
+	url: " + $"{controllerName}.{netMethod.Name}Url" + @",
 	data: {
 " + dataParametersString.Indent("\t\t") + @"
 	},
