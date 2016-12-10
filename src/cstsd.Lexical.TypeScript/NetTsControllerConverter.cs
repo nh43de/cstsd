@@ -23,7 +23,7 @@ namespace cstsd.TypeScript
                 FunctionDeclarations = controllerMethods
                     .Where(m => m.ReturnType.Name != "IActionResult")
                     .Where(m => m.IsPublic && m.Attributes.Any(a => a == "TsExport"))
-                    .Select(a => GetControllerExecFunction(a))
+                    .Select(a => GetControllerExecFunction(a, controllerNetClass.Name))
                     .ToList(),
                 FieldDeclarations = GetFields(controllerMethods, controllerNetClass),
                 IsExport = true
@@ -58,7 +58,7 @@ namespace cstsd.TypeScript
         }
 
 
-        public TsFunction GetControllerExecFunction(NetMethod netMethod)
+        public TsFunction GetControllerExecFunction(NetMethod netMethod, string controllerName)
         {
             var a = base.GetTsFunction(netMethod);
 
@@ -87,7 +87,7 @@ namespace cstsd.TypeScript
 
             a.FunctionBody =
 @"return frameworkExec({
-	url: " + $"this.{netMethod.Name}Url" + @",
+	url: " + $"controllerName.{netMethod.Name}Url" + @",
 	data: {
 " + dataParametersString.Indent("\t\t") + @"
 	},
