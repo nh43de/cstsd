@@ -62,7 +62,7 @@ namespace cstsd.TypeScript
         {
             var a = base.GetTsFunction(netMethod);
 
-            var functionReturnType = GetTsTypeName(netMethod.ReturnType, true);
+            var functionReturnType = GetTsType(netMethod.ReturnType).Name;
 
             a.ReturnType = new TsType
             {

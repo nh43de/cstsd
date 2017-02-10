@@ -25,7 +25,7 @@ namespace cstsd.TypeScript
             new NetCollectionType { Name = "PaginatedList" }
         };
 
-        public static readonly Lazy<HashSet<string>> NetCollectionTypesLazy = new Lazy<HashSet<string>>(() =>
+        private static readonly Lazy<HashSet<string>> NetCollectionTypesLazy = new Lazy<HashSet<string>>(() =>
         {
             var a = new HashSet<string>();
             foreach (var netCollectionType in NetCollectionTypes)
@@ -61,6 +61,30 @@ namespace cstsd.TypeScript
             //            //TODO: more not implemented ...
             //        };
             //    }
+
+            if (netType.Name == "Task")
+            {
+                if (netType.GenericParameters.Count > 0)
+                {
+                    //Task<T> will only have one ga
+                    var gp = netType.GenericParameters.First();
+
+                    return new TsType
+                    {
+                        Name = gp.Name,
+                        GenericParameters = gp.NetGenericParameters.Select(GetTsGenericParameter).ToArray(),
+                        IsPublic = netType.IsPublic
+                    };
+                }
+
+                //"Task" with no ga's is a void
+                return new TsType
+                {
+                    Name = "void"
+                };
+            }
+
+
             if (NetCollectionTypesLazy.Value.Contains(netType.Name))
             {
                 return new TsType
