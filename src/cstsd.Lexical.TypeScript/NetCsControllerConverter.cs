@@ -104,8 +104,8 @@ namespace cstsd.TypeScript
             };
             
             //get HTTP verb from controller attributes if present. Default to Post
-            var actionType = controllerMethod.Attributes.Any(attr => string.Equals(attr, "HttpGet", StringComparison.InvariantCultureIgnoreCase)) ? "GET" : "POST";
-            actionType = controllerMethod.Attributes.Any(attr => string.Equals(attr, "HttpPost", StringComparison.InvariantCultureIgnoreCase)) ? "POST" : actionType;
+            var actionType = controllerMethod.Attributes.Any(attr => attr.Contains("HttpGet")) ? "GET" : "POST";
+            actionType = controllerMethod.Attributes.Any(attr => attr.Contains("HttpPost")) ? "POST" : actionType;
             
             //gets the param names from controller
             var dataParametersString = string.Join(",\r\n", controllerMethod.Parameters.Select(p => $"{p.Name}"));
