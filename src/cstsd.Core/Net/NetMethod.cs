@@ -11,6 +11,8 @@ namespace cstsd.Core.Net
 
         public ICollection<NetParameter> Parameters { get; set; } = new List<NetParameter>();
 
+        public string MethodBody { get; set; } = "/* function body */";
+
         public override string ToString()
         {
             return Name;

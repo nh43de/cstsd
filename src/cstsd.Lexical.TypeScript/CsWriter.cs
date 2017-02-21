@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using cstsd.Core.Extensions;
+using cstsd.Core.Net;
 using cstsd.Core.Ts;
 using cstsd.Lexical.Core;
 
 namespace cstsd.TypeScript
 {
-    public class TsWriter // : ITsWriter
+    public class CsWriter // : ITsWriter
     {
         private readonly WriterConfig _config;
 
@@ -16,7 +17,7 @@ namespace cstsd.TypeScript
         private TextWriter _w;
         private HashSet<string> _supportedNamespaces;
 
-        public TsWriter(WriterConfig config, TextWriter w, IEnumerable<string> supportedNamespaces)
+        public CsWriter(WriterConfig config, TextWriter w, IEnumerable<string> supportedNamespaces)
         {
             _config = config;
             _w = w;
@@ -27,76 +28,51 @@ namespace cstsd.TypeScript
             };
         }
 
-        public virtual string WriteModule(TsModule netModule, bool isTopLevelDeclareNamespace)
+        public virtual string WriteNamespace(NetNamespace netModule)
         {
             var typeDeclarationsContent = string.Join(_config.NewLines(2), netModule.TypeDeclarations.Select(WriteType));
-            var functionDeclarationsContent = string.Join(_config.NewLines(2), netModule.FunctionDeclarations.Select(fd => WriteMethod(fd, true)));
-            var namespaceDeclarationsContent = string.Join(_config.NewLines(2), netModule.Namespaces.Select(ns => WriteNamespace(ns, false)));
-            var fieldDeclarationsContent = string.Join(_config.NewLines(2), netModule.FieldDeclarations.Select(fd => WriteFieldDeclaration(fd)));
 
-            var content = JoinNonEmpty(_config.NewLines(2), typeDeclarationsContent, functionDeclarationsContent, namespaceDeclarationsContent, fieldDeclarationsContent);
+            var content = JoinNonEmpty(_config.NewLines(2), typeDeclarationsContent);
 
             if (!string.IsNullOrWhiteSpace(content))
                 content = content.Indent(_indent) + _config.NewLine;
 
-            var declare = isTopLevelDeclareNamespace ? "declare " : "";
-            var export = netModule.IsExport ? "export " : "";
-
-            return $@"{declare}{export}module {netModule.Name}" + _config.NewLine +
+            return $@"namespace {netModule.Name}" + _config.NewLine +
                    @"{" + _config.NewLine +
                    content +
                    @"}";
         }
 
-        public virtual string WriteNamespace(TsNamespace netModule, bool isTopLevelDeclareNamespace)
+        public virtual string WriteType(NetType netType)
         {
-            var typeDeclarationsContent = string.Join(_config.NewLines(1), netModule.TypeDeclarations.Select(WriteType));
-            var functionDeclarationsContent = string.Join(_config.NewLines(1), netModule.FunctionDeclarations.Select(fd => WriteMethod(fd, true)));
-            var namespaceDeclarationsContent = string.Join(_config.NewLines(1), netModule.Modules.Select(ns => WriteModule(ns, false)));
-
-            var content = JoinBodyText(typeDeclarationsContent, functionDeclarationsContent, namespaceDeclarationsContent);
-
-            if (!string.IsNullOrWhiteSpace(content))
-                content = content.Indent(_indent) + _config.NewLine;
-
-            var declare = isTopLevelDeclareNamespace ? "declare " : "";
-
-            return $@"{declare}namespace {netModule.Name}" + _config.NewLine +
-                   @"{" + _config.NewLine +
-                   content +
-                   @"}";
-        }
-
-        public virtual string WriteType(TsType netType)
-        {
-            var @class = netType as TsClass;
+            var @class = netType as NetClass;
             if (@class != null)
                 return WriteClass(@class);
 
-            var @enum = netType as TsEnum;
+            var @enum = netType as NetEnum;
             if (@enum != null)
                 return WriteEnum(@enum);
 
-            var @interface = netType as TsInterface;
+            var @interface = netType as NetInterface;
             if (@interface != null)
                 return WriteInterface(@interface);
 
             throw new NotImplementedException();
         }
         
-        public virtual string WriteGenericParameterName(TsGenericParameter netGenericParameter)
+        public virtual string WriteGenericParameterName(NetGenericParameter netGenericParameter)
         {
             return netGenericParameter.Name;
         }
         
-        public virtual string WriteClass(TsClass netClass)
+        public virtual string WriteClass(NetClass netClass)
         {
-            var exportStr = netClass.IsPublic ? "export " : "";
+            var exportStr = netClass.IsPublic ? "public " : "";
             var extends = netClass.BaseTypes.Any()
-                ? " extends " + string.Join(", ", netClass.BaseTypes.Select(WriteTypeName))
+                ? " : " + string.Join(", ", netClass.BaseTypes.Select(WriteTypeName))
                 : "";
             var generics = netClass.GenericParameters.Any()
-                ? $" <{string.Join(", ", netClass.GenericParameters.Select(WriteGenericParameter))}>"
+                ? $"<{string.Join(", ", netClass.GenericParameters.Select(WriteGenericParameter))}>"
                 : "";
 
             var methods = GetMethodsString(netClass);
@@ -104,8 +80,10 @@ namespace cstsd.TypeScript
             //var properties = GetPropertiesString(netClass);
             var events = GetEventsString(netClass);
             var nestedClasses = GetNestedClassesString(netClass);
+            var constructor = netClass.Constructor != null ? GetConstructor(netClass) : "";
+            //TODO: write constructor
 
-            var body = JoinBodyText(fields, events, methods);
+            var body = JoinBodyText(fields, events, constructor, methods);
 
             //TODO: config for brackets on same line as declaration
             return $"{exportStr}class {netClass.Name}{generics}{extends}" + _config.NewLine +
@@ -115,7 +93,8 @@ namespace cstsd.TypeScript
                    nestedClasses;
         }
 
-        public virtual string WriteGenericArguments(IList<TsGenericParameter> genericParameters)
+
+        public virtual string WriteGenericArguments(IList<NetGenericParameter> genericParameters)
         {
             if (!genericParameters.Any()) return "";
 
@@ -124,11 +103,11 @@ namespace cstsd.TypeScript
             return $"<{genericParamsStr}>";
         }
 
-        public virtual string WriteInterface(TsInterface netInterface)
+        public virtual string WriteInterface(NetInterface netInterface)
         {
-            var exportStr = netInterface.IsPublic ? "export " : "";
+            var exportStr = netInterface.IsPublic ? "public " : "";
             var extends = netInterface.BaseTypes.Any()
-                ? " extends " + string.Join(", ", netInterface.BaseTypes.Select(WriteTypeName))
+                ? " : " + string.Join(", ", netInterface.BaseTypes.Select(WriteTypeName))
                 : "";
             var generics = netInterface.GenericParameters.Any()
                 ? $"<{string.Join(", ", netInterface.GenericParameters.Select(WriteGenericParameterName))}>"
@@ -147,10 +126,10 @@ namespace cstsd.TypeScript
         }
 
 
-        public virtual string WriteEnum(TsEnum netEnum)
+        public virtual string WriteEnum(NetEnum netEnum)
         {
             var enumStr = string.Join(","+_config.NewLine, netEnum.Enums.Select(WriteEnumValue)).Indent(_indent);
-            var exportStr = netEnum.IsPublic ? "export " : "";
+            var exportStr = netEnum.IsPublic ? "public " : "";
 
             return $"{exportStr}enum {netEnum.Name}" + _config.NewLine +
                    @"{" + _config.NewLine +
@@ -158,7 +137,7 @@ namespace cstsd.TypeScript
                    @"}";
         }
 
-        public virtual string WriteEnumValue(TsEnumValue tsEnumValue)
+        public virtual string WriteEnumValue(NetEnumValue tsEnumValue)
         {
             if(tsEnumValue.EnumValue != null)
                 return tsEnumValue.Name + " = " + tsEnumValue.EnumValue;
@@ -174,14 +153,14 @@ namespace cstsd.TypeScript
         //        : netGenericType.Name;
         //}
 
-        public virtual string WriteGenericParameter(TsGenericParameter netGenericParameter)
+        public virtual string WriteGenericParameter(NetGenericParameter netGenericParameter)
         {
             return netGenericParameter.ParameterConstraints.Any()
-                ? $"{netGenericParameter.Name} extends {string.Join(", ", netGenericParameter.ParameterConstraints.Select(WriteTypeName))}"
+                ? $"{netGenericParameter.Name} : {string.Join(", ", netGenericParameter.ParameterConstraints.Select(WriteTypeName))}"
                 : $"{netGenericParameter.Name}";
         }
         
-        public virtual string WriteEvent(TsEvent netEvent)
+        public virtual string WriteEvent(NetEvent netEvent)
         {
             //TODO: not exactly finished
             return $"<EVENT {netEvent.Name}>";
@@ -199,7 +178,7 @@ namespace cstsd.TypeScript
             return content;
         }
 
-        private string GetNestedClassesString(TsClass netClass)
+        private string GetNestedClassesString(NetClass netClass)
         {
             var nestedClasses = string.Join(_config.NewLines(2), netClass.NestedClasses.Select(WriteType));
             if (!string.IsNullOrWhiteSpace(nestedClasses))
@@ -208,7 +187,7 @@ namespace cstsd.TypeScript
         }
 
 
-        private string GetEventsString(TsInterface netInterface)
+        private string GetEventsString(NetInterface netInterface)
         {
             var events = string.Join(_config.NewLine, netInterface.Events.Select(p => WriteEvent(p) + ";"));
             if (!string.IsNullOrWhiteSpace(events))
@@ -226,80 +205,86 @@ namespace cstsd.TypeScript
         //    return properties;
         //}
 
-        private string GetFieldsString(TsInterface netInterface)
+        private string GetFieldsString(NetInterface netInterface)
         {
             var fields = string.Join(_config.NewLine,
-                netInterface.Fields.Select(f => WriteField(f, f.IsNullable) + ";"));
+                netInterface.Fields.Select(f => WriteField(f) + ";"));
             if (!string.IsNullOrWhiteSpace(fields))
                 fields = fields.Indent(_indent) + _config.NewLine;
             return fields;
         }
         
-        public virtual string WriteMethod(TsFunction netMethod, bool isGlobal)
+        public virtual string WriteMethod(NetMethod netMethod)
         {
-            var funParams = string.Join(", ", netMethod.Parameters.Select(p => WriteField(p, false)));
+            var funParams = string.Join(", ", netMethod.Parameters.Select(p => WriteField(p)));
             var returnTypeStr = WriteTypeName(netMethod.ReturnType);
             var returnType = string.IsNullOrWhiteSpace(returnTypeStr) ? "void" : returnTypeStr;
 
-            string accessModifier;
-            if (isGlobal)
-            {
-                var exportStr = netMethod.IsPublic || netMethod.IsStatic ? "export " : "";
-                accessModifier = $"{exportStr}function ";
-            }
-            else
-            {
-                var exportStr = !netMethod.IsPublic ? "private " : "";
-                var staticStr = netMethod.IsStatic ? "static " : "";
-                accessModifier = $"{exportStr}{staticStr}";
-            }
+            var exportStr = !netMethod.IsPublic ? "private " : "public ";
+            var staticStr = netMethod.IsStatic ? "static " : "";
+            string accessModifier = $"{exportStr}{staticStr}";
+            
+            var body = netMethod.MethodBody;
 
-            var body = netMethod.FunctionBody;
-
-            return $"{accessModifier}{netMethod.Name}({funParams}): {returnType}" + _config.NewLine +
+            return $"{accessModifier}{returnType}{netMethod.Name}({funParams})" + _config.NewLine +
                    @"{" + _config.NewLine +
                    $@"{body.Indent(_indent)}" + _config.NewLine +
                    @"}";
-            //TODO: if body is null then we should only render a method signature
+            //TODO: if body is null then we should only render a method signature?
         }
 
-        public virtual string WriteTypeName(TsType netType)
+        public virtual string WriteTypeName(NetType netType)
         {
-            var arrString = netType.IsArray ? "[]" : "";
-
             if ((netType.GenericParameters?.Count ?? 0) == 0)
-                return netType.Name + arrString;
-            
+                return netType.Name;
+           
             //render generic parameters
-            return $"{netType.Name}<{string.Join(",", netType.GenericParameters.Select(gp => gp.Name))}>" + arrString;
+            return $"{netType.Name}<{string.Join(",", netType.GenericParameters.Select(gp => gp.Name))}>";
         }
 
-        private string GetMethodsString(TsInterface netInterface)
+        private string GetMethodsString(NetInterface netInterface)
         {
-            var methods = string.Join(_config.NewLines(2), netInterface.Methods.Select(m => WriteMethod(m, false)));
+            var methods = string.Join(_config.NewLines(2), netInterface.Methods.Select(m => WriteMethod(m)));
             if (!string.IsNullOrWhiteSpace(methods))
                 methods = methods.Indent(_indent) + _config.NewLine;
             return methods;
         }
+        
+        public virtual string GetConstructor(NetClass netClass)
+        {
+            var netConstructor = netClass.Constructor;
 
-        public virtual string GetFieldDeclarationTypeString(FieldDeclarationType fieldDeclarationType)
+            var funParams = string.Join(", ", netConstructor.Parameters.Select(p => WriteField(p)));
+
+            var exportStr = !netConstructor.IsPublic ? "private " : "public ";
+            var staticStr = netConstructor.IsStatic ? "static " : "";
+            string accessModifier = $"{exportStr}{staticStr}";
+
+            var body = netConstructor.MethodBody;
+
+            return $"{accessModifier}{netClass.Name}({funParams})" + _config.NewLine +
+                   @"{" + _config.NewLine +
+                   $@"{body.Indent(_indent)}" + _config.NewLine +
+                   @"}";
+        }
+
+        public virtual string GetFieldDeclarationTypeString(NetFieldDeclarationType fieldDeclarationType)
         {
             switch (fieldDeclarationType)
             {
-                case FieldDeclarationType.Const:
+                case NetFieldDeclarationType.Const:
                     return "const";
-                case FieldDeclarationType.Var:
+                case NetFieldDeclarationType.Var:
                     return "var";
-                case FieldDeclarationType.Let:
-                    return "let";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(fieldDeclarationType), fieldDeclarationType, null);
             }
         }
 
-        public virtual string WriteFieldDeclaration(TsFieldDeclaration tsFieldDeclaration)
+        public virtual string WriteFieldDeclaration(NetFieldDeclaration tsFieldDeclaration)
         {
-            var staticStr = tsFieldDeclaration.IsStatic ? "export " : "";
+            var isPublic = tsFieldDeclaration.IsPublic ? "public " : "private ";
+            var staticStr = tsFieldDeclaration.IsStatic ? "static " : "";
             var fieldDeclarationTypeString = GetFieldDeclarationTypeString(tsFieldDeclaration.FieldDeclarationType);
             var defaultValue = tsFieldDeclaration.DefaultValue;
 
@@ -316,10 +301,11 @@ namespace cstsd.TypeScript
         }
 
 
-        public virtual string WriteField(TsField netField, bool useNullable)
+        public virtual string WriteField(NetField netField)
         {
-            var staticStr = netField.IsStatic ? "export " : "";
-            var nullableStr = netField.IsNullable ? "?" : "";
+            var isPublic = netField.IsPublic ? "public " : "";
+            var staticStr = netField.IsStatic ? "static " : "";
+            var nullableStr = netField.FieldType.IsNullable ? "?" : "";
             var defaultValue = netField.DefaultValue;
 
             if (string.IsNullOrWhiteSpace(defaultValue))
@@ -331,7 +317,7 @@ namespace cstsd.TypeScript
                 defaultValue = " = " + defaultValue + ";";
             }
             
-            return $"{staticStr}{netField.Name}{nullableStr}: {WriteTypeName(netField.FieldType)}{defaultValue}";
+            return $"{isPublic}{staticStr}{WriteTypeName(netField.FieldType)}{nullableStr} {netField.Name}{defaultValue}";
         }
 
         ///////////////////////

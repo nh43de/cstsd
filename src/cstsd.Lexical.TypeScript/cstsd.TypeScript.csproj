@@ -40,21 +40,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ControllerTask.cs" />
+    <Compile Include="ToTsControllerTask.cs" />
     <Compile Include="CstsdTask.cs" />
     <Compile Include="EnumTask.cs" />
     <Compile Include="Extensions\EnumerableTypeExtensions.cs" />
     <Compile Include="Extensions\LexicalExtensions.cs" />
     <Compile Include="Extensions\NullableTypeExtensions.cs" />
+    <Compile Include="NetCsControllerConverter.cs" />
     <Compile Include="NetTsControllerConverter.cs" />
     <Compile Include="NetTsConverter.cs" />
     <Compile Include="NetTsPocoConverter.cs" />
     <Compile Include="NullableTypeInfo.cs" />
     <Compile Include="PocoTask.cs" />
+    <Compile Include="CsWriter.cs" />
     <Compile Include="TsWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderTypescript.cs" />
-    <Compile Include="TsWriterConfig.cs" />
+    <Compile Include="WriterConfig.cs" />
     <Compile Include="TypeArrayInfo.cs" />
     <Compile Include="Extensions\TypeHelperExtensions.cs" />
     <Compile Include="TypeScriptExportAttribute.cs" />

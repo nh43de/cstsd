@@ -38,9 +38,9 @@ namespace cstsd.Tests.Helpers
             ApprovalTests.Approvals.Verify(item);
         }
 
-        public static void DumpDotNetAndVerify(this string path, System.Action<TsWriterConfig> configOverrideHook = null)
+        public static void DumpDotNetAndVerify(this string path, System.Action<WriterConfig> configOverrideHook = null)
         {
-            var config = new TsWriterConfig();
+            var config = new WriterConfig();
 
             if (configOverrideHook != null)
             {

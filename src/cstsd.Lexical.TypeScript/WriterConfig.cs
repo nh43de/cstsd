@@ -2,7 +2,7 @@
 
 namespace cstsd.TypeScript
 {
-    public class TsWriterConfig
+    public class WriterConfig
     {
         public bool CamelBackCase { get; set; } = true;
         
@@ -10,17 +10,20 @@ namespace cstsd.TypeScript
 
         public IndentationFormatting IndentationFormatting { get; set; } = IndentationFormatting.SpaceX4;
 
-        public string DefaultControllerNamespace { get; set; }
+        public string DefaultCsControllerNamespace { get; set; }
+        public string DefaultTsControllerNamespace { get; set; }
 
-        public string DefaultPocoNamespace { get; set; }
+        public string DefaultTsPocoNamespace { get; set; }
 
-        public string DefaultEnumNamespace { get; set; }
+        public string DefaultTsEnumNamespace { get; set; }
 
-        public ControllerTask[] ControllerTasks { get; set; }
+        public ControllerTask[] ToCsControllerTasks { get; set; }
 
-        public PocoTask[] PocoObjectTasks { get; set; }
+        public ControllerTask[] ToTsControllerTasks { get; set; }
 
-        public EnumTask[] EnumTasks { get; set; }
+        public PocoTask[] ToTsPocoObjectTasks { get; set; }
+
+        public EnumTask[] ToTsEnumTasks { get; set; }
 
 
         public string NewLines(int count)

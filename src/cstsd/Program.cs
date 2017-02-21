@@ -44,10 +44,10 @@ namespace cstsd
             if (!isDirFile.Value)
                 filePath = Path.Combine(filePath, "cstsd.json");
 
-            TsWriterConfig cstsdConfig;
+            WriterConfig cstsdConfig;
             if (File.Exists(filePath))
             {
-                cstsdConfig = JsonConvert.DeserializeObject<TsWriterConfig>(File.ReadAllText(filePath));
+                cstsdConfig = JsonConvert.DeserializeObject<WriterConfig>(File.ReadAllText(filePath));
             }
             else
             {
@@ -58,11 +58,38 @@ namespace cstsd
             var cstsdDir = new FileInfo(filePath).Directory?.FullName ?? "";
 
 
-            //render controllers
-            Console.WriteLine("Scanning controllers");
-            if (cstsdConfig.ControllerTasks != null)
+            //render cs controllers
+            Console.WriteLine("Scanning controllers for CS export");
+            if (cstsdConfig.ToCsControllerTasks != null)
             {
-                foreach (var controllerTask in cstsdConfig.ControllerTasks)
+                foreach (var controllerTask in cstsdConfig.ToCsControllerTasks)
+                {
+                    Console.WriteLine($"Scanning controller: {controllerTask.SourceFile}");
+
+                    var fileName = Path.GetFileNameWithoutExtension(controllerTask.SourceFile);
+
+                    var outputFile = Path.IsPathRooted(controllerTask.OutputDirectory) == false
+                        ? Path.Combine(cstsdDir, controllerTask.OutputDirectory, fileName + ".cs")
+                        : Path.Combine(controllerTask.OutputDirectory, fileName + ".cs");
+
+                    var nameSpace = string.IsNullOrWhiteSpace(controllerTask.Namespace)
+                        ? cstsdConfig.DefaultCsControllerNamespace
+                        : controllerTask.Namespace;
+
+                    CheckCreateDir(outputFile);
+                    using (TextWriter tw = new StreamWriter(outputFile, false))
+                    {
+                        RenderCs.FromControllerRoslyn(controllerTask.SourceFile, nameSpace, cstsdConfig, tw);
+                        tw.Flush();
+                    }
+                }
+            }
+
+            //render ts controllers
+            Console.WriteLine("Scanning controllers for TS export");
+            if (cstsdConfig.ToTsControllerTasks != null)
+            {
+                foreach (var controllerTask in cstsdConfig.ToTsControllerTasks)
                 {
                     Console.WriteLine($"Scanning controller: {controllerTask.SourceFile}");
 
@@ -73,7 +100,7 @@ namespace cstsd
                         : Path.Combine(controllerTask.OutputDirectory, fileName + ".ts");
 
                     var nameSpace = string.IsNullOrWhiteSpace(controllerTask.Namespace)
-                        ? cstsdConfig.DefaultControllerNamespace
+                        ? cstsdConfig.DefaultTsControllerNamespace
                         : controllerTask.Namespace;
 
                     CheckCreateDir(outputFile);
@@ -87,11 +114,11 @@ namespace cstsd
             }
 
             //render poco objects
-            Console.WriteLine("Scanning poco objects");
-            if (cstsdConfig.PocoObjectTasks != null)
+            Console.WriteLine("Scanning poco objects for TS export");
+            if (cstsdConfig.ToTsPocoObjectTasks != null)
             {
                 //render poco's from one dll into one .d.ts file
-                foreach (var pocoTask in cstsdConfig.PocoObjectTasks)
+                foreach (var pocoTask in cstsdConfig.ToTsPocoObjectTasks)
                 {
                     var sourceFiles = new List<string>();
                     
@@ -111,7 +138,7 @@ namespace cstsd
                         : Path.Combine(pocoTask.OutputDirectory, outputFileName + ".d.ts");
 
                     var nameSpace = string.IsNullOrWhiteSpace(pocoTask.Namespace)
-                        ? cstsdConfig.DefaultPocoNamespace
+                        ? cstsdConfig.DefaultTsPocoNamespace
                         : pocoTask.Namespace;
                     
                     CheckCreateDir(outputFile);
@@ -124,11 +151,11 @@ namespace cstsd
             }
 
             //render enum tasks
-            Console.WriteLine("Scanning enum objects");
-            if (cstsdConfig.EnumTasks != null)
+            Console.WriteLine("Scanning enum objects for TS export");
+            if (cstsdConfig.ToTsEnumTasks != null)
             {
                 //render enum's from one dll into one .d.ts file
-                foreach (var enumTask in cstsdConfig.EnumTasks)
+                foreach (var enumTask in cstsdConfig.ToTsEnumTasks)
                 {
                     var sourceFiles = new List<string>();
 
@@ -148,7 +175,7 @@ namespace cstsd
                         : Path.Combine(enumTask.OutputDirectory, outputFileName + ".ts");
 
                     var nameSpace = string.IsNullOrWhiteSpace(enumTask.Namespace)
-                        ? cstsdConfig.DefaultEnumNamespace
+                        ? cstsdConfig.DefaultTsEnumNamespace
                         : enumTask.Namespace;
 
                     CheckCreateDir(outputFile);
