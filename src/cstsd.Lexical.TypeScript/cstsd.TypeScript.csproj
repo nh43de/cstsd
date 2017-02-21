@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="RenderCs.cs" />
     <Compile Include="ToTsControllerTask.cs" />
     <Compile Include="CstsdTask.cs" />
     <Compile Include="EnumTask.cs" />

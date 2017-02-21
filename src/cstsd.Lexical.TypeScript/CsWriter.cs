@@ -37,7 +37,10 @@ namespace cstsd.TypeScript
             if (!string.IsNullOrWhiteSpace(content))
                 content = content.Indent(_indent) + _config.NewLine;
 
-            return $@"namespace {netModule.Name}" + _config.NewLine +
+            var usingStrings = string.Join("\r\n", netModule.ImportNamespaces.Select(u => $"using {u};"));
+
+            return usingStrings + _config.NewLines(2) +
+                   $@"namespace {netModule.Name}" + _config.NewLine +
                    @"{" + _config.NewLine +
                    content +
                    @"}";
@@ -96,7 +99,7 @@ namespace cstsd.TypeScript
 
         public virtual string WriteGenericArguments(ICollection<NetGenericParameter> genericParameters)
         {
-            if (!genericParameters.Any()) return "";
+            if (genericParameters == null || !genericParameters.Any()) return "";
 
             var genericParamsStr = string.Join(",", genericParameters.Select(gp => gp.Name + WriteGenericArguments(gp.NetGenericParameters)));
 
@@ -262,10 +265,12 @@ namespace cstsd.TypeScript
 
             var body = netConstructor.MethodBody;
 
-            return $"{accessModifier}{netClass.Name}({funParams})" + _config.NewLine +
+            var rtn = $"{accessModifier}{netClass.Name}({funParams})" + _config.NewLine +
                    @"{" + _config.NewLine +
                    $@"{body.Indent(_indent)}" + _config.NewLine +
                    @"}";
+
+            return rtn.Indent(_indent);
         }
 
         public virtual string GetFieldDeclarationTypeString(NetFieldDeclarationType fieldDeclarationType)
@@ -276,6 +281,8 @@ namespace cstsd.TypeScript
                     return "const";
                 case NetFieldDeclarationType.Var:
                     return "var";
+                case NetFieldDeclarationType.ReadOnly:
+                    return "readonly";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(fieldDeclarationType), fieldDeclarationType, null);
             }

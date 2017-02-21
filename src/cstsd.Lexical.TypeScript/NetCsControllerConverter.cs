@@ -27,11 +27,32 @@ namespace cstsd.TypeScript
                     .Select(a => GetCsProxy(a, controllerNetClass.Name))
                     .ToList(),
                 Fields =  GetFields(controllerMethods, controllerNetClass),
-                IsPublic = true
+                IsPublic = true,
+                Constructor = GetConstructor(controllerNetClass)
             };
         }
 
-        private string GetControllerName(string controllerName)
+        private static NetMethod GetConstructor(NetClass controllerNetClass)
+        {
+            return new NetMethod
+            {
+                IsPublic = true,
+                Parameters = new[]
+                {
+                    new NetParameter
+                    {
+                        FieldType = new NetType
+                        {
+                            Name = "string"
+                        },
+                        Name = "baseUrl"
+                    }
+                },
+                MethodBody = "_baseUrl = baseUrl;"
+            };
+        }
+
+        private static string GetControllerName(string controllerName)
         {
             if (controllerName.EndsWith("Controller"))
                 return controllerName.Substring(0, controllerName.Length - "Controller".Length);
@@ -58,7 +79,16 @@ namespace cstsd.TypeScript
             //var routeDataFields =
             //       distinctControllerMethods.Select(m => GetRouteDataFieldDeclaration(m, controllerNetClass));
 
-            return urlStringFields.Cast<NetField>().ToArray(); //.Union(routeDataFields).ToList();
+            return urlStringFields.Cast<NetField>().Union(new [] { new NetFieldDeclaration
+            {
+                Name = "_baseUrl",
+                FieldDeclarationType = NetFieldDeclarationType.ReadOnly,
+                IsPublic = false,
+                FieldType = new NetType
+                {
+                    Name = "string"
+                }
+            } }).ToArray(); //.Union(routeDataFields).ToList();
         }
 
         private NetMethod GetCsProxy(NetMethod controllerMethod, string controllerName)
@@ -78,7 +108,17 @@ namespace cstsd.TypeScript
             
             //gets the param names from controller
             var dataParametersString = string.Join(",\r\n", controllerMethod.Parameters.Select(p => $"{p.Name}"));
-            
+
+            //these are value params
+            csProxy.Parameters = controllerMethod.Parameters.Select(p => new NetParameter
+            {
+                Name = p.Name,
+                FieldType = new NetType
+                {
+                    Name = p.FieldType.Name
+                }
+            }).ToList();
+
             csProxy.Parameters.Add(new NetParameter
             {
                 //Action<IRestResponse<{functionReturnType}>>
@@ -89,7 +129,7 @@ namespace cstsd.TypeScript
                         new NetGenericParameter
                         {
                             Name = "IRestResponse",
-                            NetGenericParameters = new[]
+                            NetGenericParameters = controllerMethod.ReturnType.Name == "void" ? null : new[]
                             {
                                 new NetGenericParameter(controllerMethod.ReturnType)
                             }
@@ -100,7 +140,7 @@ namespace cstsd.TypeScript
                 },
                 Name = "callback"
             });
-
+            
             csProxy.MethodBody =
 @"return ServiceFramework.FrameworkExec(
     baseUrl: _baseUrl,

@@ -3,7 +3,8 @@ namespace cstsd.Core.Net
     public enum NetFieldDeclarationType
     {
         Const,
-        Var
+        Var,
+        ReadOnly
     }
 
     public class NetFieldDeclaration : NetField
