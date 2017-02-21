@@ -99,7 +99,8 @@ namespace cstsd.TypeScript
                 {
                     Name = "RestRequestAsyncHandle"
                 },
-                Name = controllerMethod.Name
+                Name = controllerMethod.Name,
+                IsPublic = true
             };
             
             //get HTTP verb from controller attributes if present. Default to Post
