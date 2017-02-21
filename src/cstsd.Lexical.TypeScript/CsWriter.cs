@@ -226,7 +226,7 @@ namespace cstsd.TypeScript
             
             var body = netMethod.MethodBody;
 
-            return $"{accessModifier}{returnType}{netMethod.Name}({funParams})" + _config.NewLine +
+            return $"{accessModifier}{returnType} {netMethod.Name}({funParams})" + _config.NewLine +
                    @"{" + _config.NewLine +
                    $@"{body.Indent(_indent)}" + _config.NewLine +
                    @"}";
