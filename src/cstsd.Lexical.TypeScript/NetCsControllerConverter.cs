@@ -24,7 +24,7 @@ namespace cstsd.TypeScript
                 Methods = controllerMethods
                     .Where(m => m.ReturnType.Name != "IActionResult")
                     .Where(m => m.IsPublic && m.Attributes.Any(a => a == "CsExport"))
-                    .Select(a => GetControllerExecFunction(a, controllerNetClass.Name))
+                    .Select(a => GetCsProxy(a, controllerNetClass.Name))
                     .ToList(),
                 Fields =  GetFields(controllerMethods, controllerNetClass),
                 IsPublic = true
@@ -39,7 +39,7 @@ namespace cstsd.TypeScript
             return controllerName;
         }
 
-        private List<NetFieldDeclaration> GetFields(List<NetMethod> controllerMethods, NetClass controllerNetClass)
+        private ICollection<NetField> GetFields(IReadOnlyCollection<NetMethod> controllerMethods, NetClass controllerNetClass)
         {
             var distinctControllerMethods = controllerMethods.Select(m => m.Name)
                 .Distinct()
@@ -58,45 +58,61 @@ namespace cstsd.TypeScript
             //var routeDataFields =
             //       distinctControllerMethods.Select(m => GetRouteDataFieldDeclaration(m, controllerNetClass));
 
-            return urlStringFields.ToList(); //.Union(routeDataFields).ToList();
+            return urlStringFields.Cast<NetField>().ToArray(); //.Union(routeDataFields).ToList();
         }
 
-        private NetMethod GetControllerExecFunction(NetMethod netMethod, string controllerName)
+        private NetMethod GetCsProxy(NetMethod controllerMethod, string controllerName)
         {
-            var functionReturnType = netMethod.ReturnType;
-
-            netMethod.ReturnType = new NetType
+            var csProxy = new NetMethod
             {
-                Name = "RestRequestAsyncHandle"
+                ReturnType = new NetType
+                {
+                    Name = "RestRequestAsyncHandle"
+                },
+                Name = controllerMethod.Name
             };
-
-            //default to Post
-            var actionType = netMethod.Attributes.Any(attr => string.Equals(attr, "HttpGet", StringComparison.InvariantCultureIgnoreCase)) ? "GET" : "POST";
-            actionType = netMethod.Attributes.Any(attr => string.Equals(attr, "HttpPost", StringComparison.InvariantCultureIgnoreCase)) ? "POST" : actionType;
             
-            var dataParametersString = string.Join(",\r\n", netMethod.Parameters.Select(p => $"{p.Name}"));
-
-            netMethod.Parameters.Add(new NetParameter
+            //get HTTP verb from controller attributes if present. Default to Post
+            var actionType = controllerMethod.Attributes.Any(attr => string.Equals(attr, "HttpGet", StringComparison.InvariantCultureIgnoreCase)) ? "GET" : "POST";
+            actionType = controllerMethod.Attributes.Any(attr => string.Equals(attr, "HttpPost", StringComparison.InvariantCultureIgnoreCase)) ? "POST" : actionType;
+            
+            //gets the param names from controller
+            var dataParametersString = string.Join(",\r\n", controllerMethod.Parameters.Select(p => $"{p.Name}"));
+            
+            csProxy.Parameters.Add(new NetParameter
             {
+                //Action<IRestResponse<{functionReturnType}>>
                 FieldType = new NetType
                 {
-                    Name = $"Action<IRestResponse<{functionReturnType}>>"
+                    Name = "Action",
+                    GenericParameters = new[] {
+                        new NetGenericParameter
+                        {
+                            Name = "IRestResponse",
+                            NetGenericParameters = new[]
+                            {
+                                new NetGenericParameter(controllerMethod.ReturnType)
+                            }
+                        }
+                    }
+                    
+                    //Name = $"Action<IRestResponse<{functionReturnType}>>"
                 },
                 Name = "callback"
             });
 
-            netMethod.MethodBody =
+            csProxy.MethodBody =
 @"return ServiceFramework.FrameworkExec(
     baseUrl: _baseUrl,
-	url: " + $"{netMethod.Name}Url" + @",
+	url: " + $"{csProxy.Name}Url" + @",
 	data: new {
 " + dataParametersString.Indent("\t\t") + @"
 	},
-	type: """ + actionType + @""",
+	method: Method." + actionType + @",
 	callback: callback
 );";
 
-            return netMethod;
+            return csProxy;
         }
 
         private NetFieldDeclaration GetUrlNavigateConstFieldDeclaration(NetMethod netMethod, NetClass controllerNetClass)

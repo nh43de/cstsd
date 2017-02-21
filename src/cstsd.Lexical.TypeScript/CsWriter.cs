@@ -94,11 +94,11 @@ namespace cstsd.TypeScript
         }
 
 
-        public virtual string WriteGenericArguments(IList<NetGenericParameter> genericParameters)
+        public virtual string WriteGenericArguments(ICollection<NetGenericParameter> genericParameters)
         {
             if (!genericParameters.Any()) return "";
 
-            var genericParamsStr = string.Join(",", genericParameters.Select(gp => gp.Name));
+            var genericParamsStr = string.Join(",", genericParameters.Select(gp => gp.Name + WriteGenericArguments(gp.NetGenericParameters)));
 
             return $"<{genericParamsStr}>";
         }
@@ -239,7 +239,7 @@ namespace cstsd.TypeScript
                 return netType.Name;
            
             //render generic parameters
-            return $"{netType.Name}<{string.Join(",", netType.GenericParameters.Select(gp => gp.Name))}>";
+            return $"{netType.Name}{WriteGenericArguments(netType.GenericParameters)}";
         }
 
         private string GetMethodsString(NetInterface netInterface)
@@ -303,6 +303,9 @@ namespace cstsd.TypeScript
 
         public virtual string WriteField(NetField netField)
         {
+            var modStr = (netField is NetFieldDeclaration)
+                ? GetFieldDeclarationTypeString(((NetFieldDeclaration) netField).FieldDeclarationType) + " "
+                : "";
             var isPublic = netField.IsPublic ? "public " : "";
             var staticStr = netField.IsStatic ? "static " : "";
             var nullableStr = netField.FieldType.IsNullable ? "?" : "";
@@ -314,10 +317,10 @@ namespace cstsd.TypeScript
             }
             else
             {
-                defaultValue = " = " + defaultValue + ";";
+                defaultValue = " = " + defaultValue + "";
             }
-            
-            return $"{isPublic}{staticStr}{WriteTypeName(netField.FieldType)}{nullableStr} {netField.Name}{defaultValue}";
+
+            return $"{isPublic}{modStr}{staticStr}{WriteTypeName(netField.FieldType)}{nullableStr} {netField.Name}{defaultValue}";
         }
 
         ///////////////////////
