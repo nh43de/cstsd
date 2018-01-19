@@ -17,20 +17,29 @@ namespace cstsd.TypeScript
                 .Methods
                 .ToList();
 
+            var ajaxMethods = controllerMethods
+                .Where(m => m.ReturnType.Name != "IActionResult")
+                .Where(m => m.IsPublic && m.Attributes.Any(a => a == "TsExport"))
+                .Select(a => GetControllerExecFunction(a, controllerNetClass.Name))
+                .ToArray();
+
+
+            var httpMethods = controllerMethods
+                .Where(m => m.ReturnType.Name == "IActionResult")
+                .Where(m => m.IsPublic && m.Attributes.Any(a => a == "TsExport"))
+                .Select(a => GetControllerNavigateFunction(a, controllerNetClass.Name))
+                .ToArray();
+
             return new TsModule
             {
                 Name = controllerNetClass.Name,
-                FunctionDeclarations = controllerMethods
-                    .Where(m => m.ReturnType.Name != "IActionResult")
-                    .Where(m => m.IsPublic && m.Attributes.Any(a => a == "TsExport"))
-                    .Select(a => GetControllerExecFunction(a, controllerNetClass.Name))
-                    .ToList(),
+                FunctionDeclarations = httpMethods.Concat(ajaxMethods).ToArray(),
                 FieldDeclarations = GetFields(controllerMethods, controllerNetClass),
                 IsExport = true
             };
         }
 
-        public string GetControllerName(string controllerName)
+        public static string GetControllerName(string controllerName)
         {
             if (controllerName.EndsWith("Controller"))
                 return controllerName.Substring(0, controllerName.Length - "Controller".Length);
@@ -74,8 +83,9 @@ namespace cstsd.TypeScript
 
             //a.FunctionBody = $"/* controller: {controllerNetClass.Name}; action: {netMethod.Name} */";
 
-            var dataParametersString = string.Join(",\r\n", a.Parameters.Select(p => $"{p.Name}: {p.Name}"));
+            var dataParametersString = GetDataParametersString(a);
 
+            //last function parameter is always a callback
             a.Parameters.Add(new TsParameter
             {
                 FieldType = new TsType
@@ -98,6 +108,35 @@ namespace cstsd.TypeScript
             return a;
         }
 
+        public static string GetDataParametersString(TsFunction tsFunction)
+        {
+            var dataParametersString = string.Join(",\r\n", tsFunction.Parameters.Select(p => $"{p.Name}: {p.Name}"));
+
+            return dataParametersString;
+        }
+
+        public TsFunction GetControllerNavigateFunction(NetMethod netMethod, string controllerName)
+        {
+            var tsFunction = GetTsFunction(netMethod);
+
+            tsFunction.ReturnType = new TsType
+            {
+                Name = "void"
+            };
+
+            var actionName = netMethod.Name;
+            var dataParametersString = GetDataParametersString(tsFunction);
+
+            tsFunction.FunctionBody =
+@"return frameworkNavigate({
+	route: " + $"this.{actionName}Route" + @",
+	data: {
+" + dataParametersString.Indent("\t\t") + @"
+	}
+});";
+            return tsFunction;
+        }
+
         public TsFieldDeclaration GetUrlNavigateConstFieldDeclaration(NetMethod netMethod, NetClass controllerNetClass)
         {
             var route = GetRouteInfo(controllerNetClass, netMethod);
@@ -115,16 +154,11 @@ namespace cstsd.TypeScript
 
         public TsFieldDeclaration GetRouteDataFieldDeclaration(NetMethod netMethod, NetClass controllerNetClass)
         {
-            var route = GetRouteInfo(controllerNetClass, netMethod);
+            var routeStr = GetRouteDataFieldDeclarationString(netMethod, controllerNetClass);
 
             var a = new TsFieldDeclaration
             {
-                DefaultValue = 
-$@"{{
-    baseUrl: '/',
-    controller: '{route.Controller}',
-    action: '{route.Action}'
-}}",
+                DefaultValue = routeStr,
                 FieldDeclarationType = FieldDeclarationType.Const,
                 FieldType = new TsType { Name = "IRouteData" },
                 IsStatic = true,
@@ -132,8 +166,23 @@ $@"{{
             };
             return a;
         }
-        
-        public RouteInfo GetRouteInfo(NetClass controllerNetClass, NetMethod netMethod)
+
+        public static string GetRouteDataFieldDeclarationString(NetMethod netMethod, NetClass controllerNetClass)
+        {
+            var route = GetRouteInfo(controllerNetClass, netMethod);
+
+            var r =
+$@"{{
+    baseUrl: '/',
+    controller: '{route.Controller}',
+    action: '{route.Action}'
+}}";
+
+            return r;
+        }
+
+
+        public static RouteInfo GetRouteInfo(NetClass controllerNetClass, NetMethod netMethod)
         {
             var controllerName = GetControllerName(controllerNetClass.Name);
             var actionName = netMethod.Name;
