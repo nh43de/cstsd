@@ -85,3 +85,5 @@ Temp/
 #
 # CUSTOM PROJECT IGNORE
 #
+/src/.vs/**
+/.vs/**
