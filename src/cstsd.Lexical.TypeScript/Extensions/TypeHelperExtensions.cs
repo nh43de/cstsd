@@ -34,6 +34,9 @@ namespace cstsd.TypeScript.Extensions
                 { "Boolean",              "boolean"},
                 { "Bool",                 "boolean"},
                 { "Int",                  "number"},
+                { "Long",                 "number"},
+                { "uint",                 "number"},
+                { "ulong",                "number"},
                 { "Byte",                 "any /* byte */"},
                 { "Byte[]",               "any /* byte[] */"},
                 { "Char",                 "string /* char */"},
@@ -60,7 +63,6 @@ namespace cstsd.TypeScript.Extensions
 
     public static class TypeHelperExtensions
     {
-
         static readonly Lazy<Dictionary<string, string>> GenericTypeMap = new Lazy<Dictionary<string, string>>(() =>
         {
             var a = TypeMappings.Default
