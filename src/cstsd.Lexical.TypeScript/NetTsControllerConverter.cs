@@ -5,6 +5,7 @@ using cstsd.Core.Extensions;
 using cstsd.Core.Net;
 using cstsd.Core.Ts;
 using System.Collections.Generic;
+using cstsd.TypeScript.Extensions;
 
 
 namespace cstsd.TypeScript
@@ -18,14 +19,14 @@ namespace cstsd.TypeScript
                 .ToList();
 
             var ajaxMethods = controllerMethods
-                .Where(m => m.ReturnType.Name != "IActionResult")
+                .Where(m => m.ReturnType.UnwrapTaskType().Name != "IActionResult")
                 .Where(m => m.IsPublic && m.Attributes.Any(a => a == "TsExport"))
                 .Select(a => GetControllerExecFunction(a, controllerNetClass.Name))
                 .ToArray();
 
 
             var httpMethods = controllerMethods
-                .Where(m => m.ReturnType.Name == "IActionResult")
+                .Where(m => m.ReturnType.UnwrapTaskType().Name == "IActionResult")
                 .Where(m => m.IsPublic && m.Attributes.Any(a => a == "TsExport"))
                 .Select(a => GetControllerNavigateFunction(a, controllerNetClass.Name))
                 .ToArray();

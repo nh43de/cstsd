@@ -35,12 +35,11 @@ namespace cstsd.TypeScript
             }
             return a;
         });
-
+        
         public virtual TsType GetTsType(NetType netType) //needs to support case on tsclass, interface, enum, etc
         {
             //TODO: this can probably be re-thought
-
-
+            
             //    if (netType is NetEnum)
             //    {
             //        return GetTsEnum((NetEnum) netType);
@@ -62,28 +61,14 @@ namespace cstsd.TypeScript
             //        };
             //    }
 
-            if (netType.Name == "Task")
-            {
-                if (netType.GenericParameters.Count > 0)
-                {
-                    //Task<T> will only have one ga
-                    var gp = netType.GenericParameters.First();
-
-                    return new TsType
-                    {
-                        Name = gp.Name,
-                        GenericParameters = gp.NetGenericParameters.Select(GetTsGenericParameter).ToArray(),
-                        IsPublic = netType.IsPublic
-                    };
-                }
-
-                //"Task" with no ga's is a void
+            netType = netType.UnwrapTaskType();
+            
+            //voids!
+            if (netType.Name == "void") 
                 return new TsType
                 {
                     Name = "void"
                 };
-            }
-
 
             if (NetCollectionTypesLazy.Value.Contains(netType.Name))
             {
@@ -94,7 +79,8 @@ namespace cstsd.TypeScript
                     IsArray = true
                 };
             }
-            else if (netType.Name.EndsWith("[]"))
+
+            if (netType.Name.EndsWith("[]"))
             {
                 return new TsType
                 {
